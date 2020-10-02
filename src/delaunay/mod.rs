@@ -15,7 +15,7 @@ use jitter::jitter;
 pub struct Delaunay<'a, F> {
   colinear: Vec<usize>,
   delaunator: Option<Triangulation>,
-  inedges: Vec<usize>,
+  pub inedges: Vec<usize>,
   hull_index: Vec<usize>,
   pub half_edges: Vec<usize>,
   hull: Vec<usize>,
@@ -153,13 +153,11 @@ where
       }
     }
     // self.delaunator.expect("expetced a valid return from delaunator");
-    let halfedges:Vec<usize> =  Vec::new();
     let hull:Vec<usize>;
     match &self.delaunator {
 
       Some(d) => {
         self.half_edges = d.halfedges.clone();
-        // halfedges = self.half_edges.clone() as i32;
         self.hull = d.hull.clone();
         hull = self.hull.clone();
         self.triangles = d.triangles.clone();
@@ -171,8 +169,6 @@ where
 
     // todo work out a appropiate work arround to not being
     // able to use -1 as a invalid state.
-    // let inedges = self.inedges.fill(-1i32);
-    // let hullIndex = self.hull_index.fill(-1i32);
     self.inedges = Vec::new();
     self.hull_index = Vec::new();
     let len = self.points.len();
@@ -181,33 +177,25 @@ where
       self.hull_index.push(EMPTY);
     }
 
-    let inedges = &self.inedges;
-    let hull_index = &self.hull_index;
+    // let inedges = &self.inedges;
+    // let hull_index = &self.hull_index;
 
     // Compute an index from each point to an (arbitrary) incoming halfedge
     // Used to give the first neighbor of each point; for this reason,
     // on the hull we give priority to exterior halfedges
-    // for (let e = 0, n = halfedges.length; e < n; ++e) {
-    for (e, he) in halfedges.iter().enumerate() {
-      // const p = triangles[e % 3 === 2 ? e - 2 : e + 1];
+    for (e, he) in self.half_edges.iter().enumerate() {
       let p: usize;
       if e % 3 == 2 {
-        p = e - 2;
+        p = self.triangles[e - 2];
       } else {
-        p = e + 1;
+        p = self.triangles[e + 1];
       }
-      //
-      //   self.inedges[p] = e;
-      // }
       if *he == EMPTY || self.inedges[p] == EMPTY {
         self.inedges[p] = e;
       }
     }
 
-    // for (let i = 0, n = hull.length; i < n; ++i) {
     for (i, h) in hull.iter().enumerate() {
-      // hullIndex[hull[i]] = i;
-      // possible truncation.
       self.hull_index[*h] = i;
     }
 
@@ -216,8 +204,6 @@ where
     if hull_len <= 2u32 && !hull.is_empty() {
       // TODO work out the implications of not setting an invalid
       // value here rust has a usize, javascript  allows -1 as invalid.
-      // this.triangles = new Int32Array(3).fill(-1);
-      // this.halfedges = new Int32Array(3).fill(-1);
       self.triangles = vec![EMPTY, EMPTY, EMPTY];
       self.half_edges = vec![EMPTY, EMPTY, EMPTY];
       self.triangles[0] = hull[0];

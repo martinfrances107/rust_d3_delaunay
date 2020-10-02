@@ -2,9 +2,10 @@ mod delaunay_test {
   #[cfg(test)]
   extern crate pretty_assertions;
 
+  use delaunator::Point;
+  use delaunator::EMPTY;
   use rust_d3_delaunay::delaunay::Delaunay;
   use std::f64::consts::PI;
-  use delaunator::Point;
 
   // #[test]
   // fn test_add() {
@@ -15,18 +16,19 @@ mod delaunay_test {
   #[test]
   fn test_from_array() {
     println!("Delaunay.from(array)");
-    let mut points = vec![Point { x: 0., y: 0. }, Point{x:1f64, y:0f64}, Point{x:0f64, y:1f64}, Point{x:1f64, y:1f64}];
-    let delaunay:Delaunay<f64> = Delaunay::new(&mut points );
-    assert_eq!(
-      delaunay.points,
-      vec![Point{x:0f64, y:0f64}, Point{x:1f64, y:0f64}, Point{x:0f64, y:1f64}, Point{x:1f64, y:1f64}]
-    );
+    let mut points = vec![
+      Point { x: 0., y: 0. },
+      Point { x: 1f64, y: 0f64 },
+      Point { x: 0f64, y: 1f64 },
+      Point { x: 1f64, y: 1f64 },
+    ];
+    let delaunay: Delaunay<f64> = Delaunay::new(&mut points);
     assert_eq!(
       delaunay.triangles,
       [0usize, 2usize, 1usize, 2usize, 3usize, 1usize]
     );
-    // assert_eq!(delaunay.half_edges, Int32Array.of(-1, 5, -1, -1, -1, 1));
-    // assert_eq!(delaunay.inedges, Int32Array.of(2, 4, 0, 3));
+    assert_eq!(delaunay.half_edges, vec![EMPTY, 5, EMPTY, EMPTY, EMPTY, 1]);
+    assert_eq!(delaunay.inedges, vec![2, 4, 0, 3]);
     // assert_eq!(Array.from(delaunay.neighbors(0)), [1, 2]);
     // assert_eq!(Array.from(delaunay.neighbors(1)), [3, 2, 0]);
     // assert_eq!(Array.from(delaunay.neighbors(2)), [0, 1, 3]);
