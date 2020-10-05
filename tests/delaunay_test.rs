@@ -1,3 +1,5 @@
+#![feature(generators, generator_trait)]
+
 mod delaunay_test {
   #[cfg(test)]
   extern crate pretty_assertions;
@@ -6,6 +8,8 @@ mod delaunay_test {
   use delaunator::EMPTY;
   use rust_d3_delaunay::delaunay::Delaunay;
   use std::f64::consts::PI;
+  use std::ops::{Generator, GeneratorState};
+  use std::pin::Pin;
 
   // #[test]
   // fn test_add() {
@@ -23,13 +27,81 @@ mod delaunay_test {
       Point { x: 1f64, y: 1f64 },
     ];
     let delaunay: Delaunay<f64> = Delaunay::new(&mut points);
+
+    let mut neighbors = |i| {
+      // degenerate case with several collinear points
+      if !delaunay.colinear.is_empty() {
+        let l = delaunay.colinear.iter().find(|&&x| x == i);
+        match l {
+          Some(l) => {
+            if *l > 0 {
+              yield delaunay.colinear[l - 1];
+            }
+            // allowed values of l here is zero !!!
+            // but I am just copiying the javascript implementation.
+            if l < &(delaunay.colinear.len() - 1) {
+              yield delaunay.colinear[l + 1];
+            }
+            // return;
+          }
+          None => {
+            return true;
+          }
+        }
+      }
+
+      let e0 = delaunay.inedges[i];
+      if e0 == EMPTY {
+        return true;
+      } // coincident point
+      let mut e = e0;
+      let p0 = EMPTY;
+      loop {
+        let p0 = delaunay.triangles[e];
+        yield p0;
+        // e = e % 3 == 2 ? e - 2 : e + 1;
+        if e % 3 == 2 {
+          e = e - 2;
+        } else {
+          e = e + 1;
+        }
+        if delaunay.triangles[e] != i {
+          return true;
+        } // bad triangulation
+        e = delaunay.half_edges[e];
+        if e == EMPTY {
+          let p = delaunay.hull[(delaunay.hull_index[i] + 1) % delaunay.hull.len()];
+          if p != p0 {
+            yield p;
+          }
+          return true;
+        }
+        if e == e0 {
+          break true;
+        }
+        // }
+      }
+    };
+
     assert_eq!(
       delaunay.triangles,
       [0usize, 2usize, 1usize, 2usize, 3usize, 1usize]
     );
     assert_eq!(delaunay.half_edges, vec![EMPTY, 5, EMPTY, EMPTY, EMPTY, 1]);
     assert_eq!(delaunay.inedges, vec![2, 4, 0, 3]);
-    // assert_eq!(Array.from(delaunay.neighbors(0)), [1, 2]);
+    // assert_eq!(neighbors(0), [1, 2]);
+    match Pin::new(&mut neighbors).resume(0) {
+      GeneratorState::Yielded(n) => assert_eq!(n, 1usize),
+      _ => panic!("unexptected return"),
+    }
+    match Pin::new(&mut neighbors).resume(0) {
+      GeneratorState::Yielded(n) => assert_eq!(n, 2usize),
+      _ => panic!("unexptected return"),
+    }
+    match Pin::new(&mut neighbors).resume(0) {
+      GeneratorState::Complete(n) => assert_eq!(n, true),
+      _ => panic!("unexptected return"),
+    }
     // assert_eq!(Array.from(delaunay.neighbors(1)), [3, 2, 0]);
     // assert_eq!(Array.from(delaunay.neighbors(2)), [0, 1, 3]);
     // assert_eq!(Array.from(delaunay.neighbors(3)), [2, 1]);

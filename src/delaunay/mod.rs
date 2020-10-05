@@ -1,6 +1,5 @@
 // use num_traits::cast::FromPrimitive;
 
-use std::collections::HashMap;
 use std::cmp::Ordering;
 
 use num_traits::Float;
@@ -13,12 +12,12 @@ use delaunator::{EMPTY, triangulate, Point, Triangulation};
 use jitter::jitter;
 
 pub struct Delaunay<'a, F> {
-  colinear: Vec<usize>,
+  pub colinear: Vec<usize>,
   delaunator: Option<Triangulation>,
   pub inedges: Vec<usize>,
-  hull_index: Vec<usize>,
+  pub hull_index: Vec<usize>,
   pub half_edges: Vec<usize>,
-  hull: Vec<usize>,
+  pub hull: Vec<usize>,
   pub triangles: Vec<usize>,
   pub points: &'a mut [Point],
   fx: Box<dyn Fn([F; 2], usize, Vec<[F; 2]>) -> F>,
@@ -91,6 +90,7 @@ where
   }
 
   fn init(&mut self) {
+
     let d = &self.delaunator;
     // let points = self.points;
 
