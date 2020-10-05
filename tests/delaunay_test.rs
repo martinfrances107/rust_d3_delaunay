@@ -11,12 +11,6 @@ mod delaunay_test {
   use std::ops::{Generator, GeneratorState};
   use std::pin::Pin;
 
-  // #[test]
-  // fn test_add() {
-
-  //   assert_eq!(1 + 3, 3);
-  // }
-
   #[test]
   fn test_from_array() {
     println!("Delaunay.from(array)");
