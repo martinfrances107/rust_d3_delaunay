@@ -221,10 +221,10 @@ where
     if self.inedges[i] == EMPTY || self.points.is_empty() {
       return (i + 1) % (self.points.len() >> 1);
     };
-    let c = i;
-    let dc = (x - self.points[i].x).powi(2) + (y - self.points[i].y).powi(2);
+    let mut c = i;
+    let mut dc = (x - self.points[i].x).powi(2) + (y - self.points[i].y).powi(2);
     let e0 = self.inedges[i];
-    let e = e0;
+    let mut e = e0;
     loop {
       let t = self.triangles[e];
       let dt = (x - self.points[t].x).powi(2) + (y - self.points[t].y).powi(2);
@@ -259,7 +259,6 @@ where
     }
 
     return c;
-
   }
 }
 

@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 
-use delaunator::EMPTY;
 use delaunator::Point;
+use delaunator::EMPTY;
 
 use crate::delaunay::Delaunay;
 use crate::path::Path;
@@ -9,7 +9,7 @@ use crate::path::Path;
 pub struct Voronoi<'a> {
   circumcenters: Vec<Point>,
   delaunay: Delaunay<'a, f64>,
-  vectors: Vec<Point>,
+  vectors: VecDeque<Point>,
   xmin: f64,
   ymin: f64,
   xmax: f64,
@@ -21,7 +21,7 @@ impl<'a> Default for Voronoi<'a> {
     return Voronoi {
       delaunay: Delaunay::default(),
       circumcenters: Vec::<Point>::new(),
-      vectors: Vec::new(),
+      vectors: VecDeque::new(),
       xmin: 0f64,
       xmax: 960f64,
       ymin: 0f64,
@@ -49,7 +49,7 @@ impl<'a> Voronoi<'a> {
       }
       None => {
         v = Self {
-          vectors: Vec::with_capacity(delaunay.points.len()),
+          vectors: VecDeque::with_capacity(delaunay.points.len()),
           ..Voronoi::default()
         };
       }
@@ -143,7 +143,7 @@ impl<'a> Voronoi<'a> {
   fn render_cell(&self, i: usize, context_in: Option<Path>) -> Option<Path> {
     // const buffer = context == null ? context = new Path : undefined;
     let buffer: Path;
-    let context: Path;
+    let mut context;
     match context_in {
       None => {
         context = Path::default();
@@ -164,7 +164,7 @@ impl<'a> Voronoi<'a> {
         }
 
         context.move_to(points[0].x, points[0].y);
-        let n = points.len();
+        let mut n = points.len();
         while points[0usize] == points[n - 2] && points[1] == points[n - 1] && n > 1 {
           n -= 2;
         }
@@ -185,7 +185,7 @@ impl<'a> Voronoi<'a> {
     return self.delaunay.step(i, x, y) == i;
   }
 
-  fn cell(&self, i: usize) -> Option<Vec<Point>> {
+  fn cell(&self, i: usize) -> Option<VecDeque<Point>> {
     //     const {circumcenters, delaunay: {inedges, halfedges, triangles}} = this;
     let e0 = self.delaunay.inedges[i];
     //     const e0 = inedges[i];
@@ -193,12 +193,12 @@ impl<'a> Voronoi<'a> {
     if e0 == EMPTY {
       return None;
     }
-    let points: Vec<Point> = Vec::new();
-    let e = e0;
+    let mut points: VecDeque<Point> = VecDeque::new();
+    let mut e = e0;
     loop {
       let t = (e as f64 / 3f64).floor() as usize;
-      points.push(self.circumcenters[t]);
-      points.push(self.circumcenters[t * 2 + 1]);
+      points.push_back(self.circumcenters[t].clone());
+      // points.push_back(self.circumcenters[t * 2 + 1].clone());
       e = match e % 3 {
         2 => e - 2,
         _ => e + 1,
@@ -215,74 +215,70 @@ impl<'a> Voronoi<'a> {
     return Some(points);
   }
 
-  fn clip(&self, i: usize) -> Option<Vec<Point>> {
+  fn clip(&self, i: usize) -> Option<VecDeque<Point>> {
     // degenerate case (1 valid point: return the box)
     if i == 0 && self.delaunay.hull.len() == 1 {
-      return Some(vec![
-        Point {
-          x: self.xmax,
-          y: self.ymin,
-        },
-        Point {
-          x: self.xmax,
-          y: self.ymax,
-        },
-        Point {
-          x: self.xmin,
-          y: self.ymax,
-        },
-        Point {
-          x: self.xmin,
-          y: self.ymin,
-        },
-      ]);
+      return Some(
+        vec![
+          Point {
+            x: self.xmax,
+            y: self.ymin,
+          },
+          Point {
+            x: self.xmax,
+            y: self.ymax,
+          },
+          Point {
+            x: self.xmin,
+            y: self.ymax,
+          },
+          Point {
+            x: self.xmin,
+            y: self.ymin,
+          },
+        ]
+        .into_iter()
+        .collect(),
+      );
     }
-    let points = self.cell(i);
     // if (points == null) return null;
-    match points {
+    match self.cell(i) {
       None => {
         return None;
       }
       Some(points) => {
         let v = i * 4;
-      }
-    }
-    // const {vectors: V} = this;
-    let v = i * 4;
-    let V = self.vectors;
-    match V.get(v) {
-      Some(v) => {
-        return Some(vec![*v]);
-      }
-      None => match V.get(v + 1) {
-        Some(_) => {
-          return Some(self.clip_infinite(
-            i,
-            &points,
-            Some(V[v].x),
-            Some(V[v].y),
-            Some(V[v + 1].x),
-            Some(V[v + 1].y),
-          ));
+        let V = &self.vectors;
+        match V.get(v) {
+          Some(v) => {
+            return Some(vec![v.clone()].into_iter().collect());
+          }
+          None => match V.get(v + 1) {
+            Some(_) => {
+              return Some(self.clip_infinite(i, &points, V[v].x, V[v].y, V[v + 1].x, V[v + 1].y));
+            }
+            None => {
+              return Some(self.clip_finite(i, &points));
+            }
+          },
         }
-        None => {
-          return Some(self.clip_infinite(i, &points, None, None, None, None));
-        }
-      },
+      }
     }
   }
 
-  fn clip_finite(&self, i: usize, points: Vec<Point>) -> Vec<Point> {
+  fn clip_finite(&self, i: usize, points: &VecDeque<Point>) -> VecDeque<Point> {
     let n = points.len();
-    let P = Vec::new();
-    let x0;
-    let y0;
-    let x1 = points[n - 1].x;
-    let y1 = points[n - 1].y;
-    let c0;
-    let c1 = self.regioncode(x1, y1);
-    let e0;
-    let e1;
+    let mut P = VecDeque::new();
+    let mut x0;
+    let mut y0;
+    let mut x1 = points[n - 1].x;
+    let mut y1 = points[n - 1].y;
+    let mut c0;
+    let mut c1 = self.regioncode(x1, y1);
+    let mut e0;
+    // There is a bug inconsitence in the javascript implementation.
+    // e1 must be given a reasonable default value.
+    let mut e1=0;
     // for (let j = 0; j < n; j += 2) {
     for j in (0..n).step_by(2) {
       x0 = x1;
@@ -295,9 +291,9 @@ impl<'a> Voronoi<'a> {
         e0 = e1;
         e1 = 0;
         if !P.is_empty() {
-          P.push(Point { x: x1, y: y1 });
+          P.push_back(Point { x: x1, y: y1 });
         } else {
-          P = vec![Point { x: x1, y: y1 }];
+          P = vec![Point { x: x1, y: y1 }].into_iter().collect();
         }
       } else {
         let S;
@@ -308,20 +304,22 @@ impl<'a> Voronoi<'a> {
         if c0 == 0 {
           S = self.clip_segment(x0, y0, x1, y1, c0, c1);
           match S {
-            None => {continue;}
-            Some(s)=> {
+            None => {
+              continue;
+            }
+            Some(s) => {
               sx0 = s[0].x;
               sy0 = s[0].y;
               sx1 = s[1].x;
-              sy0 = s[1].y;
+              sy1 = s[1].y;
             }
           }
-
-
         } else {
           S = self.clip_segment(x1, y1, x0, y0, c1, c0);
           match S {
-            None => {continue;},
+            None => {
+              continue;
+            }
             Some(s) => {
               // [sx1, sy1, sx0, sy0] = S;
               sx1 = s[0].x;
@@ -334,14 +332,12 @@ impl<'a> Voronoi<'a> {
                 self.edge(i, e0, e1, P, P.len());
               }
               if !P.is_empty() {
-                P.push(Point { x: sx0, y: sy0 });
+                P.push_back(Point { x: sx0, y: sy0 });
               } else {
-                P = vec![Point { x: sx0, y: sy0 }];
+                P = vec![Point { x: sx0, y: sy0 }].into_iter().collect();
               }
             }
           }
-
-
         }
         e0 = e1;
         e1 = self.edgecode(sx1, sy1);
@@ -349,9 +345,9 @@ impl<'a> Voronoi<'a> {
           self.edge(i, e0, e1, P, P.len());
         }
         if !P.is_empty() {
-          P.push(Point { x: sx1, y: sy1 });
+          P.push_back(Point { x: sx1, y: sy1 });
         } else {
-          P = vec![Point { x: sx1, y: sy1 }]
+          P = vec![Point { x: sx1, y: sy1 }].into_iter().collect();
         };
       }
     }
@@ -383,29 +379,47 @@ impl<'a> Voronoi<'a> {
           x: self.xmin,
           y: self.ymin,
         },
-      ];
+      ]
+      .into_iter()
+      .collect();
     }
     return P;
   }
 
-  fn clip_segment(&self, x0: f64, y0: f64, x1: f64, y1: f64, c0: u8, c1: u8) -> Option<Vec<Point>> {
+  fn clip_segment(
+    &self,
+    x0_in: f64,
+    y0_in: f64,
+    x1_in: f64,
+    y1_in: f64,
+    c0_in: u8,
+    c1_in: u8,
+  ) -> Option<Vec<Point>> {
+    let mut x0 = x0_in;
+    let mut x1 = x1_in;
+    let mut y0 = y0_in;
+    let mut y1 = y1_in;
+    let mut c0 = c0_in;
+    let mut c1 = c1_in;
     loop {
       if c0 == 0 && c1 == 0 {
-        return vec![Point { x: x0, y: y0 }, Point { x: x1, y: y1 }];
+        return Some(vec![Point { x: x0, y: y0 }, Point { x: x1, y: y1 }]);
       }
-      if c0 & c1 {
+      if c0 & c1 != 0 {
         return None;
       }
       let x;
       let y;
-      let c = c0 || c1;
-      if c & 0b1000 {
+      // This is a error in the original javascrtipt implementation.
+      let c = c0 != 0 || c1 != 0;
+
+      if c && 0b1000 != 0 {
         x = x0 + (x1 - x0) * (self.ymax - y0) / (y1 - y0);
         y = self.ymax;
-      } else if c & 0b0100 != 0 {
+      } else if c && 0b0100 != 0 {
         x = x0 + (x1 - x0) * (self.ymin - y0) / (y1 - y0);
         y = self.ymin;
-      } else if c & 0b0010 != 0 {
+      } else if c && 0b0010 != 0 {
         y = y0 + (y1 - y0) * (self.xmax - x0) / (x1 - x0);
         x = self.xmax;
       } else {
@@ -427,28 +441,29 @@ impl<'a> Voronoi<'a> {
   fn clip_infinite(
     &self,
     i: usize,
-    points: &Vec<Point>,
-    vx0: Option<f64>,
-    vy0: Option<f64>,
-    vxn: Option<f64>,
-    vyn: Option<f64>,
-  ) -> Vec<Point> {
+    points: &VecDeque<Point>,
+    vx0: f64,
+    vy0: f64,
+    vxn: f64,
+    vyn: f64,
+  ) -> VecDeque<Point> {
     // let P = Array.from(points);
-    let P: VecDeque<Point> = Vec::into(points.clone());
-    let p;
-    if p == self.project(P[0].x, P[1].y, vx0, vy0) {
-      P.push_front(p[1]);
-      P.push_front(p[0]);
+    let mut P: VecDeque<Point> = VecDeque::into(points.clone());
+    let p1 = self.project(P[0].x, P[1].y, vx0, vy0);
+    if p1.is_some() {
+      P.push_front(p1.unwrap());
     }
-    if p == self.project(P[P.len() - 1].x, P[P.len() - 1].y, vxn, vyn) {
-      P.push_front(p[1]);
-      P.push_front(p[0]);
+    let p2 = self.project(P[P.len() - 1].x, P[P.len() - 1].y, vxn, vyn);
+    if p2.is_some() {
+      P.push_front(p2.unwrap());
     }
-    if P == self.clip_finite(i, P) {
+
+    P = self.clip_finite(i, &P);
+    if !P.is_empty() {
       // for (let j = 0, n = P.length, c0, c1 = this.edgecode(P[n - 2], P[n - 1]); j < n; j += 2) {
       let n = P.len();
-      let c0;
-      let c1 = self.edgecode(P[n - 1].x, P[n - 1].y);
+      let mut c0;
+      let mut c1 = self.edgecode(P[n - 1].x, P[n - 1].y);
       for j in (0..n).step_by(2) {
         c0 = c1;
         c1 = self.edgecode(P[j].x, P[j].y);
@@ -479,26 +494,28 @@ impl<'a> Voronoi<'a> {
           x: self.xmin,
           y: self.ymax,
         },
-      ];
+      ]
+      .into_iter()
+      .collect();
     }
     return P;
   }
 
-  fn edge(&self, i: usize, e0: u8, e1: u8, P: Vec<Point>, j: usize) -> usize {
+  fn edge(&self, i: usize, e0_in: u8, e1: u8, P: VecDeque<Point>, j: usize) -> usize {
+    let mut e0 = e0_in;
     while e0 != e1 {
       let x;
       let y;
       match e0 {
         0b0101 => {
+          // top-left
           e0 = 0b0100;
-          break; // top-left
         }
         0b0100 => {
           // top
           e0 = 0b0110;
           x = self.xmax;
           y = self.ymin;
-          break;
         }
 
         0b0110 => {
@@ -511,7 +528,6 @@ impl<'a> Voronoi<'a> {
           e0 = 0b1010;
           x = self.xmax;
           y = self.ymax;
-          break;
         }
         0b1010 => {
           // bottom-right
@@ -523,7 +539,6 @@ impl<'a> Voronoi<'a> {
           e0 = 0b1001;
           x = self.xmin;
           y = self.ymax;
-          break;
         }
         0b1001 => {
           // bottom-left
@@ -535,7 +550,9 @@ impl<'a> Voronoi<'a> {
           e0 = 0b0101;
           x = self.xmin;
           y = self.ymin;
-          break;
+        }
+        _ => {
+          panic!("unexpected code");
         }
       }
       if P[j].x != x || P[j].y != y && self.contains(i, x, y) {
@@ -559,10 +576,10 @@ impl<'a> Voronoi<'a> {
   }
 
   fn project(self, x0: f64, y0: f64, vx: f64, vy: f64) -> Option<Point> {
-    let t = f64::INFINITY;
-    let c;
-    let x;
-    let y;
+    let mut t = f64::INFINITY;
+    let mut c;
+    let mut x;
+    let mut y;
     if vy < 0f64 {
       // top
       if y0 <= self.ymin {
