@@ -100,19 +100,8 @@ mod delaunay_test {
     // assert_eq!(Array.from(delaunay.neighbors(2)), [0, 1, 3]);
     // assert_eq!(Array.from(delaunay.neighbors(3)), [2, 1]);
   }
-}
 
-// tape("Delaunay.from(array)", test => {
-//   let delaunay = Delaunay.from([[0, 0], [1, 0], [0, 1], [1, 1]]);
-//   test.deepEqual(delaunay.points, Float64Array.of(0, 0, 1, 0, 0, 1, 1, 1));
-//   test.deepEqual(delaunay.triangles, Uint32Array.of(0, 2, 1, 2, 3, 1));
-//   test.deepEqual(delaunay.halfedges, Int32Array.of(-1, 5, -1, -1, -1, 1));
-//   test.deepEqual(delaunay.inedges, Int32Array.of(2, 4, 0, 3));
-//   test.deepEqual(Array.from(delaunay.neighbors(0)), [1, 2]);
-//   test.deepEqual(Array.from(delaunay.neighbors(1)), [3, 2, 0]);
-//   test.deepEqual(Array.from(delaunay.neighbors(2)), [0, 1, 3]);
-//   test.deepEqual(Array.from(delaunay.neighbors(3)), [2, 1]);
-// });
+
 
 // tape("Delaunay.from(array) handles coincident points", test => {
 //   let delaunay = Delaunay.from([[0, 0], [1, 0], [0, 1], [1, 0]]);
@@ -122,6 +111,26 @@ mod delaunay_test {
 //   test.deepEqual(Array.from(delaunay.neighbors(2)), [0, 1]);
 //   test.deepEqual(Array.from(delaunay.neighbors(3)), []);
 // });
+
+#[test]
+fn test_handles_coincident_points() {
+  println!("Delaunay.from(array)");
+
+  let mut points = vec![
+    Point { x: 0f64, y: 0f64 },
+    Point { x: 1f64, y: 0f64 },
+    Point { x: 0f64, y: 1f64 },
+    Point { x: 1f64, y: 0f64 },
+  ];
+  let delaunay: Delaunay<f64> = Delaunay::new(&mut points);
+  assert_eq!(delaunay.inedges, vec![2, 1, 0, EMPTY]);
+
+  println!(" TODO add mssing neigbors asserts");
+//   test.deepEqual(Array.from(delaunay.neighbors(0)), [1, 2]);
+//   test.deepEqual(Array.from(delaunay.neighbors(1)), [2, 0]);
+//   test.deepEqual(Array.from(delaunay.neighbors(2)), [0, 1]);
+//   test.deepEqual(Array.from(delaunay.neighbors(3)), []);
+}
 
 // tape("Delaunay.from(iterable)", test => {
 //   let delaunay = Delaunay.from((function*() {
@@ -162,6 +171,23 @@ mod delaunay_test {
 //   test.equal(voronoi.ymax, 500);
 // });
 
+fn test_voronoi_default_bounds() {
+
+  let mut points = vec![
+    Point { x: 0f64, y: 0f64 },
+    Point { x: 1f64, y: 0f64 },
+    Point { x: 0f64, y: 1f64 },
+    Point { x: 1f64, y: 0f64 },
+  ];
+  // let voronoi: Delaunay<f64> = Delaunay::new(&mut points).voronoi();
+
+  // let voronoi = Delaunay::new(points).voronoi();
+    //  assert_eq!(voronoi.xmin, 0);
+    //  assert_eq!(voronoi.ymin, 0);
+  //   test.equal(voronoi.xmax, 960);
+  //   test.equal(voronoi.ymax, 500);
+
+  }
 // tape("delaunay.voronoi([xmin, ymin, xmax, ymax]) uses the specified bounds", test => {
 //   let voronoi = Delaunay.from([[0, 0], [1, 0], [0, 1], [1, 1]]).voronoi([-1, -1, 2, 2]);
 //   test.equal(voronoi.xmin, -1);
@@ -310,3 +336,4 @@ mod delaunay_test {
 //   let context = new Context;
 //   test.equal((delaunay.renderHull(context), context.toString()), `M0,1L1,1L1,0L0,0Z`);
 // });
+}

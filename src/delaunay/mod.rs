@@ -7,8 +7,11 @@ use num_traits::Float;
 mod colinear;
 mod jitter;
 
+use crate::voronoi::Voronoi;
 use colinear::colinear;
-use delaunator::{EMPTY, triangulate, Point, Triangulation};
+
+use delaunator::{triangulate, Point, Triangulation, EMPTY};
+
 use jitter::jitter;
 
 pub struct Delaunay<'a, F> {
@@ -37,7 +40,7 @@ where
       half_edges: Vec::new(),
       hull: Vec::new(),
       hull_index: Vec::new(),
-      points: &mut[],
+      points: &mut [],
       fx: Box::new(|p: [F; 2], _i: usize, _points: Vec<[F; 2]>| return p[0]),
       fy: Box::new(|p: [F; 2], _i: usize, _points: Vec<[F; 2]>| return p[1]),
       triangles: Vec::new(),
@@ -73,7 +76,7 @@ where
   //     this.points = this._delaunator.coords;
   //     this._init();
   //   }
-  pub fn new(points: &'a mut[Point] ) -> Self {
+  pub fn new(points: &'a mut [Point]) -> Self {
     let half = points.len() / 2;
     let delaunator = triangulate(points);
     let mut out = Self {
@@ -90,7 +93,6 @@ where
   }
 
   fn init(&mut self) {
-
     let d = &self.delaunator;
     // let points = self.points;
 
@@ -153,9 +155,8 @@ where
       }
     }
     // self.delaunator.expect("expetced a valid return from delaunator");
-    let hull:Vec<usize>;
+    let hull: Vec<usize>;
     match &self.delaunator {
-
       Some(d) => {
         self.half_edges = d.halfedges.clone();
         self.hull = d.hull.clone();
@@ -215,6 +216,50 @@ where
         self.inedges[hull[1]] = 0;
       }
     }
+  }
+  pub fn step(&self, i: usize, x: f64, y: f64) -> usize {
+    if self.inedges[i] == EMPTY || self.points.is_empty() {
+      return (i + 1) % (self.points.len() >> 1);
+    };
+    let c = i;
+    let dc = (x - self.points[i].x).powi(2) + (y - self.points[i].y).powi(2);
+    let e0 = self.inedges[i];
+    let e = e0;
+    loop {
+      let t = self.triangles[e];
+      let dt = (x - self.points[t].x).powi(2) + (y - self.points[t].y).powi(2);
+      if dt < dc {
+        dc = dt;
+        c = t;
+      }
+
+      if e % 3 == 2 {
+        e = e - 2;
+      } else {
+        e = e + 1;
+      }
+
+      if self.triangles[e] != i {
+        // bad triangulation
+        break;
+      }
+      e = self.half_edges[e];
+      if e == EMPTY {
+        e = self.hull[(self.hull_index[i] + 1) % self.hull.len()];
+        if e != t {
+          if (x - self.points[e].x).powi(2) + (y - self.points[e].y).powi(2) < dc {
+            return e;
+          };
+        }
+        break;
+      }
+      if e == e0 {
+        break;
+      }
+    }
+
+    return c;
+
   }
 }
 
