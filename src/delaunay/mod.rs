@@ -139,13 +139,12 @@ where
             self.points[f].x,
             self.points[f].y,
           ];
-          // let r = 1e-8f64 * (bounds[3] - bounds[1]).hypot(bounds[3] - bounds[0]);
+          let r = 1e-8f64 * (bounds[3] - bounds[1]).hypot(bounds[3] - bounds[0]);
           // for (let i = 0, n = points.length / 2; i < n; ++i) {
           for i in 0..self.points.len() / 2 {
-            // let p = jitter(&points[i], r);
-            // points[i].x = p.x;
-            // points[2 * i + 1] = p.y;
-            // points[i] = p;
+            let p = jitter(&self.points[i], r);
+            self.points[i].x = p.x;
+            self.points[i].y = p.y;
           }
           self.delaunator = triangulate(&self.points);
         } else {

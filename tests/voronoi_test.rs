@@ -24,7 +24,13 @@ mod delaunay_test {
     let delaunay: Delaunay<f64> = Delaunay::new(&mut points);
 
     let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
-    assert_eq!(voronoi.render_cell(3, {}), None);
+    let rc = voronoi.render_cell(3, None);
+    match rc {
+      Some(_) => {
+        assert!(false);
+      }
+      None => {assert!(true);}
+    }
 
   }
 // tape("voronoi.renderCell(i, context) is a noop for coincident points", test => {

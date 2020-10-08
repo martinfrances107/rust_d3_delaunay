@@ -114,11 +114,11 @@ impl<'a> Voronoi<'a> {
 
     // Compute exterior cell rays.
     let mut h = self.delaunay.hull[self.delaunay.hull.len() - 1];
-    let p0: usize;
+    let mut p0: usize;
     let mut p1 = h * 4;
-    let x0: usize;
+    let mut x0: f64;
     let mut x1 = points[h].x;
-    let y0: f64;
+    let mut y0: f64;
     let mut y1 = points[h].y;
     // self.vectors.fill(0);
     for a in 0..self.delaunay.points.len() {
@@ -127,32 +127,34 @@ impl<'a> Voronoi<'a> {
     // for (let i = 0; i < hull.len(); ++i) {
     for i in 0..hull.len() {
       h = hull[i];
-      let p0 = p1;
-      let x0 = x1;
-      let y0 = y1;
+      p0 = p1;
+      x0 = x1;
+      y0 = y1;
       p1 = h * 4;
       x1 = points[h].x;
       y1 = points[h].y;
-      self.vectors[p0 + 2].y = y0 - y1;
+      self.vectors[p0 + 1].y = y0 - y1;
       self.vectors[p1].y = y0 - y1;
-      self.vectors[p0 + 3].x = x1 - x0;
+      self.vectors[p0 + 1].x = x1 - x0;
       self.vectors[p1].x = x1 - x0;
     }
   }
 
-  fn render_cell(&self, i: usize, context_in: Option<Path>) -> Option<Path> {
+  pub fn render_cell(&self, i: usize, context_in: Option<Path>) -> Option<Path> {
     // const buffer = context == null ? context = new Path : undefined;
     let buffer: Path;
     let mut context;
     match context_in {
       None => {
         context = Path::default();
+        buffer = Path::default();
       }
       Some(c) => {
-        context = c;
+        context = c.clone();
+        buffer = c;
       }
     }
-    buffer = context;
+    // buffer = context;
     let points = self.clip(i);
     match points {
       None => {
@@ -276,9 +278,9 @@ impl<'a> Voronoi<'a> {
     let mut c0;
     let mut c1 = self.regioncode(x1, y1);
     let mut e0;
-    // There is a bug inconsitence in the javascript implementation.
+    // There is a bug/inconsitencey in the javascript implementation.
     // e1 must be given a reasonable default value.
-    let mut e1=0;
+    let mut e1 = 0;
     // for (let j = 0; j < n; j += 2) {
     for j in (0..n).step_by(2) {
       x0 = x1;
@@ -288,7 +290,7 @@ impl<'a> Voronoi<'a> {
       c0 = c1;
       c1 = self.regioncode(x1, y1);
       if c0 == 0 && c1 == 0 {
-        e0 = e1;
+        // e0 = e1;
         e1 = 0;
         if !P.is_empty() {
           P.push_back(Point { x: x1, y: y1 });
@@ -308,8 +310,8 @@ impl<'a> Voronoi<'a> {
               continue;
             }
             Some(s) => {
-              sx0 = s[0].x;
-              sy0 = s[0].y;
+              // sx0 = s[0].x;
+              // sy0 = s[0].y;
               sx1 = s[1].x;
               sy1 = s[1].y;
             }
@@ -329,7 +331,8 @@ impl<'a> Voronoi<'a> {
               e0 = e1;
               e1 = self.edgecode(sx0, sy0);
               if e0 != 0u8 && e1 != 0u8 {
-                self.edge(i, e0, e1, P, P.len());
+                let len = P.len();
+                self.edge(i, e0, e1, &mut P, len);
               }
               if !P.is_empty() {
                 P.push_back(Point { x: sx0, y: sy0 });
@@ -342,7 +345,8 @@ impl<'a> Voronoi<'a> {
         e0 = e1;
         e1 = self.edgecode(sx1, sy1);
         if e0 != 0u8 && e1 != 0u8 {
-          self.edge(i, e0, e1, P, P.len());
+          let len = P.len();
+          self.edge(i, e0, e1, &mut P, len);
         }
         if !P.is_empty() {
           P.push_back(Point { x: sx1, y: sy1 });
@@ -355,7 +359,8 @@ impl<'a> Voronoi<'a> {
       e0 = e1;
       e1 = self.edgecode(P[0].x, P[0].y);
       if e0 != 0u8 && e1 != 0u8 {
-        self.edge(i, e0, e1, P, P.len());
+        let len = P.len();
+        self.edge(i, e0, e1, &mut P, len);
       }
     } else if self.contains(
       i,
@@ -461,17 +466,18 @@ impl<'a> Voronoi<'a> {
     P = self.clip_finite(i, &P);
     if !P.is_empty() {
       // for (let j = 0, n = P.length, c0, c1 = this.edgecode(P[n - 2], P[n - 1]); j < n; j += 2) {
-      let n = P.len();
-      let mut c0;
-      let mut c1 = self.edgecode(P[n - 1].x, P[n - 1].y);
-      for j in (0..n).step_by(2) {
-        c0 = c1;
-        c1 = self.edgecode(P[j].x, P[j].y);
-        if c0 != 0 && c1 != 0 {
-          j = self.edge(i, c0, c1, P, j);
-          n = P.len();
-        }
-      }
+      // let mut n = P.len();
+      // let mut c0;
+      // let mut c1 = self.edgecode(P[n - 1].x, P[n - 1].y);
+      // for j in (0..n).step_by(2) {
+      // c0 = c1;
+      // c1 = self.edgecode(P[j].x, P[j].y);
+      // if c0 != 0 && c1 != 0 {
+      // j is never used in the javascript version.
+      // j = self.edge(i, c0, c1, P, j);
+      // n = P.len();
+      // }
+      // }
     } else if self.contains(
       i,
       (self.xmin + self.xmax) / 2f64,
@@ -501,11 +507,12 @@ impl<'a> Voronoi<'a> {
     return P;
   }
 
-  fn edge(&self, i: usize, e0_in: u8, e1: u8, P: VecDeque<Point>, j: usize) -> usize {
+  fn edge(&self, i: usize, e0_in: u8, e1: u8, P: &mut VecDeque<Point>, j_in: usize) -> usize {
+    let mut j = j_in;
     let mut e0 = e0_in;
     while e0 != e1 {
-      let x;
-      let y;
+      let mut x = 0f64;
+      let mut y = 0f64;
       match e0 {
         0b0101 => {
           // top-left
@@ -562,7 +569,7 @@ impl<'a> Voronoi<'a> {
     }
     if P.len() > 4 {
       // for (let i = 0; i < P.len(); i+= 2) {
-      for i in 0..P.len() {
+      for mut i in 0..P.len() {
         let j = (i + 1) % P.len();
         let k = (i + 2) % P.len();
         if P[i] == P[j] && P[j] == P[k] || P[i + 1] == P[j + 1] && P[j + 1] == P[k + 1] {
@@ -575,11 +582,13 @@ impl<'a> Voronoi<'a> {
     return j;
   }
 
-  fn project(self, x0: f64, y0: f64, vx: f64, vy: f64) -> Option<Point> {
+  fn project(&self, x0: f64, y0: f64, vx: f64, vy: f64) -> Option<Point> {
     let mut t = f64::INFINITY;
     let mut c;
-    let mut x;
-    let mut y;
+    // The is a mistake in the javascript implementation
+    // if vy and vx == 0 then x, y are undefined.
+    let mut x = 0f64;
+    let mut y = 0f64;
     if vy < 0f64 {
       // top
       if y0 <= self.ymin {
@@ -603,9 +612,9 @@ impl<'a> Voronoi<'a> {
         x = x0 + t * vx;
       }
     }
+
     if vx > 0f64 {
       // right
-      t = c;
       if x0 >= self.xmax {
         return None;
       }

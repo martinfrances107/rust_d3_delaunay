@@ -1,5 +1,6 @@
 const EPSILON: f64 = 1e-6;
 
+#[derive(Clone, Debug)]
 pub struct Path {
   x0: f64,
   y0: f64,
