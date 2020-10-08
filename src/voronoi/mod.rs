@@ -182,7 +182,7 @@ impl<'a> Voronoi<'a> {
     }
   }
 
-  fn contains(&self, i: usize, x: f64, y: f64) -> bool {
+  pub fn contains(&self, i: usize, x: f64, y: f64) -> bool {
     // if ((x = +x, x !== x) || (y = +y, y !== y)) return false;
     return self.delaunay.step(i, x, y) == i;
   }
