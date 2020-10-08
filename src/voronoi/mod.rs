@@ -8,7 +8,7 @@ use crate::path::Path;
 
 pub struct Voronoi<'a> {
   circumcenters: Vec<Point>,
-  delaunay: Delaunay<'a, f64>,
+  delaunay: Delaunay<'a>,
   vectors: VecDeque<Point>,
   xmin: f64,
   ymin: f64,
@@ -31,7 +31,7 @@ impl<'a> Default for Voronoi<'a> {
 }
 
 impl<'a> Voronoi<'a> {
-  pub fn new(delaunay: Delaunay<'a, f64>, b: Option<(f64, f64, f64, f64)>) -> Self {
+  pub fn new(delaunay: Delaunay<'a>, b: Option<(f64, f64, f64, f64)>) -> Self {
     let mut v: Voronoi;
     match b {
       Some((xmin, ymin, xmax, ymax)) => {
@@ -167,12 +167,12 @@ impl<'a> Voronoi<'a> {
 
         context.move_to(points[0].x, points[0].y);
         let mut n = points.len();
-        while points[0usize] == points[n - 2] && points[1] == points[n - 1] && n > 1 {
-          n -= 2;
+        while points[0usize].x == points[n - 1].x && points[0].y == points[n - 1].y && n > 1 {
+          n -= 1;
         }
 
-        for i in (2..n).step_by(2) {
-          if points[i] != points[i - 2] || points[i + 1] != points[i - 1] {
+        for i in 1..n {
+          if points[i].x != points[i - 1].x || points[i].y != points[i - 1].y {
             context.line_to(points[i].x, points[i].y);
           }
         }
@@ -209,7 +209,7 @@ impl<'a> Voronoi<'a> {
         break;
       } // bad triangulation.
       e = self.delaunay.half_edges[e];
-      if e == e0 || e != EMPTY {
+      if e == e0 || e == EMPTY {
         break;
       }
     }

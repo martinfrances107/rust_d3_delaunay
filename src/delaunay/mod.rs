@@ -2,7 +2,7 @@
 
 use std::cmp::Ordering;
 
-use num_traits::Float;
+// use num_traits::Float;
 
 mod colinear;
 mod jitter;
@@ -14,7 +14,7 @@ use delaunator::{triangulate, Point, Triangulation, EMPTY};
 
 use jitter::jitter;
 
-pub struct Delaunay<'a, F> {
+pub struct Delaunay<'a> {
   pub colinear: Vec<usize>,
   delaunator: Option<Triangulation>,
   pub inedges: Vec<usize>,
@@ -23,14 +23,11 @@ pub struct Delaunay<'a, F> {
   pub hull: Vec<usize>,
   pub triangles: Vec<usize>,
   pub points: &'a mut [Point],
-  fx: Box<dyn Fn([F; 2], usize, Vec<[F; 2]>) -> F>,
-  fy: Box<dyn Fn([F; 2], usize, Vec<[F; 2]>) -> F>,
+  fx: Box<dyn Fn(Point, usize, Vec<Point>) -> f64>,
+  fy: Box<dyn Fn(Point, usize, Vec<Point>) -> f64>,
 }
 
-impl<'a, F> Default for Delaunay<'a, F>
-where
-  F: Float,
-{
+impl<'a> Default for Delaunay<'a> {
   fn default() -> Self {
     // let points = Vec::new();
     return Self {
@@ -41,17 +38,14 @@ where
       hull: Vec::new(),
       hull_index: Vec::new(),
       points: &mut [],
-      fx: Box::new(|p: [F; 2], _i: usize, _points: Vec<[F; 2]>| return p[0]),
-      fy: Box::new(|p: [F; 2], _i: usize, _points: Vec<[F; 2]>| return p[1]),
+      fx: Box::new(|p: Point, _i: usize, _points: Vec<Point>| return p.x),
+      fy: Box::new(|p: Point, _i: usize, _points: Vec<Point>| return p.y),
       triangles: Vec::new(),
     };
   }
 }
 
-impl<'a, F> Delaunay<'a, F>
-where
-  F: Float,
-{
+impl<'a> Delaunay<'a> {
   // pub fn from(points: Vec<[F;2]>, fx:Option<Box<dyn Fn([F;2], usize, Vec<[F;2]>) -> F>>, fy:Option<Box<dyn Fn([F;2], usize, Vec<[F;2]>) -> F>>) -> Self
   // {
   //   let  default = Delaunay::<F>::default();

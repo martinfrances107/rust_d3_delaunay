@@ -1,6 +1,6 @@
 #![feature(generators, generator_trait)]
 
-mod delaunay_test {
+mod voronoi_test {
   #[cfg(test)]
   extern crate pretty_assertions;
 
@@ -17,7 +17,7 @@ mod delaunay_test {
       Point { x: 0f64, y: 1f64 },
       Point { x: 1f64, y: 0f64 },
     ];
-    let delaunay: Delaunay<f64> = Delaunay::new(&mut points);
+    let delaunay: Delaunay = Delaunay::new(&mut points);
 
     let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
     let rc = voronoi.render_cell(3, None);
@@ -32,22 +32,22 @@ mod delaunay_test {
   //   test.equal((voronoi.renderCell(2, context), context.toString()), `M-1,2L-1,0.5L0.5,0.5L2,2Z`);
   // });
 
-  // #[test]
-  // fn test_render_cell_midpoint() {
-  //   println!("voronoi.renderCell(i, context) handles midpoint coincident with circumcenter");
-  //   let mut points = vec![
-  //     Point { x: 0f64, y: 0f64 },
-  //     Point { x: 1f64, y: 0f64 },
-  //     Point { x: 0f64, y: 1f64 },
-  //   ];
-  //   let delaunay: Delaunay<f64> = Delaunay::new(&mut points);
-  //   let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
-  //   let rc = voronoi.render_cell(0, Some(Path::default()));
-  //   assert_eq!(
-  //     rc.unwrap().value(),
-  //     Some(String::from("M-1,-1L0.5,-1L0.5,0.5L-1,0.5Z"))
-  //   );
-  // }
+  #[test]
+  fn test_render_cell_midpoint() {
+    println!("voronoi.renderCell(i, context) handles midpoint coincident with circumcenter");
+    let mut points = vec![
+      Point { x: 0f64, y: 0f64 },
+      Point { x: 1f64, y: 0f64 },
+      Point { x: 0f64, y: 1f64 },
+    ];
+    let delaunay: Delaunay = Delaunay::new(&mut points);
+    let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
+    let rc = voronoi.render_cell(0, Some(Path::default()));
+    assert_eq!(
+      rc.unwrap().value(),
+      Some(String::from("M-1,-1L0.5,-1L0.5,0.5L-1,0.5Z"))
+    );
+  }
 
   //   let voronoi = Delaunay.from([[0, 0], [1, 0], [0, 1]]).voronoi([-1, -1, 2, 2]);
   //   let context = new Context;
@@ -70,7 +70,7 @@ mod delaunay_test {
       Point { x: 0f64, y: 1f64 },
       Point { x: 1f64, y: 0f64 },
     ];
-    let delaunay: Delaunay<f64> = Delaunay::new(&mut points);
+    let delaunay: Delaunay = Delaunay::new(&mut points);
     let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
     assert_eq!(voronoi.contains(3, 1f64, 0f64), false);
     assert_eq!(voronoi.contains(1, 1f64, 0f64), true);
