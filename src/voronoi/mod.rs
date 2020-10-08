@@ -110,7 +110,7 @@ impl<'a> Voronoi<'a> {
       i += 3;
       j += 2;
     }
-    self.circumcenters[j] = Point { x, y };
+    self.circumcenters.insert(j, Point { x, y });
 
     // Compute exterior cell rays.
     let mut h = self.delaunay.hull[self.delaunay.hull.len() - 1];
@@ -121,8 +121,8 @@ impl<'a> Voronoi<'a> {
     let mut y0: f64;
     let mut y1 = points[h].y;
     // self.vectors.fill(0);
-    for a in 0..self.delaunay.points.len() {
-      self.vectors[a] = Point { x: 0f64, y: 0f64 }
+    for _a in 0..self.delaunay.points.len() * 2 {
+      self.vectors.push_back(Point { x: 0f64, y: 0f64 });
     }
     // for (let i = 0; i < hull.len(); ++i) {
     for i in 0..hull.len() {
@@ -133,10 +133,10 @@ impl<'a> Voronoi<'a> {
       p1 = h * 4;
       x1 = points[h].x;
       y1 = points[h].y;
-      self.vectors[p0 + 1].y = y0 - y1;
-      self.vectors[p1].y = y0 - y1;
-      self.vectors[p0 + 1].x = x1 - x0;
-      self.vectors[p1].x = x1 - x0;
+      let xdiff = x1 - x0;
+      let ydiff = y0 - y1;
+      self.vectors.insert(p0 + 1, Point { x: xdiff, y: ydiff });
+      self.vectors.insert(p1, Point { x: xdiff, y: ydiff });
     }
   }
 
