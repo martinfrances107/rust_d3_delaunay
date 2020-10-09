@@ -507,6 +507,7 @@ impl<'a> Voronoi<'a> {
 
   #[allow(non_snake_case)]
   fn edge(&self, i: usize, e0_in: u8, e1: u8, P: &mut VecDeque<Point>, j_in: usize) -> usize {
+
     let mut j = j_in;
     let mut e0 = e0_in;
     while e0 != e1 {
@@ -647,31 +648,51 @@ impl<'a> Voronoi<'a> {
   }
 
   fn edgecode(&self, x: f64, y: f64) -> u8 {
+    // Lower and upper nibbles.
+    let lower: u8;
+    let upper: u8;
+
     if x == self.xmin {
-      return 0b0001;
+      lower = 0b0001;
     } else if x == self.xmax {
-      return 0b0010;
-    } else if y == self.ymin {
-      return 0b0100;
-    } else if y == self.ymax {
-      return 0b1000;
+      lower = 0b0010;
     } else {
-      return 0b0000;
+      lower = 0b0000;
     }
+
+    if y == self.ymin {
+      upper = 0b0100;
+    } else if y == self.ymax {
+      upper = 0b1000;
+    } else {
+      upper = 0b0000;
+    }
+
+    return lower | upper;
   }
 
   fn regioncode(&self, x: f64, y: f64) -> u8 {
+    // Lower and upper nibbles.
+    let lower: u8;
+    let upper: u8;
+
     if x < self.xmin {
-      return 0b001;
+      lower = 0b001;
     } else if x > self.xmax {
-      return 0b0010;
-    } else if y < self.ymin {
-      return 0b0100;
-    } else if y > self.ymax {
-      return 0b1000;
+      lower = 0b0010;
     } else {
-      return 0b0000;
+      lower = 0b0000;
     }
+
+    if y < self.ymin {
+      upper = 0b0100;
+    } else if y > self.ymax {
+      upper = 0b1000;
+    } else {
+      upper = 0b0000;
+    }
+
+    return lower | upper;
   }
 }
 
