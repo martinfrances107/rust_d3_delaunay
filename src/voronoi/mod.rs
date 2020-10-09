@@ -249,20 +249,13 @@ impl<'a> Voronoi<'a> {
         return None;
       }
       Some(points) => {
-        let v = i * 4;
+        #[allow(non_snake_case)]
         let V = &self.vectors;
-        match V.get(v) {
-          Some(v) => {
-            return Some(vec![v.clone()].into_iter().collect());
-          }
-          None => match V.get(v + 1) {
-            Some(_) => {
-              return Some(self.clip_infinite(i, &points, V[v].x, V[v].y, V[v + 1].x, V[v + 1].y));
-            }
-            None => {
-              return Some(self.clip_finite(i, &points));
-            }
-          },
+        let v = i * 2;
+        if V[v].x != 0f64 || V[v].y != 0f64 {
+          return Some(self.clip_infinite(i, &points, V[v].x, V[v].y, V[v + 1].x, V[v + 1].y));
+        } else {
+          return Some(self.clip_finite(i, &points));
         }
       }
     }
@@ -270,6 +263,7 @@ impl<'a> Voronoi<'a> {
 
   fn clip_finite(&self, i: usize, points: &VecDeque<Point>) -> VecDeque<Point> {
     let n = points.len();
+    #[allow(non_snake_case)]
     let mut P = VecDeque::new();
     let mut x0;
     let mut y0;
@@ -298,6 +292,7 @@ impl<'a> Voronoi<'a> {
           P = vec![Point { x: x1, y: y1 }].into_iter().collect();
         }
       } else {
+        #[allow(non_snake_case)]
         let S;
         let sx0;
         let sy0;
@@ -453,31 +448,36 @@ impl<'a> Voronoi<'a> {
     vyn: f64,
   ) -> VecDeque<Point> {
     // let P = Array.from(points);
+    #[allow(non_snake_case)]
     let mut P: VecDeque<Point> = VecDeque::into(points.clone());
-    let p1 = self.project(P[0].x, P[1].y, vx0, vy0);
+    let p1 = self.project(P[0].x, P[0].y, vx0, vy0);
     if p1.is_some() {
       P.push_front(p1.unwrap());
     }
     let p2 = self.project(P[P.len() - 1].x, P[P.len() - 1].y, vxn, vyn);
     if p2.is_some() {
-      P.push_front(p2.unwrap());
+      P.push_back(p2.unwrap());
     }
 
     P = self.clip_finite(i, &P);
     if !P.is_empty() {
-      // for (let j = 0, n = P.length, c0, c1 = this.edgecode(P[n - 2], P[n - 1]); j < n; j += 2) {
-      // let mut n = P.len();
-      // let mut c0;
-      // let mut c1 = self.edgecode(P[n - 1].x, P[n - 1].y);
-      // for j in (0..n).step_by(2) {
-      // c0 = c1;
-      // c1 = self.edgecode(P[j].x, P[j].y);
-      // if c0 != 0 && c1 != 0 {
-      // j is never used in the javascript version.
-      // j = self.edge(i, c0, c1, P, j);
-      // n = P.len();
-      // }
-      // }
+      let mut n = P.len();
+      let mut c0;
+      let mut c1 = self.edgecode(P[n - 1].x, P[n - 1].y);
+      let mut j = 0;
+      loop {
+        c0 = c1;
+        c1 = self.edgecode(P[j].x, P[j].y);
+        if c0 != 0 && c1 != 0 {
+          j = self.edge(i, c0, c1, &mut P, j);
+          n = P.len();
+        }
+        if j < n {
+          j += 2;
+        } else {
+          continue;
+        }
+      }
     } else if self.contains(
       i,
       (self.xmin + self.xmax) / 2f64,
@@ -507,6 +507,7 @@ impl<'a> Voronoi<'a> {
     return P;
   }
 
+  #[allow(non_snake_case)]
   fn edge(&self, i: usize, e0_in: u8, e1: u8, P: &mut VecDeque<Point>, j_in: usize) -> usize {
     let mut j = j_in;
     let mut e0 = e0_in;
@@ -564,18 +565,24 @@ impl<'a> Voronoi<'a> {
       }
       if P[j].x != x || P[j].y != y && self.contains(i, x, y) {
         // P.splice(j, 0, x, y);
-        j += 2;
+        j += 1;
       }
     }
-    if P.len() > 4 {
+    if P.len() > 2 {
       // for (let i = 0; i < P.len(); i+= 2) {
-      for mut i in 0..P.len() {
+      let mut i = 0;
+      loop {
         let j = (i + 1) % P.len();
         let k = (i + 2) % P.len();
         if P[i] == P[j] && P[j] == P[k] || P[i + 1] == P[j + 1] && P[j + 1] == P[k + 1] {
           // P.splice(j, 2);
           P.remove(j);
           i -= 1;
+        }
+        if i < P.len() {
+          i += 2;
+        } else {
+          continue;
         }
       }
     }
