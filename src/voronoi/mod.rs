@@ -276,7 +276,7 @@ impl<'a> Voronoi<'a> {
     // e1 must be given a reasonable default value.
     let mut e1 = 0;
     // for (let j = 0; j < n; j += 2) {
-    for j in (0..n).step_by(2) {
+    for j in 0..n {
       x0 = x1;
       y0 = y1;
       x1 = points[j].x;
@@ -318,7 +318,6 @@ impl<'a> Voronoi<'a> {
               continue;
             }
             Some(s) => {
-              // [sx1, sy1, sx0, sy0] = S;
               sx1 = s[0].x;
               sy1 = s[0].y;
               sx0 = s[1].x;
@@ -447,7 +446,6 @@ impl<'a> Voronoi<'a> {
     vxn: f64,
     vyn: f64,
   ) -> VecDeque<Point> {
-    // let P = Array.from(points);
     #[allow(non_snake_case)]
     let mut P: VecDeque<Point> = VecDeque::into(points.clone());
     let p1 = self.project(P[0].x, P[0].y, vx0, vy0);
@@ -512,7 +510,7 @@ impl<'a> Voronoi<'a> {
     let mut j = j_in;
     let mut e0 = e0_in;
     while e0 != e1 {
-      let x ;
+      let x;
       let y;
       match e0 {
         0b0101 => {
@@ -565,9 +563,8 @@ impl<'a> Voronoi<'a> {
         }
       }
 
-
-      if (P[j].x != x || P[j].y != y ) && self.contains(i, x, y) {
-        P.insert(j, Point{x, y});
+      if (P[j].x != x || P[j].y != y) && self.contains(i, x, y) {
+        P.insert(j, Point { x, y });
         j += 1;
       }
     }
