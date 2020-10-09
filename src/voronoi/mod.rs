@@ -512,12 +512,13 @@ impl<'a> Voronoi<'a> {
     let mut j = j_in;
     let mut e0 = e0_in;
     while e0 != e1 {
-      let mut x = 0f64;
-      let mut y = 0f64;
+      let x ;
+      let y;
       match e0 {
         0b0101 => {
           // top-left
           e0 = 0b0100;
+          continue;
         }
         0b0100 => {
           // top
@@ -563,8 +564,10 @@ impl<'a> Voronoi<'a> {
           panic!("unexpected code");
         }
       }
-      if P[j].x != x || P[j].y != y && self.contains(i, x, y) {
-        // P.splice(j, 0, x, y);
+
+
+      if (P[j].x != x || P[j].y != y ) && self.contains(i, x, y) {
+        P.insert(j, Point{x, y});
         j += 1;
       }
     }
@@ -574,13 +577,13 @@ impl<'a> Voronoi<'a> {
       loop {
         let j = (i + 1) % P.len();
         let k = (i + 2) % P.len();
-        if P[i] == P[j] && P[j] == P[k] || P[i + 1] == P[j + 1] && P[j + 1] == P[k + 1] {
+        if P[i].x == P[j].x && P[j].x == P[k].x || P[i].y == P[j].y && P[j].y == P[k].y {
           // P.splice(j, 2);
           P.remove(j);
           i -= 1;
         }
         if i < P.len() {
-          i += 2;
+          i += 1;
         } else {
           continue;
         }
