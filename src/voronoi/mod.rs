@@ -31,41 +31,58 @@ impl<'a> Default for Voronoi<'a> {
 }
 
 impl<'a> Voronoi<'a> {
-  pub fn new(delaunay: Delaunay<'a>, b: Option<(f64, f64, f64, f64)>) -> Self {
+  pub fn new(delaunay: Delaunay<'a>, b_in: Option<(f64, f64, f64, f64)>) -> Self {
+    let b;
     let mut v: Voronoi;
-    match b {
-      Some((xmin, ymin, xmax, ymax)) => {
-        if xmax < xmin || ymax < ymin {
-          panic!("Invalid bounds");
-        }
-        v = Self {
-          delaunay,
-          xmin,
-          ymin,
-          xmax,
-          ymax,
-          ..Voronoi::default()
-        };
+    match b_in {
+      Some(b_in) => {
+        b = b_in;
       }
       None => {
-        v = Self {
-          vectors: VecDeque::with_capacity(delaunay.points.len()),
-          ..Voronoi::default()
-        };
+        b = (0f64, 0f64, 960f64, 500f64);
       }
     }
+    let xmin = b.0;
+    let ymin = b.1;
+    let xmax = b.2;
+    let ymax = b.3;
+
+    if xmax < xmin || ymax < ymin {
+      panic!("Invalid bounds");
+    }
+    let len = delaunay.points.len() * 2;
+
+    let mut circumcenters = Vec::with_capacity(len);
+    let mut vectors = VecDeque::with_capacity(len);
+    for _ in 0..len {
+      circumcenters.push(Point { x: 0f64, y: 0f64 });
+      vectors.push_back(Point { x: 0f64, y: 0f64 });
+    }
+    v = Self {
+      delaunay,
+      circumcenters,
+      vectors,
+      xmin,
+      ymin,
+      xmax,
+      ymax,
+      ..Voronoi::default()
+    };
 
     v.init();
     return v;
   }
 
   fn init(&mut self) {
-    //     const {delaunay: {points, hull, triangles}, vectors} = this;
+    // Compute circumcenters.
+    let circumcenter_len = self.delaunay.triangles.len() / 3;
+    // cannot use a slice cos need to be destermined at compile time.
+    self.circumcenters = (&self.circumcenters[0..circumcenter_len]).to_vec();
+
     let triangles = &self.delaunay.triangles;
     let points = &self.delaunay.points;
     let hull = &self.delaunay.hull;
-    //     // Compute circumcenters.
-    //     const circumcenters = this.circumcenters = this._circumcenters.subarray(0, triangles.length / 3 * 2);
+
     let mut i = 0usize;
     let mut j = 0usize;
     let n = triangles.len();
@@ -91,7 +108,7 @@ impl<'a> Voronoi<'a> {
       let cl = ex * ex + ey * ey;
       let ab = (dx * ey - dy * ex) * 2f64;
 
-      if ab != 0f64 {
+      if ab == 0f64 {
         // degenerate case (collinear diagram)
         x = (x1 + x3) / 2f64 - 1e8 * ey;
         y = (y1 + y3) / 2f64 + 1e8 * ex;
@@ -104,39 +121,43 @@ impl<'a> Voronoi<'a> {
         x = x1 + (ey * bl - dy * cl) * d;
         y = y1 + (dx * cl - ex * bl) * d;
       }
+      self.circumcenters[j] = Point { x, y };
       if i < n {
         break;
       }
       i += 3;
-      j += 2;
+      j += 1;
     }
-    self.circumcenters.insert(j, Point { x, y });
 
     // Compute exterior cell rays.
     let mut h = self.delaunay.hull[self.delaunay.hull.len() - 1];
     let mut p0: usize;
-    let mut p1 = h * 4;
+    let mut p1 = h * 2;
     let mut x0: f64;
     let mut x1 = points[h].x;
     let mut y0: f64;
     let mut y1 = points[h].y;
     // self.vectors.fill(0);
-    for _a in 0..self.delaunay.points.len() * 2 {
+    for _ in 0..self.vectors.capacity() {
       self.vectors.push_back(Point { x: 0f64, y: 0f64 });
     }
-    // for (let i = 0; i < hull.len(); ++i) {
     for i in 0..hull.len() {
       h = hull[i];
       p0 = p1;
       x0 = x1;
       y0 = y1;
-      p1 = h * 4;
+      p1 = h * 2;
       x1 = points[h].x;
       y1 = points[h].y;
       let xdiff = x1 - x0;
       let ydiff = y0 - y1;
-      self.vectors.insert(p0 + 1, Point { x: xdiff, y: ydiff });
-      self.vectors.insert(p1, Point { x: xdiff, y: ydiff });
+      // clip infinte pushed to both the front and back of this queue.
+      // remove() then insert() here is inefficient .. but will only be done
+      // once during init().  clip_finite() is a common operation.
+      self.vectors.remove(p0 + 1);
+      self.vectors.insert(p0 + 1, Point { x: ydiff, y: xdiff });
+      self.vectors.remove(p1);
+      self.vectors.insert(p1, Point { x: ydiff, y: xdiff });
     }
   }
 
@@ -188,11 +209,9 @@ impl<'a> Voronoi<'a> {
   }
 
   fn cell(&self, i: usize) -> Option<VecDeque<Point>> {
-    //     const {circumcenters, delaunay: {inedges, halfedges, triangles}} = this;
     let e0 = self.delaunay.inedges[i];
-    //     const e0 = inedges[i];
-    //     if (e0 === -1) return null; // coincident point
     if e0 == EMPTY {
+      // Coincident point.
       return None;
     }
     let mut points: VecDeque<Point> = VecDeque::new();
@@ -200,7 +219,6 @@ impl<'a> Voronoi<'a> {
     loop {
       let t = (e as f64 / 3f64).floor() as usize;
       points.push_back(self.circumcenters[t].clone());
-      // points.push_back(self.circumcenters[t * 2 + 1].clone());
       e = match e % 3 {
         2 => e - 2,
         _ => e + 1,
@@ -213,7 +231,6 @@ impl<'a> Voronoi<'a> {
         break;
       }
     }
-    //     return points;
     return Some(points);
   }
 
@@ -507,7 +524,6 @@ impl<'a> Voronoi<'a> {
 
   #[allow(non_snake_case)]
   fn edge(&self, i: usize, e0_in: u8, e1: u8, P: &mut VecDeque<Point>, j_in: usize) -> usize {
-
     let mut j = j_in;
     let mut e0 = e0_in;
     while e0 != e1 {
@@ -602,8 +618,8 @@ impl<'a> Voronoi<'a> {
       if y0 <= self.ymin {
         return None;
       }
-      c = self.ymin - y0;
-      if c / vy < t {
+      c = (self.ymin - y0) / vy;
+      if c < t {
         y = self.ymin;
         t = c;
         x = x0 + t * vx;
@@ -613,8 +629,8 @@ impl<'a> Voronoi<'a> {
       if y0 >= self.ymax {
         return None;
       }
-      c = self.ymax - y0;
-      if c / vy < t {
+      c = (self.ymax - y0) / vy;
+      if c < t {
         y = self.ymax;
         t = c;
         x = x0 + t * vx;
@@ -626,8 +642,8 @@ impl<'a> Voronoi<'a> {
       if x0 >= self.xmax {
         return None;
       }
-      c = self.xmax - x0;
-      if c / vx < t {
+      c = (self.xmax - x0) / vx;
+      if c < t {
         x = self.xmax;
         t = c;
         y = y0 + t * vy;
@@ -637,8 +653,8 @@ impl<'a> Voronoi<'a> {
       if x0 <= self.xmin {
         return None;
       }
-      c = self.xmin - x0;
-      if c / vx < t {
+      c = (self.xmin - x0) / vx;
+      if c < t {
         x = self.xmin;
         t = c;
         y = y0 + t * vy;
