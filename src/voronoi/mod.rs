@@ -10,10 +10,10 @@ pub struct Voronoi<'a> {
   circumcenters: Vec<Point>,
   delaunay: Delaunay<'a>,
   vectors: VecDeque<Point>,
-  xmin: f64,
-  ymin: f64,
-  xmax: f64,
-  ymax: f64,
+  pub xmin: f64,
+  pub ymin: f64,
+  pub xmax: f64,
+  pub ymax: f64,
 }
 
 impl<'a> Default for Voronoi<'a> {

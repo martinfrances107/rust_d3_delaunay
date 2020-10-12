@@ -4,12 +4,14 @@ mod delaunay_test {
   #[cfg(test)]
   extern crate pretty_assertions;
 
-  use delaunator::Point;
-  use delaunator::EMPTY;
-  use rust_d3_delaunay::delaunay::Delaunay;
-  use std::f64::consts::PI;
   use std::ops::{Generator, GeneratorState};
   use std::pin::Pin;
+
+  use delaunator::Point;
+  use delaunator::EMPTY;
+
+  use rust_d3_delaunay::delaunay::Delaunay;
+  use rust_d3_delaunay::voronoi::Voronoi;
 
   #[test]
   fn test_from_array() {
@@ -161,28 +163,23 @@ mod delaunay_test {
   //   test.deepEqual(delaunay.halfedges, Int32Array.of(-1, 5, -1, -1, -1, 1));
   // });
 
-  // tape("delaunay.voronoi() uses the default bounds", test => {
-  //   let voronoi = Delaunay.from([[0, 0], [1, 0], [0, 1], [1, 1]]).voronoi();
-  //   test.equal(voronoi.xmin, 0);
-  //   test.equal(voronoi.ymin, 0);
-  //   test.equal(voronoi.xmax, 960);
-  //   test.equal(voronoi.ymax, 500);
-  // });
-
+  #[test]
   fn test_voronoi_default_bounds() {
+    println!("delaunay.voronoi() uses the default bounds");
     let mut points = vec![
       Point { x: 0f64, y: 0f64 },
       Point { x: 1f64, y: 0f64 },
       Point { x: 0f64, y: 1f64 },
-      Point { x: 1f64, y: 0f64 },
+      Point { x: 1f64, y: 1f64 },
     ];
-    // let voronoi: Delaunay<f64> = Delaunay::new(&mut points).voronoi();
 
-    // let voronoi = Delaunay::new(points).voronoi();
-    //  assert_eq!(voronoi.xmin, 0);
-    //  assert_eq!(voronoi.ymin, 0);
-    //   test.equal(voronoi.xmax, 960);
-    //   test.equal(voronoi.ymax, 500);
+    let delaunay: Delaunay = Delaunay::new(&mut points);
+    let voronoi = Voronoi::new(delaunay, None);
+     assert_eq!(voronoi.xmin, 0f64);
+     assert_eq!(voronoi.ymin, 0f64);
+     assert_eq!(voronoi.xmax, 960f64);
+     assert_eq!(voronoi.ymax, 500f64);
+
   }
   // tape("delaunay.voronoi([xmin, ymin, xmax, ymax]) uses the specified bounds", test => {
   //   let voronoi = Delaunay.from([[0, 0], [1, 0], [0, 1], [1, 1]]).voronoi([-1, -1, 2, 2]);
@@ -191,6 +188,25 @@ mod delaunay_test {
   //   test.equal(voronoi.xmax, 2);
   //   test.equal(voronoi.ymax, 2);
   // });
+
+  #[test]
+  fn test_voronoi_specific_bounds() {
+    println!("delaunay.voronoi([xmin, ymin, xmax, ymax]) uses the specified bounds");
+    let mut points = vec![
+      Point { x: 0f64, y: 0f64 },
+      Point { x: 1f64, y: 0f64 },
+      Point { x: 0f64, y: 1f64 },
+      Point { x: 1f64, y: 1f64 },
+    ];
+
+    let delaunay: Delaunay = Delaunay::new(&mut points);
+    let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
+     assert_eq!(voronoi.xmin, -1f64);
+     assert_eq!(voronoi.ymin, -1f64);
+     assert_eq!(voronoi.xmax, 2f64);
+     assert_eq!(voronoi.ymax, 2f64);
+
+  }
 
   // tape("delaunay.voronoi() returns the expected diagram", test => {
   //   let voronoi = Delaunay.from([[0, 0], [1, 0], [0, 1], [1, 1]]).voronoi();
