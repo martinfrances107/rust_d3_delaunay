@@ -165,21 +165,23 @@ impl<'a> Voronoi<'a> {
 
   // TODO implement render_bounds()
 
-  pub fn render_cell(&self, i: usize, context_in: Option<Path>) -> Option<Path> {
-    // const buffer = context == null ? context = new Path : undefined;
-    let buffer: Path;
-    let mut context;
+  pub fn render_cell(&self, i: usize, context_in: Option<&mut Path>) -> Option<String>{
+
+    let context: &mut Path;
+    let mut path: Path = Path::default();
+    let has_context;
+
     match context_in {
       None => {
-        context = Path::default();
-        buffer = Path::default();
+        has_context = false;
+        context = &mut path;
       }
       Some(c) => {
-        context = c.clone();
-        buffer = c;
+        has_context = true;
+        context = c;
       }
     }
-    // buffer = context;
+
     let points = self.clip(i);
     match points {
       None => {
@@ -202,10 +204,14 @@ impl<'a> Voronoi<'a> {
           }
         }
         context.close_path();
-        return Some(buffer);
+        if has_context {
+           return None;
+        } else {
+          return path.value()}
+        }
       }
     }
-  }
+
 
   // TODO implement cellPolgons*()
 
