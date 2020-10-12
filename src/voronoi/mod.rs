@@ -7,9 +7,9 @@ use crate::delaunay::Delaunay;
 use crate::path::Path;
 
 pub struct Voronoi<'a> {
-  circumcenters: Vec<Point>,
+  pub circumcenters: Vec<Point>,
   delaunay: Delaunay<'a>,
-  vectors: VecDeque<Point>,
+  pub vectors: VecDeque<Point>,
   pub xmin: f64,
   pub ymin: f64,
   pub xmax: f64,
@@ -137,10 +137,14 @@ impl<'a> Voronoi<'a> {
     let mut x1 = points[h].x;
     let mut y0: f64;
     let mut y1 = points[h].y;
+
     // self.vectors.fill(0);
-    for _ in 0..self.vectors.capacity() {
+    let vectors_len = self.vectors.len();
+    self.vectors.clear();
+    for _ in 0..vectors_len {
       self.vectors.push_back(Point { x: 0f64, y: 0f64 });
     }
+
     for i in 0..hull.len() {
       h = hull[i];
       p0 = p1;
@@ -165,8 +169,7 @@ impl<'a> Voronoi<'a> {
 
   // TODO implement render_bounds()
 
-  pub fn render_cell(&self, i: usize, context_in: Option<&mut Path>) -> Option<String>{
-
+  pub fn render_cell(&self, i: usize, context_in: Option<&mut Path>) -> Option<String> {
     let context: &mut Path;
     let mut path: Path = Path::default();
     let has_context;
@@ -205,13 +208,13 @@ impl<'a> Voronoi<'a> {
         }
         context.close_path();
         if has_context {
-           return None;
+          return None;
         } else {
-          return path.value()}
+          return path.value();
         }
       }
     }
-
+  }
 
   // TODO implement cellPolgons*()
 
