@@ -1,8 +1,8 @@
-// use num_traits::cast::FromPrimitive;
+//
 
 use std::cmp::Ordering;
 
-// use num_traits::Float;
+// use delaunator::Point;
 
 mod colinear;
 mod jitter;
@@ -15,244 +15,244 @@ use delaunator::{triangulate, Point, Triangulation, EMPTY};
 use jitter::jitter;
 
 pub struct Delaunay<'a> {
-  pub colinear: Vec<usize>,
-  delaunator: Option<Triangulation>,
-  pub inedges: Vec<usize>,
-  pub hull_index: Vec<usize>,
-  pub half_edges: Vec<usize>,
-  pub hull: Vec<usize>,
-  pub triangles: Vec<usize>,
-  pub points: &'a mut [Point],
-  fx: Box<dyn Fn(Point, usize, Vec<Point>) -> f64>,
-  fy: Box<dyn Fn(Point, usize, Vec<Point>) -> f64>,
+    pub colinear: Vec<usize>,
+    delaunator: Option<Triangulation>,
+    pub inedges: Vec<usize>,
+    pub hull_index: Vec<usize>,
+    pub half_edges: Vec<usize>,
+    pub hull: Vec<usize>,
+    pub triangles: Vec<usize>,
+    pub points: &'a mut [Point],
+    fx: Box<dyn Fn(Point, usize, Vec<Point>) -> f64>,
+    fy: Box<dyn Fn(Point, usize, Vec<Point>) -> f64>,
 }
 
 impl<'a> Default for Delaunay<'a> {
-  fn default() -> Self {
-    // let points = Vec::new();
-    return Self {
-      colinear: Vec::new(),
-      delaunator: None,
-      inedges: Vec::new(),
-      half_edges: Vec::new(),
-      hull: Vec::new(),
-      hull_index: Vec::new(),
-      points: &mut [],
-      fx: Box::new(|p: Point, _i: usize, _points: Vec<Point>| return p.x),
-      fy: Box::new(|p: Point, _i: usize, _points: Vec<Point>| return p.y),
-      triangles: Vec::new(),
-    };
-  }
+    fn default() -> Self {
+        // let points = Vec::new();
+        return Self {
+            colinear: Vec::new(),
+            delaunator: None,
+            inedges: Vec::new(),
+            half_edges: Vec::new(),
+            hull: Vec::new(),
+            hull_index: Vec::new(),
+            points: &mut [],
+            fx: Box::new(|p: Point, _i: usize, _points: Vec<Point>| return p.x),
+            fy: Box::new(|p: Point, _i: usize, _points: Vec<Point>| return p.y),
+            triangles: Vec::new(),
+        };
+    }
 }
 
 impl<'a> Delaunay<'a> {
-  // pub fn from(points: Vec<[F;2]>, fx:Option<Box<dyn Fn([F;2], usize, Vec<[F;2]>) -> F>>, fy:Option<Box<dyn Fn([F;2], usize, Vec<[F;2]>) -> F>>) -> Self
-  // {
-  //   let  default = Delaunay::<F>::default();
-  //   match (fx, fy) {
-  //     (Some(fx), Some(fy)) => {return Self::new(flat_array(points, fx, fy));}
-  //     (Some(fx), None) => {return Self::new(flat_array(points, fx, default.fy));}
-  //     (None, Some(fy)) => {return Self::new(flat_array(points, default.fx, fy));}
-  //     (None, None) => {return Self::new(flat_array(points, default.fx, default.fy));}
+    // pub fn from(points: Vec<Point>, fx:Option<Box<dyn Fn(Point, usize, Vec<Point>) -> F>>, fy:Option<Box<dyn Fn(Point, usize, Vec<Point>) -> F>>) -> Self
+    // {
+    //   let  default = Delaunay::<F>::default();
+    //   match (fx, fy) {
+    //     (Some(fx), Some(fy)) => {return Self::new(flat_array(points, fx, fy));}
+    //     (Some(fx), None) => {return Self::new(flat_array(points, fx, default.fy));}
+    //     (None, Some(fy)) => {return Self::new(flat_array(points, default.fx, fy));}
+    //     (None, None) => {return Self::new(flat_array(points, default.fx, default.fy));}
 
-  //   }
+    //   }
 
-  // }
-  //   static from(points, fx = pointX, fy = pointY, that) {
-  //     return new Delaunay("length" in points
-  //         ? flatArray(points, fx, fy, that)
-  //         : Float64Array.from(flatIterable(points, fx, fy, that)));
-  //   }
-  //   constructor(points) {
-  //     this._delaunator = new Delaunator(points);
-  //     this.inedges = new Int32Array(points.length / 2);
-  //     this._hullIndex = new Int32Array(points.length / 2);
-  //     this.points = this._delaunator.coords;
-  //     this._init();
-  //   }
-  pub fn new(points: &'a mut [Point]) -> Self {
-    let half = points.len() / 2;
-    let delaunator = triangulate(points);
-    let mut out = Self {
-      delaunator,
-      inedges: Vec::with_capacity(half),
-      hull_index: Vec::with_capacity(half),
-      points,
-      ..Delaunay::default()
-    };
-    {
-      out.init();
+    // }
+    //   static from(points, fx = pointX, fy = pointY, that) {
+    //     return new Delaunay("length" in points
+    //         ? flatArray(points, fx, fy, that)
+    //         : Float64Array.from(flatIterable(points, fx, fy, that)));
+    //   }
+    //   constructor(points) {
+    //     this._delaunator = new Delaunator(points);
+    //     this.inedges = new Int32Array(points.length / 2);
+    //     this._hullIndex = new Int32Array(points.length / 2);
+    //     this.points = this._delaunator.coords;
+    //     this._init();
+    //   }
+    pub fn new(points: &'a mut [Point]) -> Self {
+        let half = points.len() / 2;
+        let delaunator = triangulate(points);
+        let mut out = Self {
+            delaunator,
+            inedges: Vec::with_capacity(half),
+            hull_index: Vec::with_capacity(half),
+            points,
+            ..Delaunay::default()
+        };
+        {
+            out.init();
+        }
+        return out;
     }
-    return out;
-  }
 
-  fn init(&mut self) {
-    let d = &self.delaunator;
-    // let points = self.points;
+    fn init(&mut self) {
+        let d = &self.delaunator;
+        // let points = self.points;
 
-    // check for collinear
-    // if d.hull && d.hull.len() > 2usize && colinear(&points, &d) {
-    match d {
-      None => {}
-      Some(d) => {
-        if d.hull.len() > 2usize && colinear(&self.points, &d) {
-          // this.collinear = Int32Array.from({length: points.length/2}, (_,i) => i)
-          //   .sort((i, j) => points[2 * i] - points[2 * j] || points[2 * i + 1] - points[2 * j + 1]); // for exact neighbors
-          let len = self.points.len() as u32 / 2;
-          // self.colinear = (0..len).collect::u32()
-          let mut colinear_vec: Vec<usize> = (0..len)
-            .map(|i| {
-              return i as usize;
-            })
-            .collect();
-          // .sort_by(|i, j| points[2 * i] - points[2 * j] || points[2 * i + 1] - points[2 * j + 1]);
-          colinear_vec.sort_by(|i, j| {
-            let x_diff = self.points[*i].x - self.points[*j].x;
-            if x_diff != 0f64 {
-              if x_diff.is_sign_positive() {
-                return Ordering::Greater;
-              } else {
-                return Ordering::Less;
-              }
-            } else {
-              let y_diff = self.points[*i].y - self.points[*j].y;
-              if y_diff == 0f64 {
-                return Ordering::Equal;
-              } else if y_diff.is_sign_positive() {
-                return Ordering::Greater;
-              } else {
-                return Ordering::Less;
-              }
+        // check for collinear
+        // if d.hull && d.hull.len() > 2usize && colinear(&points, &d) {
+        match d {
+            None => {}
+            Some(d) => {
+                if d.hull.len() > 2usize && colinear(&self.points, &d) {
+                    // this.collinear = Int32Array.from({length: points.length/2}, (_,i) => i)
+                    //   .sort((i, j) => points[2 * i] - points[2 * j] || points[2 * i + 1] - points[2 * j + 1]); // for exact neighbors
+                    let len = self.points.len() as u32 / 2;
+                    // self.colinear = (0..len).collect::u32()
+                    let mut colinear_vec: Vec<usize> = (0..len)
+                        .map(|i| {
+                            return i as usize;
+                        })
+                        .collect();
+                    // .sort_by(|i, j| points[2 * i] - points[2 * j] || points[2 * i + 1] - points[2 * j + 1]);
+                    colinear_vec.sort_by(|i, j| {
+                        let x_diff = self.points[*i].x - self.points[*j].x;
+                        if x_diff != 0f64 {
+                            if x_diff.is_sign_positive() {
+                                return Ordering::Greater;
+                            } else {
+                                return Ordering::Less;
+                            }
+                        } else {
+                            let y_diff = self.points[*i].y - self.points[*j].y;
+                            if y_diff == 0f64 {
+                                return Ordering::Equal;
+                            } else if y_diff.is_sign_positive() {
+                                return Ordering::Greater;
+                            } else {
+                                return Ordering::Less;
+                            }
+                        }
+                    });
+                    let e = self.colinear[0];
+                    let f = self.colinear[self.colinear.len() - 1];
+                    let bounds = [
+                        self.points[e].x,
+                        self.points[e].y,
+                        self.points[f].x,
+                        self.points[f].y,
+                    ];
+                    let r = 1e-8f64 * (bounds[3] - bounds[1]).hypot(bounds[3] - bounds[0]);
+                    // for (let i = 0, n = points.length / 2; i < n; ++i) {
+                    for i in 0..self.points.len() / 2 {
+                        let p = jitter(&self.points[i], r);
+                        self.points[i].x = p.x;
+                        self.points[i].y = p.y;
+                    }
+                    self.delaunator = triangulate(&self.points);
+                } else {
+                    // delete self.colinear;
+                    self.colinear = Vec::new();
+                }
             }
-          });
-          let e = self.colinear[0];
-          let f = self.colinear[self.colinear.len() - 1];
-          let bounds = [
-            self.points[e].x,
-            self.points[e].y,
-            self.points[f].x,
-            self.points[f].y,
-          ];
-          let r = 1e-8f64 * (bounds[3] - bounds[1]).hypot(bounds[3] - bounds[0]);
-          // for (let i = 0, n = points.length / 2; i < n; ++i) {
-          for i in 0..self.points.len() / 2 {
-            let p = jitter(&self.points[i], r);
-            self.points[i].x = p.x;
-            self.points[i].y = p.y;
-          }
-          self.delaunator = triangulate(&self.points);
-        } else {
-          // delete self.colinear;
-          self.colinear = Vec::new();
         }
-      }
-    }
-    // self.delaunator.expect("expetced a valid return from delaunator");
-    let hull: Vec<usize>;
-    match &self.delaunator {
-      Some(d) => {
-        self.half_edges = d.halfedges.clone();
-        self.hull = d.hull.clone();
-        hull = self.hull.clone();
-        self.triangles = d.triangles.clone();
-      }
-      None => {
-        panic!("expected a delaunator.");
-      }
-    }
-
-    // todo work out a appropiate work arround to not being
-    // able to use -1 as a invalid state.
-    self.inedges = Vec::new();
-    self.hull_index = Vec::new();
-    let len = self.points.len();
-    for _i in 0..len {
-      self.inedges.push(EMPTY);
-      self.hull_index.push(EMPTY);
-    }
-
-    // let inedges = &self.inedges;
-    // let hull_index = &self.hull_index;
-
-    // Compute an index from each point to an (arbitrary) incoming halfedge
-    // Used to give the first neighbor of each point; for this reason,
-    // on the hull we give priority to exterior halfedges
-    for (e, he) in self.half_edges.iter().enumerate() {
-      let p: usize;
-      if e % 3 == 2 {
-        p = self.triangles[e - 2];
-      } else {
-        p = self.triangles[e + 1];
-      }
-      if *he == EMPTY || self.inedges[p] == EMPTY {
-        self.inedges[p] = e;
-      }
-    }
-
-    for (i, h) in hull.iter().enumerate() {
-      self.hull_index[*h] = i;
-    }
-
-    // degenerate case: 1 or 2 (distinct) points
-    let hull_len: u32 = hull.len() as u32;
-    if hull_len <= 2u32 && !hull.is_empty() {
-      // TODO work out the implications of not setting an invalid
-      // value here rust has a usize, javascript  allows -1 as invalid.
-      self.triangles = vec![EMPTY, EMPTY, EMPTY];
-      self.half_edges = vec![EMPTY, EMPTY, EMPTY];
-      self.triangles[0] = hull[0];
-      self.triangles[1] = hull[1];
-      self.triangles[2] = hull[1];
-      self.inedges[hull[0]] = 1;
-      let hull_len: u32 = hull.len() as u32;
-      if hull_len == 2 {
-        self.inedges[hull[1]] = 0;
-      }
-    }
-  }
-  pub fn step(&self, i: usize, x: f64, y: f64) -> usize {
-    if self.inedges[i] == EMPTY || self.points.is_empty() {
-      return (i + 1) % (self.points.len() >> 1);
-    };
-    let mut c = i;
-    let mut dc = (x - self.points[i].x).powi(2) + (y - self.points[i].y).powi(2);
-    let e0 = self.inedges[i];
-    let mut e = e0;
-    loop {
-      let t = self.triangles[e];
-      let dt = (x - self.points[t].x).powi(2) + (y - self.points[t].y).powi(2);
-      if dt < dc {
-        dc = dt;
-        c = t;
-      }
-
-      if e % 3 == 2 {
-        e = e - 2;
-      } else {
-        e = e + 1;
-      }
-
-      if self.triangles[e] != i {
-        // bad triangulation
-        break;
-      }
-      e = self.half_edges[e];
-      if e == EMPTY {
-        e = self.hull[(self.hull_index[i] + 1) % self.hull.len()];
-        if e != t {
-          if (x - self.points[e].x).powi(2) + (y - self.points[e].y).powi(2) < dc {
-            return e;
-          };
+        // self.delaunator.expect("expetced a valid return from delaunator");
+        let hull: Vec<usize>;
+        match &self.delaunator {
+            Some(d) => {
+                self.half_edges = d.halfedges.clone();
+                self.hull = d.hull.clone();
+                hull = self.hull.clone();
+                self.triangles = d.triangles.clone();
+            }
+            None => {
+                panic!("expected a delaunator.");
+            }
         }
-        break;
-      }
-      if e == e0 {
-        break;
-      }
-    }
 
-    return c;
-  }
+        // todo work out a appropiate work arround to not being
+        // able to use -1 as a invalid state.
+        self.inedges = Vec::new();
+        self.hull_index = Vec::new();
+        let len = self.points.len();
+        for _i in 0..len {
+            self.inedges.push(EMPTY);
+            self.hull_index.push(EMPTY);
+        }
+
+        // let inedges = &self.inedges;
+        // let hull_index = &self.hull_index;
+
+        // Compute an index from each point to an (arbitrary) incoming halfedge
+        // Used to give the first neighbor of each point; for this reason,
+        // on the hull we give priority to exterior halfedges
+        for (e, he) in self.half_edges.iter().enumerate() {
+            let p: usize;
+            if e % 3 == 2 {
+                p = self.triangles[e - 2];
+            } else {
+                p = self.triangles[e + 1];
+            }
+            if *he == EMPTY || self.inedges[p] == EMPTY {
+                self.inedges[p] = e;
+            }
+        }
+
+        for (i, h) in hull.iter().enumerate() {
+            self.hull_index[*h] = i;
+        }
+
+        // degenerate case: 1 or 2 (distinct) points
+        let hull_len: u32 = hull.len() as u32;
+        if hull_len <= 2u32 && !hull.is_empty() {
+            // TODO work out the implications of not setting an invalid
+            // value here rust has a usize, javascript  allows -1 as invalid.
+            self.triangles = vec![EMPTY, EMPTY, EMPTY];
+            self.half_edges = vec![EMPTY, EMPTY, EMPTY];
+            self.triangles[0] = hull[0];
+            self.triangles[1] = hull[1];
+            self.triangles[2] = hull[1];
+            self.inedges[hull[0]] = 1;
+            let hull_len: u32 = hull.len() as u32;
+            if hull_len == 2 {
+                self.inedges[hull[1]] = 0;
+            }
+        }
+    }
+    pub fn step(&self, i: usize, x: f64, y: f64) -> usize {
+        if self.inedges[i] == EMPTY || self.points.is_empty() {
+            return (i + 1) % (self.points.len() >> 1);
+        };
+        let mut c = i;
+        let mut dc = (x - self.points[i].x).powi(2) + (y - self.points[i].y).powi(2);
+        let e0 = self.inedges[i];
+        let mut e = e0;
+        loop {
+            let t = self.triangles[e];
+            let dt = (x - self.points[t].x).powi(2) + (y - self.points[t].y).powi(2);
+            if dt < dc {
+                dc = dt;
+                c = t;
+            }
+
+            if e % 3 == 2 {
+                e = e - 2;
+            } else {
+                e = e + 1;
+            }
+
+            if self.triangles[e] != i {
+                // bad triangulation
+                break;
+            }
+            e = self.half_edges[e];
+            if e == EMPTY {
+                e = self.hull[(self.hull_index[i] + 1) % self.hull.len()];
+                if e != t {
+                    if (x - self.points[e].x).powi(2) + (y - self.points[e].y).powi(2) < dc {
+                        return e;
+                    };
+                }
+                break;
+            }
+            if e == e0 {
+                break;
+            }
+        }
+
+        return c;
+    }
 }
 
 // import Delaunator from "delaunator";

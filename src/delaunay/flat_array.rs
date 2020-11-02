@@ -1,6 +1,6 @@
-use num_traits::Float;
+use delaunator::Point;
 
-pub fn flat_array<F>(points: &[Point], fx: Box<dyn Fn([F;2], usize, Vec<[F;2]>)-> F>, fy: Box<dyn Fn([F;2], usize, Vec<[F;2]>)-> F>) -> Vec<F>
+pub fn flat_array<F>(points: &[Point], fx: Box<dyn Fn(Point, usize, Vec<Point>)-> F>, fy: Box<dyn Fn(Point, usize, Vec<Point>)-> F>) -> Vec<F>
 where F: Float {
   let n = points.len();
   let array: Vec<F> = Vec::with_capacity(n*2);
