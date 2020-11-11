@@ -7,14 +7,25 @@ use std::cmp::Ordering;
 mod colinear;
 mod jitter;
 
+/// Delaunay triangulation
+use std::collections::HashMap;
+use std::fmt;
+
+// use delaunator::Point;
+
+use rust_d3_geo::projection::projection_mutator::ProjectionMutator;
+
+
 use crate::voronoi::Voronoi;
+use rust_d3_geo::Transform;
+use rust_d3_geo::TransformIdentity;
 use colinear::colinear;
 
 use delaunator::{triangulate, Point, Triangulation, EMPTY};
 
 use jitter::jitter;
 
-pub struct Delaunay<'a> {
+pub  struct Delaunay {
     pub colinear: Vec<usize>,
     delaunator: Option<Triangulation>,
     pub inedges: Vec<usize>,
@@ -22,12 +33,13 @@ pub struct Delaunay<'a> {
     pub half_edges: Vec<usize>,
     pub hull: Vec<usize>,
     pub triangles: Vec<usize>,
-    pub points: &'a mut [Point],
+    pub points: Vec<Point>,
+    pub projection: Box<dyn Transform>,
     fx: Box<dyn Fn(Point, usize, Vec<Point>) -> f64>,
     fy: Box<dyn Fn(Point, usize, Vec<Point>) -> f64>,
 }
 
-impl<'a> Default for Delaunay<'a> {
+impl<'a> Default for Delaunay{
     fn default() -> Self {
         // let points = Vec::new();
         return Self {
@@ -37,7 +49,8 @@ impl<'a> Default for Delaunay<'a> {
             half_edges: Vec::new(),
             hull: Vec::new(),
             hull_index: Vec::new(),
-            points: &mut [],
+            points: Vec::new(),
+            projection: Box::new(TransformIdentity{}),
             fx: Box::new(|p: Point, _i: usize, _points: Vec<Point>| return p.x),
             fy: Box::new(|p: Point, _i: usize, _points: Vec<Point>| return p.y),
             triangles: Vec::new(),
@@ -45,7 +58,7 @@ impl<'a> Default for Delaunay<'a> {
     }
 }
 
-impl<'a> Delaunay<'a> {
+impl<'a> Delaunay {
     // pub fn from(points: Vec<Point>, fx:Option<Box<dyn Fn(Point, usize, Vec<Point>) -> F>>, fy:Option<Box<dyn Fn(Point, usize, Vec<Point>) -> F>>) -> Self
     // {
     //   let  default = Delaunay::<F>::default();
@@ -70,9 +83,9 @@ impl<'a> Delaunay<'a> {
     //     this.points = this._delaunator.coords;
     //     this._init();
     //   }
-    pub fn new(points: &'a mut [Point]) -> Self {
+    pub fn new(points: Vec<Point>) -> Self {
         let half = points.len() / 2;
-        let delaunator = triangulate(points);
+        let delaunator = triangulate(&points);
         let mut out = Self {
             delaunator,
             inedges: Vec::with_capacity(half),

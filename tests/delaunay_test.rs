@@ -116,13 +116,13 @@ mod delaunay_test {
     fn test_handles_coincident_points() {
         println!("Delaunay.from(array)");
 
-        let mut points = vec![
+        let points = vec![
             Point { x: 0f64, y: 0f64 },
             Point { x: 1f64, y: 0f64 },
             Point { x: 0f64, y: 1f64 },
             Point { x: 1f64, y: 0f64 },
         ];
-        let delaunay: Delaunay = Delaunay::new(&mut points);
+        let delaunay: Delaunay = Delaunay::new(points);
         assert_eq!(delaunay.inedges, vec![2, 1, 0, EMPTY]);
 
         println!(" TODO add mssing neigbors asserts");
@@ -173,7 +173,7 @@ mod delaunay_test {
             Point { x: 1f64, y: 1f64 },
         ];
 
-        let delaunay: Delaunay = Delaunay::new(&mut points);
+        let delaunay: Delaunay = Delaunay::new(points);
         let voronoi = Voronoi::new(delaunay, None);
         assert_eq!(voronoi.xmin, 0f64);
         assert_eq!(voronoi.ymin, 0f64);
@@ -191,14 +191,14 @@ mod delaunay_test {
     #[test]
     fn test_voronoi_specific_bounds() {
         println!("delaunay.voronoi([xmin, ymin, xmax, ymax]) uses the specified bounds");
-        let mut points = vec![
+        let points = vec![
             Point { x: 0f64, y: 0f64 },
             Point { x: 1f64, y: 0f64 },
             Point { x: 0f64, y: 1f64 },
             Point { x: 1f64, y: 1f64 },
         ];
 
-        let delaunay: Delaunay = Delaunay::new(&mut points);
+        let delaunay: Delaunay = Delaunay::new(points);
         let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
         assert_eq!(voronoi.xmin, -1f64);
         assert_eq!(voronoi.ymin, -1f64);
@@ -215,14 +215,14 @@ mod delaunay_test {
     #[test]
     fn test_voronoi_returns_the_expected_diagram() {
         println!("delaunay.voronoi() returns the expected diagram");
-        let mut points = vec![
+        let points = vec![
             Point { x: 0f64, y: 0f64 },
             Point { x: 1f64, y: 0f64 },
             Point { x: 0f64, y: 1f64 },
             Point { x: 1f64, y: 1f64 },
         ];
 
-        let delaunay: Delaunay = Delaunay::new(&mut points);
+        let delaunay: Delaunay = Delaunay::new(points);
         let voronoi = Voronoi::new(delaunay, None);
         assert_eq!(
             voronoi.circumcenters,
@@ -246,14 +246,14 @@ mod delaunay_test {
     #[test]
     fn test_voronoi_skips_cells_for_coincident_points() {
         println!("delaunay.voronoi() skips cells for coincident points");
-        let mut points = vec![
+        let points = vec![
             Point { x: 0f64, y: 0f64 },
             Point { x: 1f64, y: 0f64 },
             Point { x: 0f64, y: 1f64 },
             Point { x: 1f64, y: 0f64 },
         ];
 
-        let delaunay: Delaunay = Delaunay::new(&mut points);
+        let delaunay: Delaunay = Delaunay::new(points);
         let voronoi = Voronoi::new(delaunay, None);
 
         assert_eq!(voronoi.circumcenters, vec![Point { x: 0.5, y: 0.5 }]);

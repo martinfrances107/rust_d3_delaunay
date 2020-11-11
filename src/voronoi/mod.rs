@@ -6,9 +6,9 @@ use delaunator::EMPTY;
 use crate::delaunay::Delaunay;
 use crate::path::Path;
 
-pub struct Voronoi<'a> {
+pub struct Voronoi {
     pub circumcenters: Vec<Point>,
-    delaunay: Delaunay<'a>,
+    delaunay: Delaunay,
     pub vectors: VecDeque<Point>,
     pub xmin: f64,
     pub ymin: f64,
@@ -16,8 +16,8 @@ pub struct Voronoi<'a> {
     pub ymax: f64,
 }
 
-impl<'a> Default for Voronoi<'a> {
-    fn default() -> Voronoi<'a> {
+impl Default for Voronoi {
+    fn default() -> Voronoi {
         return Voronoi {
             delaunay: Delaunay::default(),
             circumcenters: Vec::<Point>::new(),
@@ -30,8 +30,8 @@ impl<'a> Default for Voronoi<'a> {
     }
 }
 
-impl<'a> Voronoi<'a> {
-    pub fn new(delaunay: Delaunay<'a>, b_in: Option<(f64, f64, f64, f64)>) -> Self {
+impl Voronoi {
+    pub fn new(delaunay: Delaunay, b_in: Option<(f64, f64, f64, f64)>) -> Self {
         let b;
         let mut v: Voronoi;
         match b_in {

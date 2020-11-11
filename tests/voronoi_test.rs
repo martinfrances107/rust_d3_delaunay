@@ -12,13 +12,13 @@ mod voronoi_test {
     #[test]
     fn test_noop_for_coincident_points() {
         println!("voronoi.renderCell(i, context) is a noop for coincident points");
-        let mut points = vec![
+        let points = vec![
             Point { x: 0f64, y: 0f64 },
             Point { x: 1f64, y: 0f64 },
             Point { x: 0f64, y: 1f64 },
             Point { x: 1f64, y: 0f64 },
         ];
-        let delaunay: Delaunay = Delaunay::new(&mut points);
+        let delaunay: Delaunay = Delaunay::new(points);
 
         let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
         let rc = voronoi.render_cell(3, None);
@@ -28,12 +28,12 @@ mod voronoi_test {
     #[test]
     fn test_render_cell_midpoint() {
         println!("voronoi.renderCell(i, context) handles midpoint coincident with circumcenter");
-        let mut points = vec![
+        let points = vec![
             Point { x: 0f64, y: 0f64 },
             Point { x: 1f64, y: 0f64 },
             Point { x: 0f64, y: 1f64 },
         ];
-        let delaunay: Delaunay = Delaunay::new(&mut points);
+        let delaunay: Delaunay = Delaunay::new(points);
         let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
         let mut context = Path::default();
         voronoi.render_cell(0, Some(&mut context));
@@ -60,13 +60,13 @@ mod voronoi_test {
     #[test]
     fn test_contains_false_for_coincident() {
         println!("voronoi.contains(i, x, y) is false for coincident points");
-        let mut points = vec![
+        let points = vec![
             Point { x: 0f64, y: 0f64 },
             Point { x: 1f64, y: 0f64 },
             Point { x: 0f64, y: 1f64 },
             Point { x: 1f64, y: 0f64 },
         ];
-        let delaunay: Delaunay = Delaunay::new(&mut points);
+        let delaunay: Delaunay = Delaunay::new(points);
         let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
         assert_eq!(voronoi.contains(3, 1f64, 0f64), false);
         assert_eq!(voronoi.contains(1, 1f64, 0f64), true);
