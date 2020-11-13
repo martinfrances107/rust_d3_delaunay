@@ -166,7 +166,7 @@ mod delaunay_test {
     #[test]
     fn test_voronoi_default_bounds() {
         println!("delaunay.voronoi() uses the default bounds");
-        let mut points = vec![
+        let points = vec![
             Point { x: 0f64, y: 0f64 },
             Point { x: 1f64, y: 0f64 },
             Point { x: 0f64, y: 1f64 },

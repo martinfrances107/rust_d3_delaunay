@@ -15,17 +15,16 @@ use std::fmt;
 
 use rust_d3_geo::projection::projection_mutator::ProjectionMutator;
 
-
 use crate::voronoi::Voronoi;
+use colinear::colinear;
 use rust_d3_geo::Transform;
 use rust_d3_geo::TransformIdentity;
-use colinear::colinear;
 
 use delaunator::{triangulate, Point, Triangulation, EMPTY};
 
 use jitter::jitter;
 
-pub  struct Delaunay {
+pub struct Delaunay {
     pub colinear: Vec<usize>,
     delaunator: Option<Triangulation>,
     pub inedges: Vec<usize>,
@@ -39,7 +38,7 @@ pub  struct Delaunay {
     fy: Box<dyn Fn(Point, usize, Vec<Point>) -> f64>,
 }
 
-impl<'a> Default for Delaunay{
+impl<'a> Default for Delaunay {
     fn default() -> Self {
         // let points = Vec::new();
         return Self {
@@ -50,7 +49,7 @@ impl<'a> Default for Delaunay{
             hull: Vec::new(),
             hull_index: Vec::new(),
             points: Vec::new(),
-            projection: Box::new(TransformIdentity{}),
+            projection: Box::new(TransformIdentity {}),
             fx: Box::new(|p: Point, _i: usize, _points: Vec<Point>| return p.x),
             fy: Box::new(|p: Point, _i: usize, _points: Vec<Point>| return p.y),
             triangles: Vec::new(),
