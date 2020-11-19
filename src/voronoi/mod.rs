@@ -1,10 +1,12 @@
+use crate::delaunay::Delaunay;
+use crate::path::Path;
+
 use std::collections::VecDeque;
 
 use delaunator::Point;
 use delaunator::EMPTY;
 
-use crate::delaunay::Delaunay;
-use crate::path::Path;
+use rust_d3_geo::math::EPSILON;
 
 pub struct Voronoi {
     pub circumcenters: Vec<Point>,
@@ -197,13 +199,17 @@ impl Voronoi {
 
                 context.move_to(points[0].x, points[0].y);
                 let mut n = points.len();
-                while points[0usize].x == points[n - 1].x && points[0].y == points[n - 1].y && n > 1
+                while (points[0usize].x - points[n - 1].x).abs() < EPSILON
+                    && (points[0].y - points[n - 1].y).abs() < EPSILON
+                    && n > 1
                 {
                     n -= 1;
                 }
 
                 for i in 1..n {
-                    if points[i].x != points[i - 1].x || points[i].y != points[i - 1].y {
+                    if (points[i].x - points[i - 1].x).abs() >= EPSILON
+                        || (points[i].y - points[i - 1].y).abs() >= EPSILON
+                    {
                         context.line_to(points[i].x, points[i].y);
                     }
                 }
@@ -608,7 +614,9 @@ impl Voronoi {
                 }
             }
 
-            if (P[j].x != x || P[j].y != y) && self.contains(i, x, y) {
+            if ((P[j].x - x).abs() >= EPSILON || (P[j].y - y).abs() >= EPSILON)
+                && self.contains(i, x, y)
+            {
                 P.insert(j, Point { x, y });
                 j += 1;
             }
@@ -618,7 +626,9 @@ impl Voronoi {
             loop {
                 let j = (i + 1) % P.len();
                 let k = (i + 2) % P.len();
-                if P[i].x == P[j].x && P[j].x == P[k].x || P[i].y == P[j].y && P[j].y == P[k].y {
+                if (P[i].x - P[j].x).abs() < EPSILON && (P[j].x - P[k].x).abs() < EPSILON
+                    || (P[i].y - P[j].y) < EPSILON && (P[j].y - P[k].y) < EPSILON
+                {
                     // P.splice(j, 2);
                     P.remove(j);
                     i -= 1;
