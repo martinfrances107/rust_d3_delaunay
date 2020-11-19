@@ -8,14 +8,6 @@ mod colinear;
 mod jitter;
 
 /// Delaunay triangulation
-use std::collections::HashMap;
-use std::fmt;
-
-// use delaunator::Point;
-
-use rust_d3_geo::projection::projection_mutator::ProjectionMutator;
-
-use crate::voronoi::Voronoi;
 use colinear::colinear;
 use rust_d3_geo::Transform;
 use rust_d3_geo::TransformIdentity;
@@ -34,8 +26,8 @@ pub struct Delaunay {
     pub triangles: Vec<usize>,
     pub points: Vec<Point>,
     pub projection: Box<dyn Transform>,
-    fx: Box<dyn Fn(Point, usize, Vec<Point>) -> f64>,
-    fy: Box<dyn Fn(Point, usize, Vec<Point>) -> f64>,
+    pub fx: Box<dyn Fn(Point, usize, Vec<Point>) -> f64>,
+    pub fy: Box<dyn Fn(Point, usize, Vec<Point>) -> f64>,
 }
 
 impl<'a> Default for Delaunay {
@@ -50,8 +42,8 @@ impl<'a> Default for Delaunay {
             hull_index: Vec::new(),
             points: Vec::new(),
             projection: Box::new(TransformIdentity {}),
-            fx: Box::new(|p: Point, _i: usize, _points: Vec<Point>| return p.x),
-            fy: Box::new(|p: Point, _i: usize, _points: Vec<Point>| return p.y),
+            fx: Box::new(|p: Point, _i: usize, _points: Vec<Point>| p.x),
+            fy: Box::new(|p: Point, _i: usize, _points: Vec<Point>| p.y),
             triangles: Vec::new(),
         };
     }
