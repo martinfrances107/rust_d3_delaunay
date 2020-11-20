@@ -627,7 +627,7 @@ impl Voronoi {
                 let j = (i + 1) % P.len();
                 let k = (i + 2) % P.len();
                 if (P[i].x - P[j].x).abs() < EPSILON && (P[j].x - P[k].x).abs() < EPSILON
-                    || (P[i].y - P[j].y) < EPSILON && (P[j].y - P[k].y) < EPSILON
+                    || (P[i].y - P[j].y).abs() < EPSILON && (P[j].y - P[k].y).abs() < EPSILON
                 {
                     // P.splice(j, 2);
                     P.remove(j);
@@ -706,7 +706,7 @@ impl Voronoi {
 
         if (x - self.xmin).abs() < EPSILON {
             lower = 0b0001;
-        } else if (x - self.xmax) < EPSILON {
+        } else if (x - self.xmax).abs() < EPSILON {
             lower = 0b0010;
         } else {
             lower = 0b0000;
@@ -714,7 +714,7 @@ impl Voronoi {
 
         if (y - self.ymin).abs() < EPSILON {
             upper = 0b0100;
-        } else if (y - self.ymax) < EPSILON {
+        } else if (y - self.ymax).abs() < EPSILON {
             upper = 0b1000;
         } else {
             upper = 0b0000;
