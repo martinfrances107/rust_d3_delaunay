@@ -8,7 +8,7 @@ edition = "2018"
 
 [dependencies]
 delaunator = { git = "https://github.com/mourner/delaunator-rs.git" }
-rust_d3_geo = {path = "../rust_d3_geo"}
+rust_d3_geo = {git = "https://github.com/martinfrances107/rust_d3_geo.git"}
 
 [dev-dependencies]
 pretty_assertions = "0.6.1"

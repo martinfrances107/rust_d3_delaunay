@@ -4,9 +4,6 @@ mod delaunay_test {
     #[cfg(test)]
     extern crate pretty_assertions;
 
-    // use std::ops::{Generator, GeneratorState};
-    use std::pin::Pin;
-
     use delaunator::Point;
     use delaunator::EMPTY;
 
@@ -205,12 +202,6 @@ mod delaunay_test {
         assert_eq!(voronoi.xmax, 2f64);
         assert_eq!(voronoi.ymax, 2f64);
     }
-
-    // tape("delaunay.voronoi() returns the expected diagram", test => {
-    //   let voronoi = Delaunay.from([[0, 0], [1, 0], [0, 1], [1, 1]]).voronoi();
-    //   test.deepEqual(voronoi.circumcenters, Float64Array.of(0.5, 0.5, 0.5, 0.5));
-    //   test.deepEqual(voronoi.vectors, Float64Array.of(0, -1, -1, 0, 1, 0, 0, -1, -1, 0, 0, 1, 0, 1, 1, 0));
-    // });
 
     #[test]
     fn test_voronoi_returns_the_expected_diagram() {

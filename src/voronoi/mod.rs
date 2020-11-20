@@ -1,3 +1,4 @@
+#![allow(clippy::clippy::many_single_char_names)]
 use crate::delaunay::Delaunay;
 use crate::path::Path;
 
@@ -68,7 +69,6 @@ impl Voronoi {
             ymin,
             xmax,
             ymax,
-            ..Voronoi::default()
         };
 
         v.init();
@@ -132,7 +132,7 @@ impl Voronoi {
         }
 
         // Compute exterior cell rays.
-        let mut h = self.delaunay.hull[self.delaunay.hull.len() - 1];
+        let h = self.delaunay.hull[self.delaunay.hull.len() - 1];
         let mut p0: usize;
         let mut p1 = h * 2;
         let mut x0: f64;
@@ -147,14 +147,13 @@ impl Voronoi {
             self.vectors.push_back(Point { x: 0f64, y: 0f64 });
         }
 
-        for i in 0..hull.len() {
-            h = hull[i];
+        for h in hull {
             p0 = p1;
             x0 = x1;
             y0 = y1;
             p1 = h * 2;
-            x1 = points[h].x;
-            y1 = points[h].y;
+            x1 = points[*h].x;
+            y1 = points[*h].y;
             let xdiff = x1 - x0;
             let ydiff = y0 - y1;
             // clip infinte pushed to both the front and back of this queue.
@@ -328,11 +327,11 @@ impl Voronoi {
         // e1 must be given a reasonable default value.
         let mut e1 = 0;
         // for (let j = 0; j < n; j += 2) {
-        for j in 0..n {
+        for point in points {
             x0 = x1;
             y0 = y1;
-            x1 = points[j].x;
-            y1 = points[j].y;
+            x1 = point.x;
+            y1 = point.y;
             c0 = c1;
             c1 = self.regioncode(x1, y1);
             if c0 == 0 && c1 == 0 {
@@ -461,7 +460,6 @@ impl Voronoi {
             }
             let x;
             let y;
-            // This is a error in the original javascrtipt implementation.
             let c = if c0 != 0 { c0 } else { c1 };
 
             if c & 0b1000 != 0 {
@@ -500,13 +498,18 @@ impl Voronoi {
     ) -> VecDeque<Point> {
         #[allow(non_snake_case)]
         let mut P: VecDeque<Point> = VecDeque::into(points.clone());
-        let p1 = self.project(P[0].x, P[0].y, vx0, vy0);
-        if p1.is_some() {
-            P.push_front(p1.unwrap());
+        match self.project(P[0].x, P[0].y, vx0, vy0) {
+            Some(p1) => {
+                P.push_front(p1);
+            }
+            None => {}
         }
-        let p2 = self.project(P[P.len() - 1].x, P[P.len() - 1].y, vxn, vyn);
-        if p2.is_some() {
-            P.push_back(p2.unwrap());
+
+        match self.project(P[P.len() - 1].x, P[P.len() - 1].y, vxn, vyn) {
+            Some(p2) => {
+                P.push_back(p2);
+            }
+            None => {}
         }
 
         P = self.clip_finite(i, &P);
