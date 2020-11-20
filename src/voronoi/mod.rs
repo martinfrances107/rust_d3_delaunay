@@ -462,15 +462,15 @@ impl Voronoi {
             let x;
             let y;
             // This is a error in the original javascrtipt implementation.
-            let c = c0 != 0 || c1 != 0;
+            let c = if c0 != 0 { c0 } else { c1 };
 
-            if c && 0b1000 != 0 {
+            if c & 0b1000 != 0 {
                 x = x0 + (x1 - x0) * (self.ymax - y0) / (y1 - y0);
                 y = self.ymax;
-            } else if c && 0b0100 != 0 {
+            } else if c & 0b0100 != 0 {
                 x = x0 + (x1 - x0) * (self.ymin - y0) / (y1 - y0);
                 y = self.ymin;
-            } else if c && 0b0010 != 0 {
+            } else if c & 0b0010 != 0 {
                 y = y0 + (y1 - y0) * (self.xmax - x0) / (x1 - x0);
                 x = self.xmax;
             } else {
