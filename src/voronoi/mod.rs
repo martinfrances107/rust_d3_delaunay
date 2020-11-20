@@ -704,17 +704,17 @@ impl Voronoi {
         let lower: u8;
         let upper: u8;
 
-        if x == self.xmin {
+        if (x - self.xmin).abs() < EPSILON {
             lower = 0b0001;
-        } else if x == self.xmax {
+        } else if (x - self.xmax) < EPSILON {
             lower = 0b0010;
         } else {
             lower = 0b0000;
         }
 
-        if y == self.ymin {
+        if (y - self.ymin).abs() < EPSILON {
             upper = 0b0100;
-        } else if y == self.ymax {
+        } else if (y - self.ymax) < EPSILON {
             upper = 0b1000;
         } else {
             upper = 0b0000;
