@@ -1,7 +1,7 @@
 // #![feature(generators, generator_trait)]
 
+#[cfg(test)]
 mod voronoi_test {
-    #[cfg(test)]
     extern crate pretty_assertions;
 
     use delaunator::Point;
