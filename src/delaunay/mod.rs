@@ -66,24 +66,17 @@ impl<'a> Delaunay {
 
     fn init(&mut self) {
         let d = &self.delaunator;
-        // let points = self.points;
 
-        // check for collinear
-        // if d.hull && d.hull.len() > 2usize && colinear(&points, &d) {
         match d {
             None => {}
             Some(d) => {
                 if d.hull.len() > 2usize && colinear(&self.points, &d) {
-                    // this.collinear = Int32Array.from({length: points.length/2}, (_,i) => i)
-                    //   .sort((i, j) => points[2 * i] - points[2 * j] || points[2 * i + 1] - points[2 * j + 1]); // for exact neighbors
                     let len = self.points.len() as u32 / 2;
-                    // self.colinear = (0..len).collect::u32()
                     let mut colinear_vec: Vec<usize> = (0..len)
                         .map(|i| {
                             return i as usize;
                         })
                         .collect();
-                    // .sort_by(|i, j| points[2 * i] - points[2 * j] || points[2 * i + 1] - points[2 * j + 1]);
                     colinear_vec.sort_by(|i, j| {
                         let x_diff = self.points[*i].x - self.points[*j].x;
                         if x_diff != 0f64 {
@@ -147,19 +140,15 @@ impl<'a> Delaunay {
             self.hull_index.push(EMPTY);
         }
 
-        // let inedges = &self.inedges;
-        // let hull_index = &self.hull_index;
-
         // Compute an index from each point to an (arbitrary) incoming halfedge
         // Used to give the first neighbor of each point; for this reason,
         // on the hull we give priority to exterior halfedges
         for (e, he) in self.half_edges.iter().enumerate() {
-            let p: usize;
-            if e % 3 == 2 {
-                p = self.triangles[e - 2];
+            let p = if e % 3 == 2 {
+                self.triangles[e - 2]
             } else {
-                p = self.triangles[e + 1];
-            }
+                self.triangles[e + 1]
+            };
             if *he == EMPTY || self.inedges[p] == EMPTY {
                 self.inedges[p] = e;
             }

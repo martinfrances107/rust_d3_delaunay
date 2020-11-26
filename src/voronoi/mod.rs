@@ -140,7 +140,6 @@ impl Voronoi {
         let mut y0: f64;
         let mut y1 = points[h].y;
 
-        // self.vectors.fill(0);
         let vectors_len = self.vectors.len();
         self.vectors.clear();
         for _ in 0..vectors_len {
@@ -215,7 +214,6 @@ impl Voronoi {
     // TODO implement renderSegment()
 
     pub fn contains(&self, i: usize, x: f64, y: f64) -> bool {
-        // if ((x = +x, x !== x) || (y = +y, y !== y)) return false;
         return self.delaunay.step(i, x, y) == i;
     }
 
@@ -273,7 +271,6 @@ impl Voronoi {
                 .collect(),
             );
         }
-        // if (points == null) return null;
         match self.cell(i) {
             None => {
                 return None;
@@ -312,7 +309,6 @@ impl Voronoi {
         // There is a bug/inconsitencey in the javascript implementation.
         // e1 must be given a reasonable default value.
         let mut e1 = 0;
-        // for (let j = 0; j < n; j += 2) {
         for point in points {
             x0 = x1;
             y0 = y1;
