@@ -8,6 +8,7 @@ mod voronoi_test {
     use rust_d3_delaunay::delaunay::Delaunay;
     use rust_d3_delaunay::path::Path;
     use rust_d3_delaunay::voronoi::Voronoi;
+    use rust_d3_delaunay::RenderingContext2d;
 
     #[test]
     fn test_noop_for_coincident_points() {
@@ -21,8 +22,9 @@ mod voronoi_test {
         let delaunay: Delaunay = Delaunay::new(points);
 
         let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
-        let rc = voronoi.render_cell(3, None);
-        assert!(rc.is_none());
+        let mut path = Path::new();
+        voronoi.render_cell::<Path>(3, &mut path);
+        assert_eq!(path.value_str(), String::from(""));
     }
 
     #[test]
@@ -35,25 +37,27 @@ mod voronoi_test {
         ];
         let delaunay: Delaunay = Delaunay::new(points);
         let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
-        let mut context = Path::default();
-        voronoi.render_cell(0, Some(&mut context));
+        let mut context1 = Path::new();
+        {
+            voronoi.render_cell::<Path>(0, &mut context1);
+        }
         assert_eq!(
-            context.value(),
-            Some(String::from("M-1,-1L0.5,-1L0.5,0.5L-1,0.5Z"))
+            context1.value_str(),
+            String::from("M-1,-1L0.5,-1L0.5,0.5L-1,0.5Z")
         );
 
-        let mut context = Path::default();
-        voronoi.render_cell(1, Some(&mut context));
+        let mut context = Path::new();
+        voronoi.render_cell(1, &mut context);
         assert_eq!(
-            context.value(),
-            Some(String::from("M2,-1L2,2L0.5,0.5L0.5,-1Z"))
+            context.value_str(),
+            String::from("M2,-1L2,2L0.5,0.5L0.5,-1Z")
         );
 
-        let mut context = Path::default();
-        voronoi.render_cell(2, Some(&mut context));
+        let mut context = Path::new();
+        voronoi.render_cell(2, &mut context);
         assert_eq!(
-            context.value(),
-            Some(String::from("M-1,2L-1,0.5L0.5,0.5L2,2Z"))
+            context.value_str(),
+            String::from("M-1,2L-1,0.5L0.5,0.5L2,2Z")
         );
     }
 
@@ -101,6 +105,30 @@ mod voronoi_test {
     //    const voronoi2 = Delaunay.from([[10, 10], [20, 10]]).voronoi([0, 0, 30, 20]);
     //    test.deepEqual(voronoi2.cellPolygon(0), [[15, 20], [0, 20], [0, 0], [15, 0], [15, 20]]);
     // });
+
+    #[test]
+    fn zero_length_edges_are_removed() {
+        let d1 = Delaunay::new(vec![
+            Point {
+                x: 50.0f64,
+                y: 10.0f64,
+            },
+            Point {
+                x: 10.0f64,
+                y: 50.0f64,
+            },
+            Point {
+                x: 10.0f64,
+                y: 10.0f64,
+            },
+            Point {
+                x: 200.0f64,
+                y: 100.0f64,
+            },
+        ]);
+        let voronoi1 = Voronoi::new(d1, Some((40f64, 40f64, 440f64, 180f64)));
+        assert_eq!(voronoi1.cell_polygon(0).len(), 4);
+    }
 
     // tape("voronoi neighbors are clipped", test => {
     //    const voronoi = Delaunay.from([[300, 10], [200, 100], [300, 100], [10, 10], [350, 200], [350, 400]]).voronoi([0, 0, 500, 150]);

@@ -1,13 +1,13 @@
 #![allow(clippy::clippy::many_single_char_names)]
-use crate::delaunay::Delaunay;
-use crate::path::Path;
-
-use std::collections::VecDeque;
-
 use delaunator::Point;
 use delaunator::EMPTY;
+use std::collections::VecDeque;
 
 use rust_d3_geo::math::EPSILON;
+
+use crate::delaunay::Delaunay;
+use crate::polygon::Polygon;
+use crate::RenderingContext2d;
 
 pub struct Voronoi {
     pub circumcenters: Vec<Point>,
@@ -170,33 +170,18 @@ impl Voronoi {
 
     // TODO implement render_bounds()
 
-    pub fn render_cell(&self, i: usize, context_in: Option<&mut Path>) -> Option<String> {
-        let context: &mut Path;
-        let mut path: Path = Path::default();
-        let has_context;
-
-        match context_in {
-            None => {
-                has_context = false;
-                context = &mut path;
-            }
-            Some(c) => {
-                has_context = true;
-                context = c;
-            }
-        }
-
+    pub fn render_cell<T: RenderingContext2d>(&self, i: usize, context: &mut T) -> String {
         let points = self.clip(i);
-        match points {
+        return match points {
             None => {
-                return None;
+                return "".to_string();
             }
             Some(points) => {
                 if points.is_empty() {
-                    return None;
+                    return "".to_string();
                 }
 
-                context.move_to(points[0].x, points[0].y);
+                context.move_to(points[0].clone());
                 let mut n = points.len();
                 while (points[0usize].x - points[n - 1].x).abs() < EPSILON
                     && (points[0].y - points[n - 1].y).abs() < EPSILON
@@ -209,22 +194,23 @@ impl Voronoi {
                     if (points[i].x - points[i - 1].x).abs() >= EPSILON
                         || (points[i].y - points[i - 1].y).abs() >= EPSILON
                     {
-                        context.line_to(points[i].x, points[i].y);
+                        context.line_to(points[i].clone());
                     }
                 }
                 context.close_path();
-                if has_context {
-                    return None;
-                } else {
-                    return path.value();
-                }
+
+                context.value_str()
             }
-        }
+        };
     }
 
     // TODO implement cellPolgons*()
 
-    // TODO implement cellPolgons()
+    pub fn cell_polygon(&self, i: usize) -> Vec<Point> {
+        let mut polygon = Polygon::new();
+        self.render_cell(i, &mut polygon);
+        return polygon.value();
+    }
 
     // TODO implement renderSegment()
 
@@ -498,18 +484,12 @@ impl Voronoi {
     ) -> VecDeque<Point> {
         #[allow(non_snake_case)]
         let mut P: VecDeque<Point> = VecDeque::into(points.clone());
-        match self.project(P[0].x, P[0].y, vx0, vy0) {
-            Some(p1) => {
-                P.push_front(p1);
-            }
-            None => {}
+        if let Some(p1) = self.project(P[0].x, P[0].y, vx0, vy0) {
+            P.push_front(p1);
         }
 
-        match self.project(P[P.len() - 1].x, P[P.len() - 1].y, vxn, vyn) {
-            Some(p2) => {
-                P.push_back(p2);
-            }
-            None => {}
+        if let Some(p2) = self.project(P[P.len() - 1].x, P[P.len() - 1].y, vxn, vyn) {
+            P.push_back(p2);
         }
 
         P = self.clip_finite(i, &P);
