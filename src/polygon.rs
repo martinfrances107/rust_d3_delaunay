@@ -1,34 +1,41 @@
 use crate::RenderingContext2d;
-use delaunator::Point;
+use geo::CoordinateType;
+use geo::Point;
 #[derive(Clone, Debug)]
-pub struct Polygon {
-    p: Vec<Point>,
+pub struct Polygon<T>
+where
+    T: CoordinateType,
+{
+    p: Vec<Point<T>>,
 }
 
-impl RenderingContext2d for Polygon {
+impl<T> RenderingContext2d<T> for Polygon<T>
+where
+    T: CoordinateType,
+{
     fn new() -> Self {
         return Self { p: Vec::new() };
     }
-    fn arc(&mut self, _p: Point, _r: f64) {}
+    fn arc(&mut self, _p: &Point<T>, _r: T) {}
 
-    fn move_to(&mut self, p: Point) {
-        self.p.push(p);
+    fn move_to(&mut self, p: &Point<T>) {
+        self.p.push(*p);
     }
 
     fn close_path(&mut self) {
-        self.p.push(self.p[0].clone());
+        self.p.push(self.p[0]);
     }
 
-    fn line_to(&mut self, p: Point) {
-        self.p.push(p);
+    fn line_to(&mut self, p: &Point<T>) {
+        self.p.push(*p);
     }
 
-    fn rect(&mut self, _p: Point, _w: f64, _h: f64) {}
+    fn rect(&mut self, _p: &Point<T>, _w: T, _h: T) {}
 
     fn value_str(&self) -> String {
         return String::from("");
     }
-    fn value(&self) -> Vec<Point> {
+    fn value(&self) -> Vec<Point<T>> {
         self.p.clone()
     }
 }

@@ -1,71 +1,74 @@
-const EPSILON: f64 = 1e-6;
-
 use super::RenderingContext2d;
-use delaunator::Point;
+use geo::CoordinateType;
+use geo::Point;
+use num_traits::float::Float;
+use std::fmt::Display;
 
 #[derive(Clone, Debug)]
-pub struct Path {
-    // x0: f64,
-    // y0: f64,
-    p0: Point,
-    p1: Option<Point>,
-    // x1: Option<f64>,
-    // y1: Option<f64>,
+pub struct Path<T>
+where
+    T: CoordinateType,
+{
+    p0: Point<T>,
+    p1: Option<Point<T>>,
     s: String,
 }
 
-impl RenderingContext2d for Path {
+impl<T> RenderingContext2d<T> for Path<T>
+where
+    T: CoordinateType + Float + Display,
+{
     fn new() -> Self {
         return Self {
-            p0: Point { x: 0f64, y: 0f64 },
+            p0: Point::new(T::zero(), T::zero()),
             p1: None,
             s: "".to_owned(),
         };
     }
 
-    fn move_to(&mut self, p: Point) {
-        self.p0 = p.clone();
-        self.p1 = Some(p.clone());
-        self.s.push_str(&format!("M{},{}", p.x, p.y));
+    fn move_to(&mut self, p: &Point<T>) {
+        self.p0 = *p;
+        self.p1 = Some(*p);
+        self.s.push_str(&format!("M{},{}", p.x(), p.y()));
     }
 
     fn close_path(&mut self) {
         if self.p1.is_some() {
-            self.p1 = Some(self.p0.clone());
+            self.p1 = Some(self.p0);
             self.s += "Z";
         }
     }
 
-    fn line_to(&mut self, p: Point) {
-        self.p1 = Some(p.clone());
-        self.s.push_str(&format!("L{},{}", p.x, p.y));
+    fn line_to(&mut self, p: &Point<T>) {
+        self.p1 = Some(*p);
+        self.s.push_str(&format!("L{},{}", p.x(), p.y()));
     }
 
-    fn arc(&mut self, p: Point, r: f64) {
-        let x0 = p.x + r;
-        let y0 = p.y;
-        if r < 0f64 {
+    fn arc(&mut self, p: &Point<T>, r: T) {
+        let x0 = p.x() + r;
+        let y0 = p.y();
+        if r < T::zero() {
             panic!("negative radius");
         }
         match &self.p1 {
             Some(p1) => {
-                if (p1.x - x0).abs() > EPSILON || (p1.y - y0).abs() > EPSILON {
+                if (p1.x() - x0).abs() > T::epsilon() || (p1.y() - y0).abs() > T::epsilon() {
                     self.s.push_str(&format!("L{},{}", x0, y0));
                 }
-                if r == 0f64 {
+                if r == T::zero() {
                     return;
                 }
-                self.p1 = Some(p1.clone());
+                self.p1 = Some(*p1);
                 self.s.push_str(&format!(
                     "AS{},{},0,1,1,{},{}AS{},{},0,1,1{},{}",
                     r,
                     r,
-                    p.x - r,
-                    p.y,
+                    p.x() - r,
+                    p.y(),
                     r,
                     r,
-                    self.p0.x,
-                    self.p0.y
+                    self.p0.x(),
+                    self.p0.y()
                 ));
             }
             _ => {
@@ -74,11 +77,11 @@ impl RenderingContext2d for Path {
         }
     }
 
-    fn rect(&mut self, p: Point, w: f64, h: f64) {
-        self.p0 = p.clone();
-        self.p1 = Some(p.clone());
+    fn rect(&mut self, p: &Point<T>, w: T, h: T) {
+        self.p0 = *p;
+        self.p1 = Some(*p);
         self.s
-            .push_str(&format!("M{},{},{}h{}v{}h{}Z", p.x, p.y, w, h, h, -w));
+            .push_str(&format!("M{},{},{}h{}v{}h{}Z", p.x(), p.y(), w, h, h, -w));
     }
 
     fn value_str(&self) -> String {
@@ -89,7 +92,7 @@ impl RenderingContext2d for Path {
         }
     }
 
-    fn value(&self) -> Vec<Point> {
+    fn value(&self) -> Vec<Point<T>> {
         return Vec::new();
     }
 }

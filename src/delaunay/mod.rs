@@ -7,14 +7,20 @@ mod jitter;
 
 /// Delaunay triangulation
 use colinear::colinear;
-use rust_d3_geo::Transform;
-use rust_d3_geo::TransformIdentity;
+use proj::Proj;
 
-use delaunator::{triangulate, Point, Triangulation, EMPTY};
+use delaunator::{triangulate, Point as DPoint, Triangulation, EMPTY};
+use geo::CoordinateType;
+use geo::Point;
+use num_traits::{float::Float, AsPrimitive};
+use num_traits::{FromPrimitive, ToPrimitive};
 
 use jitter::jitter;
 
-pub struct Delaunay {
+pub struct Delaunay<T>
+where
+    T: CoordinateType + AsPrimitive<T>,
+{
     pub colinear: Vec<usize>,
     delaunator: Option<Triangulation>,
     pub inedges: Vec<usize>,
@@ -22,13 +28,16 @@ pub struct Delaunay {
     pub half_edges: Vec<usize>,
     pub hull: Vec<usize>,
     pub triangles: Vec<usize>,
-    pub points: Vec<Point>,
-    pub projection: Box<dyn Transform>,
-    pub fx: Box<dyn Fn(Point, usize, Vec<Point>) -> f64>,
-    pub fy: Box<dyn Fn(Point, usize, Vec<Point>) -> f64>,
+    pub points: Vec<Point<T>>,
+    pub projection: Option<Proj>,
+    pub fx: Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>,
+    pub fy: Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>,
 }
 
-impl<'a> Default for Delaunay {
+impl<'a, T> Default for Delaunay<T>
+where
+    T: CoordinateType + AsPrimitive<T>,
+{
     fn default() -> Self {
         // let points = Vec::new();
         return Self {
@@ -39,18 +48,33 @@ impl<'a> Default for Delaunay {
             hull: Vec::new(),
             hull_index: Vec::new(),
             points: Vec::new(),
-            projection: Box::new(TransformIdentity {}),
-            fx: Box::new(|p: Point, _i: usize, _points: Vec<Point>| p.x),
-            fy: Box::new(|p: Point, _i: usize, _points: Vec<Point>| p.y),
+            projection: None,
+            fx: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.x()),
+            fy: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.y()),
             triangles: Vec::new(),
         };
     }
 }
 
-impl<'a> Delaunay {
-    pub fn new(points: Vec<Point>) -> Self {
+impl<'a, T> Delaunay<T>
+where
+    T: CoordinateType + Float + FromPrimitive + AsPrimitive<T> + ToPrimitive,
+{
+    pub fn new(points: Vec<Point<T>>) -> Self {
         let half = points.len() / 2;
-        let delaunator = triangulate(&points);
+        // TODO conversion into delaunay point!!!
+        let d_point_in: Vec<DPoint> = points
+            .iter()
+            .map(|p| DPoint {
+                x: p.x().to_f64().unwrap(),
+                y: p.y().to_f64().unwrap(),
+            })
+            .collect();
+
+        let delaunator_dpoint = triangulate(&d_point_in);
+
+        // let delaunator = delaunator_dpoint.iter().map(|p| => )
+        let delaunator = delaunator_dpoint;
         let mut out = Self {
             delaunator,
             inedges: Vec::with_capacity(half),
@@ -78,16 +102,16 @@ impl<'a> Delaunay {
                         })
                         .collect();
                     colinear_vec.sort_by(|i, j| {
-                        let x_diff = self.points[*i].x - self.points[*j].x;
-                        if x_diff != 0f64 {
+                        let x_diff = self.points[*i].x() - self.points[*j].x();
+                        if x_diff != T::zero() {
                             if x_diff.is_sign_positive() {
                                 return Ordering::Greater;
                             } else {
                                 return Ordering::Less;
                             }
                         } else {
-                            let y_diff = self.points[*i].y - self.points[*j].y;
-                            if y_diff == 0f64 {
+                            let y_diff = self.points[*i].y() - self.points[*j].y();
+                            if y_diff.is_zero() {
                                 return Ordering::Equal;
                             } else if y_diff.is_sign_positive() {
                                 return Ordering::Greater;
@@ -99,18 +123,27 @@ impl<'a> Delaunay {
                     let e = self.colinear[0];
                     let f = self.colinear[self.colinear.len() - 1];
                     let bounds = [
-                        self.points[e].x,
-                        self.points[e].y,
-                        self.points[f].x,
-                        self.points[f].y,
+                        self.points[e].x(),
+                        self.points[e].y(),
+                        self.points[f].x(),
+                        self.points[f].y(),
                     ];
-                    let r = 1e-8f64 * (bounds[3] - bounds[1]).hypot(bounds[3] - bounds[0]);
+                    let r = T::from_f64(1e-8).unwrap()
+                        * (bounds[3] - bounds[1]).hypot(bounds[3] - bounds[0]);
                     for i in 0..self.points.len() / 2 {
                         let p = jitter(&self.points[i], r);
-                        self.points[i].x = p.x;
-                        self.points[i].y = p.y;
+                        self.points[i].set_x(p.x());
+                        self.points[i].set_y(p.y());
                     }
-                    self.delaunator = triangulate(&self.points);
+                    let d_point_in: Vec<DPoint> = self
+                        .points
+                        .iter()
+                        .map(|p| DPoint {
+                            x: p.x().to_f64().unwrap(),
+                            y: p.y().to_f64().unwrap(),
+                        })
+                        .collect();
+                    self.delaunator = triangulate(&d_point_in);
                 } else {
                     self.colinear = Vec::new();
                 }
@@ -175,17 +208,17 @@ impl<'a> Delaunay {
             }
         }
     }
-    pub fn step(&self, i: usize, x: f64, y: f64) -> usize {
+    pub fn step(&self, i: usize, x: T, y: T) -> usize {
         if self.inedges[i] == EMPTY || self.points.is_empty() {
             return (i + 1) % (self.points.len() >> 1);
         };
         let mut c = i;
-        let mut dc = (x - self.points[i].x).powi(2) + (y - self.points[i].y).powi(2);
+        let mut dc = (x - self.points[i].x()).powi(2) + (y - self.points[i].y()).powi(2);
         let e0 = self.inedges[i];
         let mut e = e0;
         loop {
             let t = self.triangles[e];
-            let dt = (x - self.points[t].x).powi(2) + (y - self.points[t].y).powi(2);
+            let dt = (x - self.points[t].x()).powi(2) + (y - self.points[t].y()).powi(2);
             if dt < dc {
                 dc = dt;
                 c = t;
@@ -204,7 +237,9 @@ impl<'a> Delaunay {
             e = self.half_edges[e];
             if e == EMPTY {
                 e = self.hull[(self.hull_index[i] + 1) % self.hull.len()];
-                if e != t && (x - self.points[e].x).powi(2) + (y - self.points[e].y).powi(2) < dc {
+                if e != t
+                    && (x - self.points[e].x()).powi(2) + (y - self.points[e].y()).powi(2) < dc
+                {
                     return e;
                 }
                 break;
