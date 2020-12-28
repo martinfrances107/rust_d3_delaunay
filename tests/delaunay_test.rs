@@ -5,8 +5,7 @@ mod delaunay_test {
 
     // use delaunator::Point;
     use delaunator::EMPTY;
-    use geo::Point;
-
+    use geo::{Coordinate, Point};
     use rust_d3_delaunay::delaunay::Delaunay;
     use rust_d3_delaunay::voronoi::Voronoi;
 
@@ -114,10 +113,10 @@ mod delaunay_test {
         println!("Delaunay.from(array)");
 
         let points = vec![
-            Point::new(0f64, 0f64),
-            Point::new(1f64, 0f64),
-            Point::new(0f64, 1f64),
-            Point::new(1f64, 0f64),
+            Coordinate{x: 0f64, y:0f64},
+            Coordinate{x: 1f64, y:0f64},
+            Coordinate{x: 0f64, y:1f64},
+            Coordinate{x: 1f64, y:0f64},
         ];
         let delaunay: Delaunay<f64> = Delaunay::new(points);
         assert_eq!(delaunay.inedges, vec![2, 1, 0, EMPTY]);
@@ -164,10 +163,10 @@ mod delaunay_test {
     fn test_voronoi_default_bounds() {
         println!("delaunay.voronoi() uses the default bounds");
         let points = vec![
-            Point::new(0f64, 0f64),
-            Point::new(1f64, 0f64),
-            Point::new(0f64, 1f64),
-            Point::new(1f64, 1f64),
+            Coordinate{x: 0f64, y: 0f64},
+            Coordinate{x: 1f64, y: 0f64},
+            Coordinate{x: 0f64, y: 1f64},
+            Coordinate{x: 1f64, y: 1f64},
         ];
 
         let delaunay = Delaunay::new(points);
@@ -189,10 +188,10 @@ mod delaunay_test {
     fn test_voronoi_specific_bounds() {
         println!("delaunay.voronoi([xmin, ymin, xmax, ymax]) uses the specified bounds");
         let points = vec![
-            Point::new(0f64, 0f64),
-            Point::new(1f64, 0f64),
-            Point::new(0f64, 1f64),
-            Point::new(1f64, 1f64),
+            Coordinate{x: 0f64, y:0f64},
+            Coordinate{x: 1f64, y:0f64},
+            Coordinate{x: 0f64, y:1f64},
+            Coordinate{x: 1f64, y:1f64},
         ];
 
         let delaunay = Delaunay::new(points);
@@ -207,10 +206,10 @@ mod delaunay_test {
     fn test_voronoi_returns_the_expected_diagram() {
         println!("delaunay.voronoi() returns the expected diagram");
         let points = vec![
-            Point::new(0f64, 0f64),
-            Point::new(1f64, 0f64),
-            Point::new(0f64, 1f64),
-            Point::new(1f64, 1f64),
+            Coordinate{x: 0f64, y: 0f64},
+            Coordinate{x: 1f64, y: 0f64},
+            Coordinate{x: 0f64, y: 1f64},
+            Coordinate{x: 1f64, y: 1f64},
         ];
 
         let delaunay = Delaunay::new(points);
@@ -238,10 +237,10 @@ mod delaunay_test {
     fn test_voronoi_skips_cells_for_coincident_points() {
         println!("delaunay.voronoi() skips cells for coincident points");
         let points = vec![
-            Point::new(0f64, 0f64),
-            Point::new(1f64, 0f64),
-            Point::new(0f64, 1f64),
-            Point::new(1f64, 0f64),
+            Coordinate{x :0f64, y: 0f64},
+            Coordinate{x :1f64, y: 0f64},
+            Coordinate{x :0f64, y: 1f64},
+            Coordinate{x :1f64, y: 0f64},
         ];
 
         let delaunay = Delaunay::new(points);

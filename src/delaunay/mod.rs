@@ -7,11 +7,13 @@ mod jitter;
 
 /// Delaunay triangulation
 use colinear::colinear;
-use proj::Proj;
+// use proj::Proj;
 
 use delaunator::{triangulate, Point as DPoint, Triangulation, EMPTY};
-use geo::CoordinateType;
+use geo::{Coordinate, CoordinateType};
 use geo::Point;
+use rust_d3_geo::projection::projection_mutator::ProjectionMutator;
+
 use num_traits::{float::Float, AsPrimitive};
 use num_traits::{FromPrimitive, ToPrimitive};
 
@@ -19,7 +21,7 @@ use jitter::jitter;
 
 pub struct Delaunay<T>
 where
-    T: CoordinateType + AsPrimitive<T>,
+    T: CoordinateType + AsPrimitive<T> + Float,
 {
     pub colinear: Vec<usize>,
     delaunator: Option<Triangulation>,
@@ -28,15 +30,15 @@ where
     pub half_edges: Vec<usize>,
     pub hull: Vec<usize>,
     pub triangles: Vec<usize>,
-    pub points: Vec<Point<T>>,
-    pub projection: Option<Proj>,
+    pub points: Vec<Coordinate<T>>,
+    pub projection: Option<ProjectionMutator<T>>,
     pub fx: Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>,
     pub fy: Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>,
 }
 
 impl<'a, T> Default for Delaunay<T>
 where
-    T: CoordinateType + AsPrimitive<T>,
+    T: CoordinateType + AsPrimitive<T> + Float,
 {
     fn default() -> Self {
         // let points = Vec::new();
@@ -60,14 +62,14 @@ impl<'a, T> Delaunay<T>
 where
     T: CoordinateType + Float + FromPrimitive + AsPrimitive<T> + ToPrimitive,
 {
-    pub fn new(points: Vec<Point<T>>) -> Self {
+    pub fn new(points: Vec<Coordinate<T>>) -> Self {
         let half = points.len() / 2;
         // TODO conversion into delaunay point!!!
         let d_point_in: Vec<DPoint> = points
             .iter()
             .map(|p| DPoint {
-                x: p.x().to_f64().unwrap(),
-                y: p.y().to_f64().unwrap(),
+                x: p.x.to_f64().unwrap(),
+                y: p.y.to_f64().unwrap(),
             })
             .collect();
 
@@ -102,7 +104,7 @@ where
                         })
                         .collect();
                     colinear_vec.sort_by(|i, j| {
-                        let x_diff = self.points[*i].x() - self.points[*j].x();
+                        let x_diff = self.points[*i].x - self.points[*j].x;
                         if x_diff != T::zero() {
                             if x_diff.is_sign_positive() {
                                 return Ordering::Greater;
@@ -110,7 +112,7 @@ where
                                 return Ordering::Less;
                             }
                         } else {
-                            let y_diff = self.points[*i].y() - self.points[*j].y();
+                            let y_diff = self.points[*i].y - self.points[*j].y;
                             if y_diff.is_zero() {
                                 return Ordering::Equal;
                             } else if y_diff.is_sign_positive() {
@@ -123,24 +125,24 @@ where
                     let e = self.colinear[0];
                     let f = self.colinear[self.colinear.len() - 1];
                     let bounds = [
-                        self.points[e].x(),
-                        self.points[e].y(),
-                        self.points[f].x(),
-                        self.points[f].y(),
+                        self.points[e].x,
+                        self.points[e].y,
+                        self.points[f].x,
+                        self.points[f].y,
                     ];
                     let r = T::from_f64(1e-8).unwrap()
                         * (bounds[3] - bounds[1]).hypot(bounds[3] - bounds[0]);
                     for i in 0..self.points.len() / 2 {
                         let p = jitter(&self.points[i], r);
-                        self.points[i].set_x(p.x());
-                        self.points[i].set_y(p.y());
+                        self.points[i].x = p.x;
+                        self.points[i].y = p.y;
                     }
                     let d_point_in: Vec<DPoint> = self
                         .points
                         .iter()
                         .map(|p| DPoint {
-                            x: p.x().to_f64().unwrap(),
-                            y: p.y().to_f64().unwrap(),
+                            x: p.x.to_f64().unwrap(),
+                            y: p.y.to_f64().unwrap(),
                         })
                         .collect();
                     self.delaunator = triangulate(&d_point_in);
@@ -213,12 +215,12 @@ where
             return (i + 1) % (self.points.len() >> 1);
         };
         let mut c = i;
-        let mut dc = (x - self.points[i].x()).powi(2) + (y - self.points[i].y()).powi(2);
+        let mut dc = (x - self.points[i].x).powi(2) + (y - self.points[i].y).powi(2);
         let e0 = self.inedges[i];
         let mut e = e0;
         loop {
             let t = self.triangles[e];
-            let dt = (x - self.points[t].x()).powi(2) + (y - self.points[t].y()).powi(2);
+            let dt = (x - self.points[t].x).powi(2) + (y - self.points[t].y).powi(2);
             if dt < dc {
                 dc = dt;
                 c = t;
@@ -238,7 +240,7 @@ where
             if e == EMPTY {
                 e = self.hull[(self.hull_index[i] + 1) % self.hull.len()];
                 if e != t
-                    && (x - self.points[e].x()).powi(2) + (y - self.points[e].y()).powi(2) < dc
+                    && (x - self.points[e].x).powi(2) + (y - self.points[e].y).powi(2) < dc
                 {
                     return e;
                 }

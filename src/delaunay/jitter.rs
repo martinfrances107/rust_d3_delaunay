@@ -1,13 +1,12 @@
-use geo::CoordinateType;
-use geo::Point;
+use geo::{Coordinate, CoordinateType};
 use num_traits::float::Float;
 
-pub fn jitter<T>(p: &Point<T>, r: T) -> Point<T>
+pub fn jitter<T>(p: &Coordinate<T>, r: T) -> Coordinate<T>
 where
     T: CoordinateType + Float,
 {
-    return Point::new(
-        p.x() + (p.x() + p.y()).sin() * r,
-        p.y() + (p.x() - p.y()).cos() * r,
-    );
+    Coordinate{
+        x: p.x + (p.x + p.y).sin() * r,
+        y: p.y + (p.x - p.y).cos() * r,
+    }
 }

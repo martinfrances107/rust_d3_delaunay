@@ -12,7 +12,7 @@ use crate::RenderingContext2d;
 
 pub struct Voronoi<T>
 where
-    T: CoordinateType + AsPrimitive<T>,
+    T: CoordinateType + AsPrimitive<T> + Float,
 {
     pub circumcenters: Vec<Point<T>>,
     delaunay: Delaunay<T>,
@@ -113,12 +113,12 @@ where
             let t1 = triangles[i];
             let t2 = triangles[i + 1];
             let t3 = triangles[i + 2];
-            let x1 = points[t1].x();
-            let y1 = points[t1].y();
-            let x2 = points[t2].x();
-            let y2 = points[t2].y();
-            let x3 = points[t3].x();
-            let y3 = points[t3].y();
+            let x1 = points[t1].x;
+            let y1 = points[t1].y;
+            let x2 = points[t2].x;
+            let y2 = points[t2].y;
+            let x3 = points[t3].x;
+            let y3 = points[t3].y;
 
             let dx = x2 - x1;
             let dy = y2 - y1;
@@ -154,9 +154,9 @@ where
         let mut p0: usize;
         let mut p1 = h * 2;
         let mut x0;
-        let mut x1 = points[h].x();
+        let mut x1 = points[h].x;
         let mut y0;
-        let mut y1 = points[h].y();
+        let mut y1 = points[h].y;
 
         let vectors_len = self.vectors.len();
         self.vectors.clear();
@@ -169,8 +169,8 @@ where
             x0 = x1;
             y0 = y1;
             p1 = h * 2;
-            x1 = points[*h].x();
-            y1 = points[*h].y();
+            x1 = points[*h].x;
+            y1 = points[*h].y;
             let xdiff = x1 - x0;
             let ydiff = y0 - y1;
             // clip infinte pushed to both the front and back of this queue.

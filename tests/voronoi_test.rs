@@ -2,8 +2,7 @@
 #[cfg(test)]
 mod voronoi_test {
     extern crate pretty_assertions;
-
-    use geo::Point;
+    use geo::Coordinate;
 
     use rust_d3_delaunay::delaunay::Delaunay;
     use rust_d3_delaunay::path::Path;
@@ -14,10 +13,10 @@ mod voronoi_test {
     fn test_noop_for_coincident_points() {
         println!("voronoi.renderCell(i, context) is a noop for coincident points");
         let points = vec![
-            Point::new(0f64, 0f64),
-            Point::new(1f64, 0f64),
-            Point::new(0f64, 1f64),
-            Point::new(1f64, 0f64),
+            Coordinate{x: 0f64, y:0f64},
+            Coordinate{x: 1f64, y:0f64},
+            Coordinate{x: 0f64, y:1f64},
+            Coordinate{x: 1f64, y:0f64},
         ];
         let delaunay = Delaunay::new(points);
 
@@ -31,9 +30,9 @@ mod voronoi_test {
     fn test_render_cell_midpoint() {
         println!("voronoi.renderCell(i, context) handles midpoint coincident with circumcenter");
         let points = vec![
-            Point::new(0f64, 0f64),
-            Point::new(1f64, 0f64),
-            Point::new(0f64, 1f64),
+            Coordinate{x: 0f64, y:0f64},
+            Coordinate{x: 1f64, y:0f64},
+            Coordinate{x: 0f64, y:1f64},
         ];
         let delaunay = Delaunay::new(points);
         let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
@@ -65,10 +64,10 @@ mod voronoi_test {
     fn test_contains_false_for_coincident() {
         println!("voronoi.contains(i, x, y) is false for coincident points");
         let points = vec![
-            Point::new(0f64, 0f64),
-            Point::new(1f64, 0f64),
-            Point::new(0f64, 1f64),
-            Point::new(1f64, 0f64),
+            Coordinate{x: 0f64, y:0f64},
+            Coordinate{x: 1f64, y:0f64},
+            Coordinate{x: 0f64, y:1f64},
+            Coordinate{x: 1f64, y:0f64},
         ];
         let delaunay = Delaunay::new(points);
         let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
@@ -109,10 +108,10 @@ mod voronoi_test {
     #[test]
     fn zero_length_edges_are_removed() {
         let d1 = Delaunay::new(vec![
-            Point::new(50.0f64, 10.0f64),
-            Point::new(10.0f64, 50.0f64),
-            Point::new(10.0f64, 10.0f64),
-            Point::new(200.0f64, 100.0f64),
+            Coordinate{x: 50.0f64, y: 10.0f64},
+            Coordinate{x: 10.0f64, y: 50.0f64},
+            Coordinate{x: 10.0f64, y: 10.0f64},
+            Coordinate{x: 200.0f64,y:  100.0f64},
         ]);
         let voronoi1 = Voronoi::new(d1, Some((40f64, 40f64, 440f64, 180f64)));
         assert_eq!(voronoi1.cell_polygon(0).len(), 4);
