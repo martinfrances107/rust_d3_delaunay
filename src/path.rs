@@ -1,6 +1,6 @@
 use super::RenderingContext2d;
+use geo::Coordinate;
 use geo::CoordinateType;
-use geo::Point;
 use num_traits::float::Float;
 use std::fmt::Display;
 
@@ -9,27 +9,35 @@ pub struct Path<T>
 where
     T: CoordinateType,
 {
-    p0: Point<T>,
-    p1: Option<Point<T>>,
+    p0: Coordinate<T>,
+    p1: Option<Coordinate<T>>,
     s: String,
+}
+
+impl<T> Default for Path<T>
+where
+    T: CoordinateType,
+{
+    fn default() -> Self {
+        Path {
+            p0: Coordinate {
+                x: T::zero(),
+                y: T::zero(),
+            },
+            p1: None,
+            s: String::from(""),
+        }
+    }
 }
 
 impl<T> RenderingContext2d<T> for Path<T>
 where
     T: CoordinateType + Float + Display,
 {
-    fn new() -> Self {
-        return Self {
-            p0: Point::new(T::zero(), T::zero()),
-            p1: None,
-            s: "".to_owned(),
-        };
-    }
-
-    fn move_to(&mut self, p: &Point<T>) {
+    fn move_to(&mut self, p: &Coordinate<T>) {
         self.p0 = *p;
         self.p1 = Some(*p);
-        self.s.push_str(&format!("M{},{}", p.x(), p.y()));
+        self.s.push_str(&format!("M{},{}", p.x, p.y));
     }
 
     fn close_path(&mut self) {
@@ -39,20 +47,20 @@ where
         }
     }
 
-    fn line_to(&mut self, p: &Point<T>) {
+    fn line_to(&mut self, p: &Coordinate<T>) {
         self.p1 = Some(*p);
-        self.s.push_str(&format!("L{},{}", p.x(), p.y()));
+        self.s.push_str(&format!("L{},{}", p.x, p.y));
     }
 
-    fn arc(&mut self, p: &Point<T>, r: T) {
-        let x0 = p.x() + r;
-        let y0 = p.y();
+    fn arc(&mut self, p: &Coordinate<T>, r: T) {
+        let x0 = p.x + r;
+        let y0 = p.y;
         if r < T::zero() {
             panic!("negative radius");
         }
         match &self.p1 {
             Some(p1) => {
-                if (p1.x() - x0).abs() > T::epsilon() || (p1.y() - y0).abs() > T::epsilon() {
+                if (p1.x - x0).abs() > T::epsilon() || (p1.y - y0).abs() > T::epsilon() {
                     self.s.push_str(&format!("L{},{}", x0, y0));
                 }
                 if r == T::zero() {
@@ -63,12 +71,12 @@ where
                     "AS{},{},0,1,1,{},{}AS{},{},0,1,1{},{}",
                     r,
                     r,
-                    p.x() - r,
-                    p.y(),
+                    p.x - r,
+                    p.y,
                     r,
                     r,
-                    self.p0.x(),
-                    self.p0.y()
+                    self.p0.x,
+                    self.p0.y
                 ));
             }
             _ => {
@@ -77,11 +85,11 @@ where
         }
     }
 
-    fn rect(&mut self, p: &Point<T>, w: T, h: T) {
+    fn rect(&mut self, p: &Coordinate<T>, w: T, h: T) {
         self.p0 = *p;
         self.p1 = Some(*p);
         self.s
-            .push_str(&format!("M{},{},{}h{}v{}h{}Z", p.x(), p.y(), w, h, h, -w));
+            .push_str(&format!("M{},{},{}h{}v{}h{}Z", p.x, p.y, w, h, h, -w));
     }
 
     fn value_str(&self) -> String {
@@ -92,7 +100,7 @@ where
         }
     }
 
-    fn value(&self) -> Vec<Point<T>> {
+    fn value(&self) -> Vec<Coordinate<T>> {
         return Vec::new();
     }
 }

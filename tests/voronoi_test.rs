@@ -13,15 +13,15 @@ mod voronoi_test {
     fn test_noop_for_coincident_points() {
         println!("voronoi.renderCell(i, context) is a noop for coincident points");
         let points = vec![
-            Coordinate{x: 0f64, y:0f64},
-            Coordinate{x: 1f64, y:0f64},
-            Coordinate{x: 0f64, y:1f64},
-            Coordinate{x: 1f64, y:0f64},
+            Coordinate { x: 0f64, y: 0f64 },
+            Coordinate { x: 1f64, y: 0f64 },
+            Coordinate { x: 0f64, y: 1f64 },
+            Coordinate { x: 1f64, y: 0f64 },
         ];
         let delaunay = Delaunay::new(points);
 
         let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
-        let mut path = Path::new();
+        let mut path = Path::default();
         voronoi.render_cell::<Path<f64>>(3, &mut path);
         assert_eq!(path.value_str(), String::from(""));
     }
@@ -30,13 +30,13 @@ mod voronoi_test {
     fn test_render_cell_midpoint() {
         println!("voronoi.renderCell(i, context) handles midpoint coincident with circumcenter");
         let points = vec![
-            Coordinate{x: 0f64, y:0f64},
-            Coordinate{x: 1f64, y:0f64},
-            Coordinate{x: 0f64, y:1f64},
+            Coordinate { x: 0f64, y: 0f64 },
+            Coordinate { x: 1f64, y: 0f64 },
+            Coordinate { x: 0f64, y: 1f64 },
         ];
         let delaunay = Delaunay::new(points);
         let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
-        let mut context1 = Path::new();
+        let mut context1 = Path::default();
         {
             voronoi.render_cell::<Path<f64>>(0, &mut context1);
         }
@@ -45,14 +45,14 @@ mod voronoi_test {
             String::from("M-1,-1L0.5,-1L0.5,0.5L-1,0.5Z")
         );
 
-        let mut context = Path::new();
+        let mut context = Path::default();
         voronoi.render_cell(1, &mut context);
         assert_eq!(
             context.value_str(),
             String::from("M2,-1L2,2L0.5,0.5L0.5,-1Z")
         );
 
-        let mut context = Path::new();
+        let mut context = Path::default();
         voronoi.render_cell(2, &mut context);
         assert_eq!(
             context.value_str(),
@@ -64,10 +64,10 @@ mod voronoi_test {
     fn test_contains_false_for_coincident() {
         println!("voronoi.contains(i, x, y) is false for coincident points");
         let points = vec![
-            Coordinate{x: 0f64, y:0f64},
-            Coordinate{x: 1f64, y:0f64},
-            Coordinate{x: 0f64, y:1f64},
-            Coordinate{x: 1f64, y:0f64},
+            Coordinate { x: 0f64, y: 0f64 },
+            Coordinate { x: 1f64, y: 0f64 },
+            Coordinate { x: 0f64, y: 1f64 },
+            Coordinate { x: 1f64, y: 0f64 },
         ];
         let delaunay = Delaunay::new(points);
         let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
@@ -108,10 +108,22 @@ mod voronoi_test {
     #[test]
     fn zero_length_edges_are_removed() {
         let d1 = Delaunay::new(vec![
-            Coordinate{x: 50.0f64, y: 10.0f64},
-            Coordinate{x: 10.0f64, y: 50.0f64},
-            Coordinate{x: 10.0f64, y: 10.0f64},
-            Coordinate{x: 200.0f64,y:  100.0f64},
+            Coordinate {
+                x: 50.0f64,
+                y: 10.0f64,
+            },
+            Coordinate {
+                x: 10.0f64,
+                y: 50.0f64,
+            },
+            Coordinate {
+                x: 10.0f64,
+                y: 10.0f64,
+            },
+            Coordinate {
+                x: 200.0f64,
+                y: 100.0f64,
+            },
         ]);
         let voronoi1 = Voronoi::new(d1, Some((40f64, 40f64, 440f64, 180f64)));
         assert_eq!(voronoi1.cell_polygon(0).len(), 4);
@@ -137,6 +149,30 @@ mod voronoi_test {
     //     test.deepEqual([...voronoi.cellPolygons()].map(d => d.length), lengths);
     //   }
     // });
+
+    // fn unnecessary_point_on_the_corner() {
+    //     println!("unnecessary points on the corners are avoided (#88)");
+    //     let pattern = vec![(
+    //         vec![
+    //             Coordinate { x: 289f64, y: 25f64 },
+    //             Coordinate { x: 3f64, y: 22f64 },
+    //             Coordinate { x: 93f64, y: 165f64 },
+    //             Coordinate { x: 282f64, y: 184f64 },
+    //             Coordinate { x: 65f64, y: 89f64 },
+    //         ],
+    //         vec![6, 4, 6, 5, 6],
+    //     )];
+
+    //     for (coords, len_array) in pattern {
+    //         let delaunay = Delaunay::new(coords);
+    //         let voronoi = Voronoi::new(delaunay, Some((0., 0., 290., 190.)));
+
+    //         for i in 0..len_array.len() {
+    //             let cell_array = voronoi.cell_polygon(i);
+    //             cell_array.map(|d|  d.length).collect();
+    //         }
+    //     }
+    // }
 
     // tape("a degenerate triangle is avoided", test => {
     //   const pts = [[424.75, 253.75],[424.75, 253.74999999999997],[407.17640687119285, 296.17640687119285],[364.75, 313.75],[322.32359312880715, 296.17640687119285],[304.75, 253.75],[322.32359312880715, 211.32359312880715],[364.75, 193.75],[407.17640687119285, 211.32359312880715],[624.75, 253.75],[607.1764068711929, 296.17640687119285],[564.75, 313.75],[522.3235931288071, 296.17640687119285],[504.75, 253.75],[564.75, 193.75]

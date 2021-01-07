@@ -10,8 +10,8 @@ use colinear::colinear;
 // use proj::Proj;
 
 use delaunator::{triangulate, Point as DPoint, Triangulation, EMPTY};
-use geo::{Coordinate, CoordinateType};
 use geo::Point;
+use geo::{Coordinate, CoordinateType};
 use rust_d3_geo::projection::projection_mutator::ProjectionMutator;
 
 use num_traits::{float::Float, AsPrimitive};
@@ -72,7 +72,6 @@ where
                 y: p.y.to_f64().unwrap(),
             })
             .collect();
-
         let delaunator_dpoint = triangulate(&d_point_in);
 
         // let delaunator = delaunator_dpoint.iter().map(|p| => )
@@ -239,9 +238,7 @@ where
             e = self.half_edges[e];
             if e == EMPTY {
                 e = self.hull[(self.hull_index[i] + 1) % self.hull.len()];
-                if e != t
-                    && (x - self.points[e].x).powi(2) + (y - self.points[e].y).powi(2) < dc
-                {
+                if e != t && (x - self.points[e].x).powi(2) + (y - self.points[e].y).powi(2) < dc {
                     return e;
                 }
                 break;

@@ -5,139 +5,67 @@ mod delaunay_test {
 
     // use delaunator::Point;
     use delaunator::EMPTY;
-    use geo::{Coordinate, Point};
+    use geo::Coordinate;
     use rust_d3_delaunay::delaunay::Delaunay;
     use rust_d3_delaunay::voronoi::Voronoi;
 
-    // #[test]
-    // fn test_from_array() {
-    //   println!("Delaunay.from(array)");
-    //   let mut points = vec![
-    //     Point { x: 0., y: 0. },
-    //     Point { x: 1f64, y: 0f64 },
-    //     Point { x: 0f64, y: 1f64 },
-    //     Point { x: 1f64, y: 1f64 },
-    //   ];
-    //   let delaunay: Delaunay = Delaunay::new(&mut points);
+    #[test]
+    fn test_from_array() {
+        println!("Delaunay.from(array)");
+        let points = vec![
+            Coordinate { x: 0f64, y: 0f64 },
+            Coordinate { x: 1f64, y: 0f64 },
+            Coordinate { x: 0f64, y: 1f64 },
+            Coordinate { x: 1f64, y: 1f64 },
+        ];
+        let delaunay = Delaunay::new(points);
+        assert_eq!(
+            delaunay.points,
+            vec![
+                Coordinate { x: 0f64, y: 0f64 },
+                Coordinate { x: 1f64, y: 0f64 },
+                Coordinate { x: 0f64, y: 1f64 },
+                Coordinate { x: 1f64, y: 1f64 },
+            ]
+        );
 
-    //   let mut neighbors = |i| {
-    //     // degenerate case with several collinear points
-    //     if !delaunay.colinear.is_empty() {
-    //       let l = delaunay.colinear.iter().find(|&&x| x == i);
-    //       match l {
-    //         Some(l) => {
-    //           if *l > 0 {
-    //             yield delaunay.colinear[l - 1];
-    //           }
-    //           // allowed values of l here is zero !!!
-    //           // but I am just copiying the javascript implementation.
-    //           if l < &(delaunay.colinear.len() - 1) {
-    //             yield delaunay.colinear[l + 1];
-    //           }
-    //           // return;
-    //         }
-    //         None => {
-    //           return true;
-    //         }
-    //       }
-    //     }
+        assert_eq!(delaunay.triangles, vec![0, 2, 1, 2, 3, 1]);
+        assert_eq!(delaunay.half_edges, vec![EMPTY, 5, EMPTY, EMPTY, EMPTY, 1]);
+        assert_eq!(delaunay.inedges, vec![2, 4, 0, 3]);
 
-    //     let e0 = delaunay.inedges[i];
-    //     if e0 == EMPTY {
-    //       return true;
-    //     } // coincident point
-    //     let mut e = e0;
-    //     let p0 = EMPTY;
-    //     loop {
-    //       let p0 = delaunay.triangles[e];
-    //       yield p0;
-    //       // e = e % 3 == 2 ? e - 2 : e + 1;
-    //       if e % 3 == 2 {
-    //         e = e - 2;
-    //       } else {
-    //         e = e + 1;
-    //       }
-    //       if delaunay.triangles[e] != i {
-    //         return true;
-    //       } // bad triangulation
-    //       e = delaunay.half_edges[e];
-    //       if e == EMPTY {
-    //         let p = delaunay.hull[(delaunay.hull_index[i] + 1) % delaunay.hull.len()];
-    //         if p != p0 {
-    //           yield p;
-    //         }
-    //         return true;
-    //       }
-    //       if e == e0 {
-    //         break true;
-    //       }
-    //       // }
-    //     }
-    //   };
+        // Cannot reproduce neighbors tests...neighbors is a genrator function!
 
-    //   assert_eq!(
-    //     delaunay.triangles,
-    //     [0usize, 2usize, 1usize, 2usize, 3usize, 1usize]
-    //   );
-    //   assert_eq!(delaunay.half_edges, vec![EMPTY, 5, EMPTY, EMPTY, EMPTY, 1]);
-    //   assert_eq!(delaunay.inedges, vec![2, 4, 0, 3]);
-    //   // assert_eq!(neighbors(0), [1, 2]);
-    //   match Pin::new(&mut neighbors).resume(0) {
-    //     GeneratorState::Yielded(n) => assert_eq!(n, 1usize),
-    //     _ => panic!("unexptected return"),
-    //   }
-    //   match Pin::new(&mut neighbors).resume(0) {
-    //     GeneratorState::Yielded(n) => assert_eq!(n, 2usize),
-    //     _ => panic!("unexptected return"),
-    //   }
-    //   match Pin::new(&mut neighbors).resume(0) {
-    //     GeneratorState::Complete(n) => assert_eq!(n, true),
-    //     _ => panic!("unexptected return"),
-    //   }
-    //   // assert_eq!(Array.from(delaunay.neighbors(1)), [3, 2, 0]);
-    //   // assert_eq!(Array.from(delaunay.neighbors(2)), [0, 1, 3]);
-    //   // assert_eq!(Array.from(delaunay.neighbors(3)), [2, 1]);
-    // }
-
-    // tape("Delaunay.from(array) handles coincident points", test => {
-    //   let delaunay = Delaunay.from([[0, 0], [1, 0], [0, 1], [1, 0]]);
-    //   test.deepEqual(delaunay.inedges, Int32Array.of(2, 1, 0, -1));
-    //   test.deepEqual(Array.from(delaunay.neighbors(0)), [1, 2]);
-    //   test.deepEqual(Array.from(delaunay.neighbors(1)), [2, 0]);
-    //   test.deepEqual(Array.from(delaunay.neighbors(2)), [0, 1]);
-    //   test.deepEqual(Array.from(delaunay.neighbors(3)), []);
-    // });
+        // test.deepEqual(Array.from(delaunay.neighbors(0)), [1, 2]);
+        //   test.deepEqual(Array.from(delaunay.neighbors(1)), [2, 0]);
+        //   test.deepEqual(Array.from(delaunay.neighbors(2)), [0, 1]);
+        //   test.deepEqual(Array.from(delaunay.neighbors(3)), []);
+    }
 
     #[test]
     fn test_handles_coincident_points() {
         println!("Delaunay.from(array)");
 
         let points = vec![
-            Coordinate{x: 0f64, y:0f64},
-            Coordinate{x: 1f64, y:0f64},
-            Coordinate{x: 0f64, y:1f64},
-            Coordinate{x: 1f64, y:0f64},
+            Coordinate { x: 0f64, y: 0f64 },
+            Coordinate { x: 1f64, y: 0f64 },
+            Coordinate { x: 0f64, y: 1f64 },
+            Coordinate { x: 1f64, y: 0f64 },
         ];
         let delaunay: Delaunay<f64> = Delaunay::new(points);
         assert_eq!(delaunay.inedges, vec![2, 1, 0, EMPTY]);
 
-        println!(" TODO add mssing neigbors asserts");
+        // Cannot reproduce neighbors tests...
+        // neighbors is part of rust_d3_geo_voronoi.delaunay.
+
         //   test.deepEqual(Array.from(delaunay.neighbors(0)), [1, 2]);
         //   test.deepEqual(Array.from(delaunay.neighbors(1)), [2, 0]);
         //   test.deepEqual(Array.from(delaunay.neighbors(2)), [0, 1]);
         //   test.deepEqual(Array.from(delaunay.neighbors(3)), []);
     }
 
-    // tape("Delaunay.from(iterable)", test => {
-    //   let delaunay = Delaunay.from((function*() {
-    //     yield [0, 0];
-    //     yield [1, 0];
-    //     yield [0, 1];
-    //     yield [1, 1];
-    //   })());
-    //   test.deepEqual(delaunay.points, Float64Array.of(0, 0, 1, 0, 0, 1, 1, 1));
-    //   test.deepEqual(delaunay.triangles, Uint32Array.of(0, 2, 1, 2, 3, 1));
-    //   test.deepEqual(delaunay.halfedges, Int32Array.of(-1, 5, -1, -1, -1, 1));
+    // fn test_delaunay_from_iterable() {
+    //     println!("Delaunay.from(iterable)");
+    //     // iterable not supported in initial rustlang version.
     // });
 
     // tape("Delaunay.from(iterable, fx, fy)", test => {
@@ -163,10 +91,10 @@ mod delaunay_test {
     fn test_voronoi_default_bounds() {
         println!("delaunay.voronoi() uses the default bounds");
         let points = vec![
-            Coordinate{x: 0f64, y: 0f64},
-            Coordinate{x: 1f64, y: 0f64},
-            Coordinate{x: 0f64, y: 1f64},
-            Coordinate{x: 1f64, y: 1f64},
+            Coordinate { x: 0f64, y: 0f64 },
+            Coordinate { x: 1f64, y: 0f64 },
+            Coordinate { x: 0f64, y: 1f64 },
+            Coordinate { x: 1f64, y: 1f64 },
         ];
 
         let delaunay = Delaunay::new(points);
@@ -176,22 +104,15 @@ mod delaunay_test {
         assert_eq!(voronoi.xmax, 960f64);
         assert_eq!(voronoi.ymax, 500f64);
     }
-    // tape("delaunay.voronoi([xmin, ymin, xmax, ymax]) uses the specified bounds", test => {
-    //   let voronoi = Delaunay.from([[0, 0], [1, 0], [0, 1], [1, 1]]).voronoi([-1, -1, 2, 2]);
-    //   test.equal(voronoi.xmin, -1);
-    //   test.equal(voronoi.ymin, -1);
-    //   test.equal(voronoi.xmax, 2);
-    //   test.equal(voronoi.ymax, 2);
-    // });
 
     #[test]
     fn test_voronoi_specific_bounds() {
         println!("delaunay.voronoi([xmin, ymin, xmax, ymax]) uses the specified bounds");
         let points = vec![
-            Coordinate{x: 0f64, y:0f64},
-            Coordinate{x: 1f64, y:0f64},
-            Coordinate{x: 0f64, y:1f64},
-            Coordinate{x: 1f64, y:1f64},
+            Coordinate { x: 0f64, y: 0f64 },
+            Coordinate { x: 1f64, y: 0f64 },
+            Coordinate { x: 0f64, y: 1f64 },
+            Coordinate { x: 1f64, y: 1f64 },
         ];
 
         let delaunay = Delaunay::new(points);
@@ -206,29 +127,47 @@ mod delaunay_test {
     fn test_voronoi_returns_the_expected_diagram() {
         println!("delaunay.voronoi() returns the expected diagram");
         let points = vec![
-            Coordinate{x: 0f64, y: 0f64},
-            Coordinate{x: 1f64, y: 0f64},
-            Coordinate{x: 0f64, y: 1f64},
-            Coordinate{x: 1f64, y: 1f64},
+            Coordinate { x: 0f64, y: 0f64 },
+            Coordinate { x: 1f64, y: 0f64 },
+            Coordinate { x: 0f64, y: 1f64 },
+            Coordinate { x: 1f64, y: 1f64 },
         ];
 
         let delaunay = Delaunay::new(points);
         let voronoi = Voronoi::new(delaunay, None);
         assert_eq!(
             voronoi.circumcenters,
-            vec![Point::new(0.5, 0.5), Point::new(0.5, 0.5)]
+            vec![Coordinate { x: 0.5, y: 0.5 }, Coordinate { x: 0.5, y: 0.5 }]
         );
         assert_eq!(
             voronoi.vectors,
             vec![
-                Point::new(0.0f64, -1.0f64),
-                Point::new(-1f64, 0.0f64),
-                Point::new(1.0f64, 0.0f64),
-                Point::new(0f64, -1.0f64),
-                Point::new(-1f64, 0.0f64),
-                Point::new(0f64, 1.0f64),
-                Point::new(0f64, 1.0f64),
-                Point::new(1.0f64, 0.0f64)
+                Coordinate {
+                    x: 0.0f64,
+                    y: -1.0f64
+                },
+                Coordinate {
+                    x: -1f64,
+                    y: 0.0f64
+                },
+                Coordinate {
+                    x: 1.0f64,
+                    y: 0.0f64
+                },
+                Coordinate {
+                    x: 0f64,
+                    y: -1.0f64
+                },
+                Coordinate {
+                    x: -1f64,
+                    y: 0.0f64
+                },
+                Coordinate { x: 0f64, y: 1.0f64 },
+                Coordinate { x: 0f64, y: 1.0f64 },
+                Coordinate {
+                    x: 1.0f64,
+                    y: 0.0f64
+                }
             ]
         );
     }
@@ -237,35 +176,38 @@ mod delaunay_test {
     fn test_voronoi_skips_cells_for_coincident_points() {
         println!("delaunay.voronoi() skips cells for coincident points");
         let points = vec![
-            Coordinate{x :0f64, y: 0f64},
-            Coordinate{x :1f64, y: 0f64},
-            Coordinate{x :0f64, y: 1f64},
-            Coordinate{x :1f64, y: 0f64},
+            Coordinate { x: 0f64, y: 0f64 },
+            Coordinate { x: 1f64, y: 0f64 },
+            Coordinate { x: 0f64, y: 1f64 },
+            Coordinate { x: 1f64, y: 0f64 },
         ];
 
         let delaunay = Delaunay::new(points);
         let voronoi = Voronoi::new(delaunay, None);
 
-        assert_eq!(voronoi.circumcenters, vec![Point::new(0.5, 0.5)]);
+        assert_eq!(voronoi.circumcenters, vec![Coordinate { x: 0.5, y: 0.5 }]);
         assert_eq!(
             voronoi.vectors,
             vec![
-                Point::new(0.0f64, -1.0),
-                Point::new(-1f64, 0.0),
-                Point::new(1.0, 1.0),
-                Point::new(0f64, -1.0),
-                Point::new(-1f64, 0.0),
-                Point::new(1f64, 1.0),
-                Point::new(0f64, 0.0),
-                Point::new(0f64, 0.0)
+                Coordinate { x: 0.0f64, y: -1.0 },
+                Coordinate { x: -1f64, y: 0.0 },
+                Coordinate { x: 1.0, y: 1.0 },
+                Coordinate { x: 0f64, y: -1.0 },
+                Coordinate { x: -1f64, y: 0.0 },
+                Coordinate { x: 1f64, y: 1.0 },
+                Coordinate { x: 0f64, y: 0.0 },
+                Coordinate { x: 0f64, y: 0.0 }
             ]
         );
     }
 
-    // tape("delaunay.voronoi() for zero point returns expected values", test => {
-    //   let voronoi = Delaunay.from([]).voronoi([-1, -1, 2, 2]);
-    //   test.equal(voronoi.render(), null);
-    // });
+    #[test]
+    fn test_delaunay_return_for_zero_points() {
+        // println!("delaunay.voronoi() for zero point returns expected values");
+        // let delaunay = Delaunay::new(vec![]);
+        // let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
+        // assert_eq!(voronoi.render(), None);
+    }
 
     // tape("delaunay.voronoi() for one point returns the bounding rectangle", test => {
     //   let voronoi = Delaunay.from([[0, 0]]).voronoi([-1, -1, 2, 2]);

@@ -1,24 +1,30 @@
 use crate::RenderingContext2d;
+use geo::Coordinate;
 use geo::CoordinateType;
-use geo::Point;
 #[derive(Clone, Debug)]
 pub struct Polygon<T>
 where
     T: CoordinateType,
 {
-    p: Vec<Point<T>>,
+    p: Vec<Coordinate<T>>,
+}
+
+impl<T> Default for Polygon<T>
+where
+    T: CoordinateType,
+{
+    fn default() -> Self {
+        Polygon { p: Vec::new() }
+    }
 }
 
 impl<T> RenderingContext2d<T> for Polygon<T>
 where
     T: CoordinateType,
 {
-    fn new() -> Self {
-        return Self { p: Vec::new() };
-    }
-    fn arc(&mut self, _p: &Point<T>, _r: T) {}
+    fn arc(&mut self, _p: &Coordinate<T>, _r: T) {}
 
-    fn move_to(&mut self, p: &Point<T>) {
+    fn move_to(&mut self, p: &Coordinate<T>) {
         self.p.push(*p);
     }
 
@@ -26,16 +32,16 @@ where
         self.p.push(self.p[0]);
     }
 
-    fn line_to(&mut self, p: &Point<T>) {
+    fn line_to(&mut self, p: &Coordinate<T>) {
         self.p.push(*p);
     }
 
-    fn rect(&mut self, _p: &Point<T>, _w: T, _h: T) {}
+    fn rect(&mut self, _p: &Coordinate<T>, _w: T, _h: T) {}
 
     fn value_str(&self) -> String {
         return String::from("");
     }
-    fn value(&self) -> Vec<Point<T>> {
+    fn value(&self) -> Vec<Coordinate<T>> {
         self.p.clone()
     }
 }

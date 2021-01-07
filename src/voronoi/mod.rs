@@ -1,22 +1,22 @@
 #![allow(clippy::clippy::many_single_char_names)]
 
-use delaunator::EMPTY;
-use geo::CoordinateType;
-use geo::Point;
-use num_traits::{float::Float, AsPrimitive, FromPrimitive};
-use std::collections::VecDeque;
-
 use crate::delaunay::Delaunay;
+use crate::path::Path;
 use crate::polygon::Polygon;
 use crate::RenderingContext2d;
+use delaunator::EMPTY;
+use geo::Coordinate;
+use geo::CoordinateType;
+use num_traits::{float::Float, AsPrimitive, FromPrimitive};
+use std::collections::VecDeque;
 
 pub struct Voronoi<T>
 where
     T: CoordinateType + AsPrimitive<T> + Float,
 {
-    pub circumcenters: Vec<Point<T>>,
+    pub circumcenters: Vec<Coordinate<T>>,
     delaunay: Delaunay<T>,
-    pub vectors: VecDeque<Point<T>>,
+    pub vectors: VecDeque<Coordinate<T>>,
     pub xmin: T,
     pub ymin: T,
     pub xmax: T,
@@ -30,7 +30,7 @@ where
     fn default() -> Voronoi<T> {
         return Voronoi {
             delaunay: Delaunay::default(),
-            circumcenters: Vec::<Point<T>>::new(),
+            circumcenters: Vec::<Coordinate<T>>::new(),
             vectors: VecDeque::new(),
             xmin: T::from_f64(0f64).unwrap(),
             xmax: T::from_f64(960.0f64).unwrap(),
@@ -73,8 +73,14 @@ where
         let mut circumcenters = Vec::with_capacity(len);
         let mut vectors = VecDeque::with_capacity(len);
         for _ in 0..len {
-            circumcenters.push(Point::new(T::zero(), T::zero()));
-            vectors.push_back(Point::new(T::zero(), T::zero()));
+            circumcenters.push(Coordinate {
+                x: T::zero(),
+                y: T::zero(),
+            });
+            vectors.push_back(Coordinate {
+                x: T::zero(),
+                y: T::zero(),
+            });
         }
         v = Self {
             delaunay,
@@ -141,7 +147,7 @@ where
                 x = x1 + (ey * bl - dy * cl) * d;
                 y = y1 + (dx * cl - ex * bl) * d;
             }
-            self.circumcenters[j] = Point::new(x, y);
+            self.circumcenters[j] = Coordinate { x, y };
             i += 3;
             j += 1;
             if i >= n {
@@ -161,7 +167,10 @@ where
         let vectors_len = self.vectors.len();
         self.vectors.clear();
         for _ in 0..vectors_len {
-            self.vectors.push_back(Point::new(T::zero(), T::zero()));
+            self.vectors.push_back(Coordinate {
+                x: T::zero(),
+                y: T::zero(),
+            });
         }
 
         for h in hull {
@@ -177,13 +186,45 @@ where
             // remove() then insert() here is inefficient .. but will only be done
             // once during init().  clip_finite() is a common operation.
             self.vectors.remove(p0 + 1);
-            self.vectors.insert(p0 + 1, Point::new(ydiff, xdiff));
+            self.vectors
+                .insert(p0 + 1, Coordinate { x: ydiff, y: xdiff });
             self.vectors.remove(p1);
-            self.vectors.insert(p1, Point::new(ydiff, xdiff));
+            self.vectors.insert(p1, Coordinate { x: ydiff, y: xdiff });
         }
     }
 
-    // TODO implement render()
+    // pub fn render(
+    //     &self,
+    //     i: usize,
+    //     context: Option<&mut impl RenderingContext2d<T>>,
+    // ) -> String
+    // where
+    //     T: CoordinateType,
+    // {
+    //     let buffer: Option<&mut C>;
+    //     let buffer = match context {
+    //         None => {
+    //             context = Some(&mut Path::default());
+    //             buffer = context;
+    //         }
+    //         Some(context) => {
+    //             buffer = None; // undefined
+    //         }
+    //     };
+
+    //     let half_edges = self.delaunay.half_edges;
+    //     let circumcenters = self.circumcenters;
+    //     for i in 0..half_edges.len() {
+    //         let j = half_edges[i];
+    //         if j < i {
+    //             continue;
+    //         }
+    //         let ti = (i / 3).floor();
+    //         let tj = (j / 3).floor();
+    //         let pi = circumcenters[i];
+    //         let pj = circumcenters[j];
+    //     }
+    // }
 
     // TODO implement render_bounds()
 
@@ -200,16 +241,16 @@ where
 
                 context.move_to(&points[0].clone());
                 let mut n = points.len();
-                while (points[0usize].x() - points[n - 1].x()).abs() < T::epsilon()
-                    && (points[0].y() - points[n - 1].y()).abs() < T::epsilon()
+                while (points[0usize].x - points[n - 1].x).abs() < T::epsilon()
+                    && (points[0].y - points[n - 1].y).abs() < T::epsilon()
                     && n > 1
                 {
                     n -= 1;
                 }
 
                 for i in 1..n {
-                    if (points[i].x() - points[i - 1].x()).abs() >= T::epsilon()
-                        || (points[i].y() - points[i - 1].y()).abs() >= T::epsilon()
+                    if (points[i].x - points[i - 1].x).abs() >= T::epsilon()
+                        || (points[i].y - points[i - 1].y).abs() >= T::epsilon()
                     {
                         context.line_to(&points[i].clone());
                     }
@@ -221,29 +262,39 @@ where
         };
     }
 
-    // TODO implement cellPolgons*()
+    //  cellPolgons*() is a generator which rustlang does not support.
+    // in tests this is implemented as a for loop using cell_polygon().
 
-    pub fn cell_polygon(&self, i: usize) -> Vec<Point<T>> {
-        let mut polygon = Polygon::new();
+    pub fn cell_polygon(&self, i: usize) -> Vec<Coordinate<T>> {
+        let mut polygon = Polygon::default();
         self.render_cell(i, &mut polygon);
         return polygon.value();
     }
 
-    // TODO implement renderSegment()
+    // // TODO
+    // fn render_segments(
+    //     self,
+    //     p0: Coordinate<T>,
+    //     p1: Coordinate<T>,
+    //     context: Box<dyn RenderingContext2d<T>>,
+    // ) {
+    //     let S;
+    //     let s0 = self.regioncode(p0);
+    // }
 
     pub fn contains(&self, i: usize, x: T, y: T) -> bool {
         return self.delaunay.step(i, x, y) == i;
     }
 
-    // TODO place neighbours* here()
+    // TODO place neighbours* here() rustlang does not yet support generator functions.
 
-    fn cell(&self, i: usize) -> Option<VecDeque<Point<T>>> {
+    fn cell(&self, i: usize) -> Option<VecDeque<Coordinate<T>>> {
         let e0 = self.delaunay.inedges[i];
         if e0 == EMPTY {
             // Coincident point.
             return None;
         }
-        let mut points: VecDeque<Point<T>> = VecDeque::new();
+        let mut points: VecDeque<Coordinate<T>> = VecDeque::new();
         let mut e = e0;
         loop {
             let t = (e as f64 / 3f64).floor() as usize;
@@ -263,15 +314,27 @@ where
         return Some(points);
     }
 
-    fn clip(&self, i: usize) -> Option<VecDeque<Point<T>>> {
+    fn clip(&self, i: usize) -> Option<VecDeque<Coordinate<T>>> {
         // degenerate case (1 valid point: return the box)
         if i == 0 && self.delaunay.hull.len() == 1 {
             return Some(
                 vec![
-                    Point::new(self.xmax, self.ymin),
-                    Point::new(self.xmax, self.ymax),
-                    Point::new(self.xmin, self.ymax),
-                    Point::new(self.xmin, self.ymin),
+                    Coordinate {
+                        x: self.xmax,
+                        y: self.ymin,
+                    },
+                    Coordinate {
+                        x: self.xmax,
+                        y: self.ymax,
+                    },
+                    Coordinate {
+                        x: self.xmin,
+                        y: self.ymax,
+                    },
+                    Coordinate {
+                        x: self.xmin,
+                        y: self.ymin,
+                    },
                 ]
                 .into_iter()
                 .collect(),
@@ -285,14 +348,14 @@ where
                 #[allow(non_snake_case)]
                 let V = &self.vectors;
                 let v = i * 2;
-                if V[v].x() != T::zero() || V[v].y() != T::zero() {
+                if V[v].x != T::zero() || V[v].y != T::zero() {
                     return Some(self.clip_infinite(
                         i,
                         &points,
-                        V[v].x(),
-                        V[v].y(),
-                        V[v + 1].x(),
-                        V[v + 1].y(),
+                        V[v].x,
+                        V[v].y,
+                        V[v + 1].x,
+                        V[v + 1].y,
                     ));
                 } else {
                     return Some(self.clip_finite(i, &points));
@@ -301,45 +364,39 @@ where
         }
     }
 
-    fn clip_finite(&self, i: usize, points: &VecDeque<Point<T>>) -> VecDeque<Point<T>> {
+    fn clip_finite(&self, i: usize, points: &VecDeque<Coordinate<T>>) -> VecDeque<Coordinate<T>> {
         let n = points.len();
         #[allow(non_snake_case)]
         let mut P = VecDeque::new();
-        let mut x0;
-        let mut y0;
-        let mut x1 = points[n - 1].x();
-        let mut y1 = points[n - 1].y();
+        let mut p0: Coordinate<T>;
+        let mut p1 = points[n - 1];
         let mut c0;
-        let mut c1 = self.regioncode(x1, y1);
+        let mut c1 = self.regioncode(p1);
         let mut e0;
         // There is a bug/inconsitencey in the javascript implementation.
         // e1 must be given a reasonable default value.
         let mut e1 = 0;
         let t2 = T::from_f64(2f64).unwrap();
         for point in points {
-            x0 = x1;
-            y0 = y1;
-            x1 = point.x();
-            y1 = point.y();
+            p0 = p1;
+            p1 = *point;
             c0 = c1;
-            c1 = self.regioncode(x1, y1);
+            c1 = self.regioncode(p1);
             if c0 == 0 && c1 == 0 {
                 // e0 = e1;
                 e1 = 0;
                 if !P.is_empty() {
-                    P.push_back(Point::new(x1, y1));
+                    P.push_back(p1);
                 } else {
-                    P = vec![Point::new(x1, y1)].into_iter().collect();
+                    P = vec![p1].into_iter().collect();
                 }
             } else {
                 #[allow(non_snake_case)]
                 let S;
-                let sx0;
-                let sy0;
-                let sx1;
-                let sy1;
+                let s0: Coordinate<T>;
+                let s1: Coordinate<T>;
                 if c0 == 0 {
-                    S = self.clip_segment(x0, y0, x1, y1, c0, c1);
+                    S = self.clip_segment(p0, p1, c0, c1);
                     match S {
                         None => {
                             continue;
@@ -347,51 +404,48 @@ where
                         Some(s) => {
                             // sx0 = s[0].x;
                             // sy0 = s[0].y;
-                            sx1 = s[1].x();
-                            sy1 = s[1].y();
+                            s1 = s[1];
                         }
                     }
                 } else {
-                    S = self.clip_segment(x1, y1, x0, y0, c1, c0);
+                    S = self.clip_segment(p1, p0, c1, c0);
                     match S {
                         None => {
                             continue;
                         }
                         Some(s) => {
-                            sx1 = s[0].x();
-                            sy1 = s[0].y();
-                            sx0 = s[1].x();
-                            sy0 = s[1].y();
+                            s1 = s[0];
+                            s0 = s[1];
                             e0 = e1;
-                            e1 = self.edgecode(sx0, sy0);
+                            e1 = self.edgecode(s0);
                             if e0 != 0u8 && e1 != 0u8 {
                                 let len = P.len();
                                 self.edge(i, e0, e1, &mut P, len);
                             }
                             if !P.is_empty() {
-                                P.push_back(Point::new(sx0, sy0));
+                                P.push_back(s0);
                             } else {
-                                P = vec![Point::new(sx0, sy0)].into_iter().collect();
+                                P = vec![s0].into_iter().collect();
                             }
                         }
                     }
                 }
                 e0 = e1;
-                e1 = self.edgecode(sx1, sy1);
+                e1 = self.edgecode(s1);
                 if e0 != 0u8 && e1 != 0u8 {
                     let len = P.len();
                     self.edge(i, e0, e1, &mut P, len);
                 }
                 if !P.is_empty() {
-                    P.push_back(Point::new(sx1, sy1));
+                    P.push_back(s1);
                 } else {
-                    P = vec![Point::new(sx1, sy1)].into_iter().collect();
+                    P = vec![s1].into_iter().collect();
                 };
             }
         }
         if !P.is_empty() {
             e0 = e1;
-            e1 = self.edgecode(P[0].x(), P[0].y());
+            e1 = self.edgecode(P[0]);
             if e0 != 0u8 && e1 != 0u8 {
                 let len = P.len();
                 self.edge(i, e0, e1, &mut P, len);
@@ -402,10 +456,22 @@ where
             (self.ymin + self.ymax) / T::from_f64(2f64).unwrap(),
         ) {
             return vec![
-                Point::new(self.xmax, self.ymin),
-                Point::new(self.xmax, self.ymax),
-                Point::new(self.xmin, self.ymax),
-                Point::new(self.xmin, self.ymin),
+                Coordinate {
+                    x: self.xmax,
+                    y: self.ymin,
+                },
+                Coordinate {
+                    x: self.xmax,
+                    y: self.ymax,
+                },
+                Coordinate {
+                    x: self.xmin,
+                    y: self.ymax,
+                },
+                Coordinate {
+                    x: self.xmin,
+                    y: self.ymin,
+                },
             ]
             .into_iter()
             .collect();
@@ -415,22 +481,18 @@ where
 
     fn clip_segment(
         &self,
-        x0_in: T,
-        y0_in: T,
-        x1_in: T,
-        y1_in: T,
+        p0_in: Coordinate<T>,
+        p1_in: Coordinate<T>,
         c0_in: u8,
         c1_in: u8,
-    ) -> Option<Vec<Point<T>>> {
-        let mut x0 = x0_in;
-        let mut x1 = x1_in;
-        let mut y0 = y0_in;
-        let mut y1 = y1_in;
+    ) -> Option<Vec<Coordinate<T>>> {
+        let mut p0 = p0_in;
+        let mut p1 = p1_in;
         let mut c0 = c0_in;
         let mut c1 = c1_in;
         loop {
             if c0 == 0 && c1 == 0 {
-                return Some(vec![Point::new(x0, y0), Point::new(x1, y1)]);
+                return Some(vec![p0, p1]);
             }
             if c0 & c1 != 0 {
                 return None;
@@ -440,26 +502,24 @@ where
             let c = if c0 != 0 { c0 } else { c1 };
 
             if c & 0b1000 != 0 {
-                x = x0 + (x1 - x0) * (self.ymax - y0) / (y1 - y0);
+                x = p0.x + (p1.x - p0.x) * (self.ymax - p0.y) / (p1.y - p0.y);
                 y = self.ymax;
             } else if c & 0b0100 != 0 {
-                x = x0 + (x1 - x0) * (self.ymin - y0) / (y1 - y0);
+                x = p0.x + (p1.x - p0.x) * (self.ymin - p0.y) / (p1.y - p0.y);
                 y = self.ymin;
             } else if c & 0b0010 != 0 {
-                y = y0 + (y1 - y0) * (self.xmax - x0) / (x1 - x0);
+                y = p0.y + (p1.y - p0.y) * (self.xmax - p0.x) / (p1.x - p0.x);
                 x = self.xmax;
             } else {
-                y = y0 + (y1 - y0) * (self.xmin - x0) / (x1 - x0);
+                y = p0.y + (p1.y - p0.y) * (self.xmin - p0.x) / (p1.x - p0.x);
                 x = self.xmin;
             }
             if c0 != 0 {
-                x0 = x;
-                y0 = y;
-                c0 = self.regioncode(x0, y0);
+                p0 = Coordinate { x, y };
+                c0 = self.regioncode(p0);
             } else {
-                x1 = x;
-                y1 = y;
-                c1 = self.regioncode(x1, y1);
+                p1 = Coordinate { x, y };
+                c1 = self.regioncode(p1);
             }
         }
     }
@@ -467,19 +527,19 @@ where
     fn clip_infinite(
         &self,
         i: usize,
-        points: &VecDeque<Point<T>>,
+        points: &VecDeque<Coordinate<T>>,
         vx0: T,
         vy0: T,
         vxn: T,
         vyn: T,
-    ) -> VecDeque<Point<T>> {
+    ) -> VecDeque<Coordinate<T>> {
         #[allow(non_snake_case)]
-        let mut P: VecDeque<Point<T>> = VecDeque::into(points.clone());
-        if let Some(p1) = self.project(P[0].x(), P[0].y(), vx0, vy0) {
+        let mut P: VecDeque<Coordinate<T>> = VecDeque::into(points.clone());
+        if let Some(p1) = self.project(P[0].x, P[0].y, vx0, vy0) {
             P.push_front(p1);
         }
 
-        if let Some(p2) = self.project(P[P.len() - 1].x(), P[P.len() - 1].y(), vxn, vyn) {
+        if let Some(p2) = self.project(P[P.len() - 1].x, P[P.len() - 1].y, vxn, vyn) {
             P.push_back(p2);
         }
 
@@ -488,11 +548,11 @@ where
         if !P.is_empty() {
             let mut n = P.len();
             let mut c0;
-            let mut c1 = self.edgecode(P[n - 1].x(), P[n - 1].y());
+            let mut c1 = self.edgecode(P[n - 1]);
             let mut j = 0;
             loop {
                 c0 = c1;
-                c1 = self.edgecode(P[j].x(), P[j].y());
+                c1 = self.edgecode(P[j]);
                 if c0 != 0 && c1 != 0 {
                     j = self.edge(i, c0, c1, &mut P, j);
                     n = P.len();
@@ -508,10 +568,22 @@ where
             (self.ymin + self.ymax) / t2,
         ) {
             P = vec![
-                Point::new(self.xmin, self.ymin),
-                Point::new(self.xmax, self.ymin),
-                Point::new(self.xmax, self.ymax),
-                Point::new(self.xmin, self.ymax),
+                Coordinate {
+                    x: self.xmin,
+                    y: self.ymin,
+                },
+                Coordinate {
+                    x: self.xmax,
+                    y: self.ymin,
+                },
+                Coordinate {
+                    x: self.xmax,
+                    y: self.ymax,
+                },
+                Coordinate {
+                    x: self.xmin,
+                    y: self.ymax,
+                },
             ]
             .into_iter()
             .collect();
@@ -520,7 +592,14 @@ where
     }
 
     #[allow(non_snake_case)]
-    fn edge(&self, i: usize, e0_in: u8, e1: u8, P: &mut VecDeque<Point<T>>, j_in: usize) -> usize {
+    fn edge(
+        &self,
+        i: usize,
+        e0_in: u8,
+        e1: u8,
+        P: &mut VecDeque<Coordinate<T>>,
+        j_in: usize,
+    ) -> usize {
         let mut j = j_in;
         let mut e0 = e0_in;
         while e0 != e1 {
@@ -577,10 +656,10 @@ where
                 }
             }
 
-            if ((P[j].x() - x).abs() >= T::epsilon() || (P[j].y() - y).abs() >= T::epsilon())
+            if ((P[j].x - x).abs() >= T::epsilon() || (P[j].y - y).abs() >= T::epsilon())
                 && self.contains(i, x, y)
             {
-                P.insert(j, Point::new(x, y));
+                P.insert(j, Coordinate { x, y });
                 j += 1;
             }
         }
@@ -589,10 +668,9 @@ where
             loop {
                 let j = (i + 1) % P.len();
                 let k = (i + 2) % P.len();
-                if (P[i].x() - P[j].x()).abs() < T::epsilon()
-                    && (P[j].x() - P[k].x()).abs() < T::epsilon()
-                    || (P[i].y() - P[j].y()).abs() < T::epsilon()
-                        && (P[j].y() - P[k].y()).abs() < T::epsilon()
+                if (P[i].x - P[j].x).abs() < T::epsilon() && (P[j].x - P[k].x).abs() < T::epsilon()
+                    || (P[i].y - P[j].y).abs() < T::epsilon()
+                        && (P[j].y - P[k].y).abs() < T::epsilon()
                 {
                     // P.splice(j, 2);
                     P.remove(j);
@@ -607,7 +685,7 @@ where
         return j;
     }
 
-    fn project(&self, x0: T, y0: T, vx: T, vy: T) -> Option<Point<T>> {
+    fn project(&self, x0: T, y0: T, vx: T, vy: T) -> Option<Coordinate<T>> {
         let mut t = Float::infinity();
         let mut c;
         // The is a mistake in the javascript implementation
@@ -661,25 +739,26 @@ where
                 y = y0 + t * vy;
             }
         }
-        return Some(Point::new(x, y));
+        return Some(Coordinate { x, y });
     }
 
-    fn edgecode(&self, x: T, y: T) -> u8 {
+    // fn edgecode(&self, x: T, y: T) -> u8 {
+    fn edgecode(&self, p: Coordinate<T>) -> u8 {
         // Lower and upper nibbles.
         let lower: u8;
         let upper: u8;
 
-        if (x - self.xmin).abs() < T::epsilon() {
+        if (p.x - self.xmin).abs() < T::epsilon() {
             lower = 0b0001;
-        } else if (x - self.xmax).abs() < T::epsilon() {
+        } else if (p.x - self.xmax).abs() < T::epsilon() {
             lower = 0b0010;
         } else {
             lower = 0b0000;
         }
 
-        if (y - self.ymin).abs() < T::epsilon() {
+        if (p.y - self.ymin).abs() < T::epsilon() {
             upper = 0b0100;
-        } else if (y - self.ymax).abs() < T::epsilon() {
+        } else if (p.y - self.ymax).abs() < T::epsilon() {
             upper = 0b1000;
         } else {
             upper = 0b0000;
@@ -688,22 +767,22 @@ where
         return lower | upper;
     }
 
-    fn regioncode(&self, x: T, y: T) -> u8 {
+    fn regioncode(&self, p: Coordinate<T>) -> u8 {
         // Lower and upper nibbles.
         let lower: u8;
         let upper: u8;
 
-        if x < self.xmin {
+        if p.x < self.xmin {
             lower = 0b001;
-        } else if x > self.xmax {
+        } else if p.x > self.xmax {
             lower = 0b0010;
         } else {
             lower = 0b0000;
         }
 
-        if y < self.ymin {
+        if p.y < self.ymin {
             upper = 0b0100;
-        } else if y > self.ymax {
+        } else if p.y > self.ymax {
             upper = 0b1000;
         } else {
             upper = 0b0000;
