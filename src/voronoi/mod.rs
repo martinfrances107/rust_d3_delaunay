@@ -742,7 +742,6 @@ where
         return Some(Coordinate { x, y });
     }
 
-    // fn edgecode(&self, x: T, y: T) -> u8 {
     fn edgecode(&self, p: Coordinate<T>) -> u8 {
         // Lower and upper nibbles.
         let lower: u8;
