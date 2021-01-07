@@ -9,6 +9,7 @@ use geo::Coordinate;
 use geo::CoordinateType;
 use num_traits::{float::Float, AsPrimitive, FromPrimitive};
 use std::collections::VecDeque;
+use std::fmt::Display;
 
 pub struct Voronoi<T>
 where
@@ -193,38 +194,48 @@ where
         }
     }
 
-    // pub fn render(
-    //     &self,
-    //     i: usize,
-    //     context: Option<&mut impl RenderingContext2d<T>>,
-    // ) -> String
-    // where
-    //     T: CoordinateType,
-    // {
-    //     let buffer: Option<&mut C>;
-    //     let buffer = match context {
-    //         None => {
-    //             context = Some(&mut Path::default());
-    //             buffer = context;
-    //         }
-    //         Some(context) => {
-    //             buffer = None; // undefined
-    //         }
-    //     };
+    // This function does not exits in javascript version.
+    // It permits a simplification of render().
+    pub fn render_to_string(&self) -> String
+    where
+        T: CoordinateType + Float + Display,
+    {
+        let mut path = Path::<T>::default();
+        self.render(&mut path);
+        path.value_str()
+    }
 
-    //     let half_edges = self.delaunay.half_edges;
-    //     let circumcenters = self.circumcenters;
-    //     for i in 0..half_edges.len() {
-    //         let j = half_edges[i];
-    //         if j < i {
-    //             continue;
-    //         }
-    //         let ti = (i / 3).floor();
-    //         let tj = (j / 3).floor();
-    //         let pi = circumcenters[i];
-    //         let pj = circumcenters[j];
-    //     }
-    // }
+    pub fn render(&self, context: &mut impl RenderingContext2d<T>)
+    where
+        T: CoordinateType + Float + Display,
+    {
+        // let circumcenters = self.circumcenters;
+        for i in 0..self.delaunay.half_edges.len() {
+            let j = self.delaunay.half_edges[i];
+            if j < i {
+                continue;
+            }
+            let ti = (i as f64 / 3.).floor() as usize;
+            let tj = (j as f64 / 3.).floor() as usize;
+            let pi = self.circumcenters[ti];
+            let pj = self.circumcenters[tj];
+            self.render_segment(pi, pj, context);
+        }
+
+        let mut h0;
+        let mut h1 = *self.delaunay.hull.last().unwrap();
+        for i in 0..self.delaunay.hull.len() {
+            h0 = h1;
+            h1 = self.delaunay.hull[i];
+            let t = (self.delaunay.inedges[h1] as f64 / 3.).floor() as usize;
+            let pi = self.circumcenters[t];
+            let v = h0 * 2;
+            let p = self.project(pi, self.vectors[v + 2].x, self.vectors[v + 2].y);
+            if let Some(p) = p {
+                self.render_segment(pi, p, context);
+            }
+        }
+    }
 
     // TODO implement render_bounds()
 
@@ -271,16 +282,27 @@ where
         return polygon.value();
     }
 
-    // // TODO
-    // fn render_segments(
-    //     self,
-    //     p0: Coordinate<T>,
-    //     p1: Coordinate<T>,
-    //     context: Box<dyn RenderingContext2d<T>>,
-    // ) {
-    //     let S;
-    //     let s0 = self.regioncode(p0);
-    // }
+    fn render_segment(
+        &self,
+        p0: Coordinate<T>,
+        p1: Coordinate<T>,
+        context: &mut impl RenderingContext2d<T>,
+    ) {
+        let s;
+        let c0 = self.regioncode(p0);
+        let c1 = self.regioncode(p1);
+        if c0 == 0 && c1 == 0 {
+            context.move_to(&p0);
+            context.move_to(&p1);
+        } else {
+            s = self.clip_segment(p0, p1, c0, c1);
+
+            if let Some(s) = s {
+                context.move_to(&s[0]);
+                context.move_to(&s[2]);
+            }
+        }
+    }
 
     pub fn contains(&self, i: usize, x: T, y: T) -> bool {
         return self.delaunay.step(i, x, y) == i;
@@ -535,11 +557,11 @@ where
     ) -> VecDeque<Coordinate<T>> {
         #[allow(non_snake_case)]
         let mut P: VecDeque<Coordinate<T>> = VecDeque::into(points.clone());
-        if let Some(p1) = self.project(P[0].x, P[0].y, vx0, vy0) {
+        if let Some(p1) = self.project(P[0], vx0, vy0) {
             P.push_front(p1);
         }
 
-        if let Some(p2) = self.project(P[P.len() - 1].x, P[P.len() - 1].y, vxn, vyn) {
+        if let Some(p2) = self.project(P[P.len() - 1], vxn, vyn) {
             P.push_back(p2);
         }
 
@@ -685,7 +707,7 @@ where
         return j;
     }
 
-    fn project(&self, x0: T, y0: T, vx: T, vy: T) -> Option<Coordinate<T>> {
+    fn project(&self, p0: Coordinate<T>, vx: T, vy: T) -> Option<Coordinate<T>> {
         let mut t = Float::infinity();
         let mut c;
         // The is a mistake in the javascript implementation
@@ -694,49 +716,49 @@ where
         let mut y = T::zero();
         if vy < T::zero() {
             // top
-            if y0 <= self.ymin {
+            if p0.y <= self.ymin {
                 return None;
             }
-            c = (self.ymin - y0) / vy;
+            c = (self.ymin - p0.y) / vy;
             if c < t {
                 y = self.ymin;
                 t = c;
-                x = x0 + t * vx;
+                x = p0.x + t * vx;
             }
         } else if vy > T::zero() {
             // bottom
-            if y0 >= self.ymax {
+            if p0.y >= self.ymax {
                 return None;
             }
-            c = (self.ymax - y0) / vy;
+            c = (self.ymax - p0.y) / vy;
             if c < t {
                 y = self.ymax;
                 t = c;
-                x = x0 + t * vx;
+                x = p0.x + t * vx;
             }
         }
 
         if vx > T::zero() {
             // right
-            if x0 >= self.xmax {
+            if p0.x >= self.xmax {
                 return None;
             }
-            c = (self.xmax - x0) / vx;
+            c = (self.xmax - p0.x) / vx;
             if c < t {
                 x = self.xmax;
                 t = c;
-                y = y0 + t * vy;
+                y = p0.y + t * vy;
             }
         } else if vx < T::zero() {
             // left
-            if x0 <= self.xmin {
+            if p0.x <= self.xmin {
                 return None;
             }
-            c = (self.xmin - x0) / vx;
+            c = (self.xmin - p0.x) / vx;
             if c < t {
                 x = self.xmin;
                 t = c;
-                y = y0 + t * vy;
+                y = p0.x + t * vy;
             }
         }
         return Some(Coordinate { x, y });
