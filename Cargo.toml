@@ -8,7 +8,6 @@ edition = "2018"
 
 [dependencies]
 delaunator = { git = "https://github.com/mourner/delaunator-rs.git" }
-proj = "0.20.5"
 geo = "0.16.0"
 num-traits = "0.2"
 rust_d3_geo = {git = "https://github.com/martinfrances107/rust_d3_geo.git"}
