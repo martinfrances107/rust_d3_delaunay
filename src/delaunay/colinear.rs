@@ -1,12 +1,12 @@
-use geo::{Coordinate, CoordinateType};
+use geo::{CoordFloat, Coordinate};
 
 use delaunator::Triangulation;
-use num_traits::{float::Float, FromPrimitive};
+use num_traits::FromPrimitive;
 
 // A triangulation is collinear if all its triangles have a non-null area.
 pub fn colinear<T>(coords: &[Coordinate<T>], d: &Triangulation) -> bool
 where
-    T: CoordinateType + Float + FromPrimitive,
+    T: CoordFloat + FromPrimitive,
 {
     let t1e_minus_10 = T::from_f64(1e-10).unwrap();
     for i in (0..d.triangles.len()).step_by(3) {

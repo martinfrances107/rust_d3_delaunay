@@ -11,17 +11,17 @@ use colinear::colinear;
 
 use delaunator::{triangulate, Point as DPoint, Triangulation, EMPTY};
 use geo::Point;
-use geo::{Coordinate, CoordinateType};
+use geo::{CoordFloat, Coordinate};
 use rust_d3_geo::projection::projection_mutator::ProjectionMutator;
 
-use num_traits::{float::Float, AsPrimitive};
+use num_traits::{float::FloatConst, AsPrimitive};
 use num_traits::{FromPrimitive, ToPrimitive};
 
 use jitter::jitter;
 
 pub struct Delaunay<T>
 where
-    T: CoordinateType + AsPrimitive<T> + Float,
+    T: CoordFloat + FloatConst + AsPrimitive<T>,
 {
     pub colinear: Vec<usize>,
     delaunator: Option<Triangulation>,
@@ -38,7 +38,7 @@ where
 
 impl<'a, T> Default for Delaunay<T>
 where
-    T: CoordinateType + AsPrimitive<T> + Float,
+    T: CoordFloat + FloatConst + AsPrimitive<T>,
 {
     fn default() -> Self {
         // let points = Vec::new();
@@ -60,7 +60,7 @@ where
 
 impl<'a, T> Delaunay<T>
 where
-    T: CoordinateType + Float + FromPrimitive + AsPrimitive<T> + ToPrimitive,
+    T: CoordFloat + FloatConst + FromPrimitive + AsPrimitive<T> + ToPrimitive,
 {
     pub fn new(points: Vec<Coordinate<T>>) -> Self {
         let half = points.len() / 2;

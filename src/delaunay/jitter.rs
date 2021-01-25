@@ -1,9 +1,9 @@
-use geo::{Coordinate, CoordinateType};
-use num_traits::float::Float;
+use geo::{CoordFloat, Coordinate};
 
+#[inline]
 pub fn jitter<T>(p: &Coordinate<T>, r: T) -> Coordinate<T>
 where
-    T: CoordinateType + Float,
+    T: CoordFloat,
 {
     Coordinate {
         x: p.x + (p.x + p.y).sin() * r,

@@ -1,17 +1,17 @@
 use crate::RenderingContext2d;
+use geo::CoordFloat;
 use geo::Coordinate;
-use geo::CoordinateType;
 #[derive(Clone, Debug)]
 pub struct Polygon<T>
 where
-    T: CoordinateType,
+    T: CoordFloat,
 {
     p: Vec<Coordinate<T>>,
 }
 
 impl<T> Default for Polygon<T>
 where
-    T: CoordinateType,
+    T: CoordFloat,
 {
     fn default() -> Self {
         Polygon { p: Vec::new() }
@@ -20,7 +20,7 @@ where
 
 impl<T> RenderingContext2d<T> for Polygon<T>
 where
-    T: CoordinateType,
+    T: CoordFloat,
 {
     fn arc(&mut self, _p: &Coordinate<T>, _r: T) {}
 

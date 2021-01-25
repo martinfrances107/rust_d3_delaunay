@@ -1,7 +1,7 @@
 #[cfg(not(tarpaulin_include))]
 #[cfg(test)]
 mod voronoi_test {
-    extern crate pretty_assertions;
+    // extern crate pretty_assertions;
     use geo::Coordinate;
 
     use rust_d3_delaunay::delaunay::Delaunay;

@@ -1,13 +1,13 @@
 use super::RenderingContext2d;
+use geo::CoordFloat;
 use geo::Coordinate;
-use geo::CoordinateType;
-use num_traits::float::Float;
+// use num_traits::float::Float;
 use std::fmt::Display;
 
 #[derive(Clone, Debug)]
 pub struct Path<T>
 where
-    T: CoordinateType,
+    T: CoordFloat,
 {
     p0: Coordinate<T>,
     p1: Option<Coordinate<T>>,
@@ -16,7 +16,7 @@ where
 
 impl<T> Default for Path<T>
 where
-    T: CoordinateType,
+    T: CoordFloat,
 {
     fn default() -> Self {
         Path {
@@ -32,7 +32,7 @@ where
 
 impl<T> RenderingContext2d<T> for Path<T>
 where
-    T: CoordinateType + Float + Display,
+    T: CoordFloat + Display,
 {
     fn move_to(&mut self, p: &Coordinate<T>) {
         self.p0 = *p;

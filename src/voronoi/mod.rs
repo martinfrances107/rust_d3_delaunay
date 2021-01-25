@@ -5,15 +5,15 @@ use crate::path::Path;
 use crate::polygon::Polygon;
 use crate::RenderingContext2d;
 use delaunator::EMPTY;
+use geo::CoordFloat;
 use geo::Coordinate;
-use geo::CoordinateType;
-use num_traits::{float::Float, AsPrimitive, FromPrimitive};
+use num_traits::{AsPrimitive, Float, FloatConst, FromPrimitive};
 use std::collections::VecDeque;
 use std::fmt::Display;
 
 pub struct Voronoi<T>
 where
-    T: CoordinateType + AsPrimitive<T> + Float,
+    T: CoordFloat + FloatConst + AsPrimitive<T>,
 {
     pub circumcenters: Vec<Coordinate<T>>,
     delaunay: Delaunay<T>,
@@ -26,10 +26,11 @@ where
 
 impl<T> Default for Voronoi<T>
 where
-    T: CoordinateType + Float + FromPrimitive + AsPrimitive<T>,
+    T: CoordFloat + FloatConst + FromPrimitive + AsPrimitive<T>,
 {
+    #[inline]
     fn default() -> Voronoi<T> {
-        return Voronoi {
+        Voronoi {
             delaunay: Delaunay::default(),
             circumcenters: Vec::<Coordinate<T>>::new(),
             vectors: VecDeque::new(),
@@ -37,13 +38,13 @@ where
             xmax: T::from_f64(960.0f64).unwrap(),
             ymin: T::from_f64(0.0f64).unwrap(),
             ymax: T::from_f64(500f64).unwrap(),
-        };
+        }
     }
 }
 
 impl<T> Voronoi<T>
 where
-    T: CoordinateType + Float + FromPrimitive + AsPrimitive<T>,
+    T: CoordFloat + FloatConst + FromPrimitive + AsPrimitive<T>,
 {
     pub fn new(delaunay: Delaunay<T>, b_in: Option<(T, T, T, T)>) -> Self {
         let b;
@@ -198,7 +199,7 @@ where
     // It permits a simplification of render().
     pub fn render_to_string(&self) -> String
     where
-        T: CoordinateType + Float + Display,
+        T: CoordFloat + Display,
     {
         let mut path = Path::<T>::default();
         self.render(&mut path);
@@ -207,7 +208,7 @@ where
 
     pub fn render(&self, context: &mut impl RenderingContext2d<T>)
     where
-        T: CoordinateType + Float + Display,
+        T: CoordFloat + Display,
     {
         // let circumcenters = self.circumcenters;
         for i in 0..self.delaunay.half_edges.len() {
