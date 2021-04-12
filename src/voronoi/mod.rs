@@ -1,19 +1,22 @@
 #![allow(clippy::clippy::many_single_char_names)]
 
-use crate::delaunay::Delaunay;
-use crate::path::Path;
-use crate::polygon::Polygon;
-use crate::RenderingContext2d;
+use std::fmt::Display;
+use std::collections::VecDeque;
+use std::ops::AddAssign;
+
 use delaunator::EMPTY;
 use geo::CoordFloat;
 use geo::Coordinate;
 use num_traits::{AsPrimitive, Float, FloatConst, FromPrimitive};
-use std::collections::VecDeque;
-use std::fmt::Display;
+
+use crate::delaunay::Delaunay;
+use crate::path::Path;
+use crate::polygon::Polygon;
+use crate::RenderingContext2d;
 
 pub struct Voronoi<T>
 where
-    T: CoordFloat + FloatConst + AsPrimitive<T>,
+    T: AddAssign + AsPrimitive<T> + Default + CoordFloat + FloatConst ,
 {
     pub circumcenters: Vec<Coordinate<T>>,
     delaunay: Delaunay<T>,
@@ -26,7 +29,7 @@ where
 
 impl<T> Default for Voronoi<T>
 where
-    T: CoordFloat + FloatConst + FromPrimitive + AsPrimitive<T>,
+    T: AddAssign + AsPrimitive<T> + Default + CoordFloat + FloatConst + FromPrimitive,
 {
     #[inline]
     fn default() -> Voronoi<T> {
@@ -44,7 +47,7 @@ where
 
 impl<T> Voronoi<T>
 where
-    T: CoordFloat + FloatConst + FromPrimitive + AsPrimitive<T>,
+    T: AddAssign + CoordFloat + Default + FloatConst + FromPrimitive + AsPrimitive<T>,
 {
     pub fn new(delaunay: Delaunay<T>, b_in: Option<(T, T, T, T)>) -> Self {
         let b;

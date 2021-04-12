@@ -1,6 +1,7 @@
 #![allow(clippy::clippy::many_single_char_names)]
 
 use std::cmp::Ordering;
+use std::ops::AddAssign;
 
 mod colinear;
 mod jitter;
@@ -21,7 +22,7 @@ use jitter::jitter;
 
 pub struct Delaunay<T>
 where
-    T: CoordFloat + FloatConst + AsPrimitive<T>,
+    T: AddAssign + CoordFloat + Default + FloatConst + AsPrimitive<T>,
 {
     pub colinear: Vec<usize>,
     delaunator: Option<Triangulation>,
@@ -38,7 +39,7 @@ where
 
 impl<'a, T> Default for Delaunay<T>
 where
-    T: CoordFloat + FloatConst + AsPrimitive<T>,
+    T: AddAssign + AsPrimitive<T> +CoordFloat + Default + FloatConst,
 {
     fn default() -> Self {
         // let points = Vec::new();
@@ -60,7 +61,7 @@ where
 
 impl<'a, T> Delaunay<T>
 where
-    T: CoordFloat + FloatConst + FromPrimitive + AsPrimitive<T> + ToPrimitive,
+    T: AddAssign + AsPrimitive<T> + Default + CoordFloat + FloatConst + FromPrimitive + ToPrimitive,
 {
     pub fn new(points: Vec<Coordinate<T>>) -> Self {
         let half = points.len() / 2;
