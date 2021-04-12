@@ -12,4 +12,4 @@ geo = "0.17.0"
 num-traits = "0.2"
 rust_d3_geo = {git = "https://github.com/martinfrances107/rust_d3_geo.git"}
 [dev-dependencies]
-pretty_assertions = "0.6.1"
+pretty_assertions = "0.7.0"

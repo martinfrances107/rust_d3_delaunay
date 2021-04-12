@@ -39,7 +39,7 @@ where
 
 impl<'a, T> Default for Delaunay<T>
 where
-    T: AddAssign + AsPrimitive<T> +CoordFloat + Default + FloatConst,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst,
 {
     fn default() -> Self {
         // let points = Vec::new();

@@ -1,7 +1,7 @@
 #![allow(clippy::clippy::many_single_char_names)]
 
-use std::fmt::Display;
 use std::collections::VecDeque;
+use std::fmt::Display;
 use std::ops::AddAssign;
 
 use delaunator::EMPTY;
@@ -16,7 +16,7 @@ use crate::RenderingContext2d;
 
 pub struct Voronoi<T>
 where
-    T: AddAssign + AsPrimitive<T> + Default + CoordFloat + FloatConst ,
+    T: AddAssign + AsPrimitive<T> + Default + CoordFloat + FloatConst,
 {
     pub circumcenters: Vec<Coordinate<T>>,
     delaunay: Delaunay<T>,
