@@ -211,9 +211,6 @@ where
             self.triangles[0] = hull[0];
             self.inedges[hull[0]] = 1;
             if hull.len() == 2 {
-                // this is a deviation from the javascript.
-                // when hull[1] is undefined javascript
-                // the assignment triangles[1] = hull[1] is a noop.
                 self.triangles[1] = hull[1];
                 self.triangles[2] = hull[1];
                 self.inedges[hull[1]] = 0;
