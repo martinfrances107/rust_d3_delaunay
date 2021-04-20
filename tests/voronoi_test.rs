@@ -22,8 +22,8 @@ mod voronoi_test {
 
         let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
         let mut path = Path::default();
-        voronoi.render_cell::<Path<f64>>(3, &mut path);
-        assert_eq!(path.value_str(), String::from(""));
+        voronoi.render_cell(3, &mut path);
+        assert_eq!(path.to_string(), String::from(""));
     }
 
     #[test]
@@ -38,24 +38,24 @@ mod voronoi_test {
         let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
         let mut context1 = Path::default();
         {
-            voronoi.render_cell::<Path<f64>>(0, &mut context1);
+            voronoi.render_cell(0, &mut context1);
         }
         assert_eq!(
-            context1.value_str(),
+            context1.to_string(),
             String::from("M-1,-1L0.5,-1L0.5,0.5L-1,0.5Z")
         );
 
         let mut context = Path::default();
         voronoi.render_cell(1, &mut context);
         assert_eq!(
-            context.value_str(),
+            context.to_string(),
             String::from("M2,-1L2,2L0.5,0.5L0.5,-1Z")
         );
 
         let mut context = Path::default();
         voronoi.render_cell(2, &mut context);
         assert_eq!(
-            context.value_str(),
+            context.to_string(),
             String::from("M-1,2L-1,0.5L0.5,0.5L2,2Z")
         );
     }

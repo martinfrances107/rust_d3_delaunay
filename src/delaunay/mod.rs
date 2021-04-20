@@ -25,7 +25,7 @@ where
     T: AddAssign + CoordFloat + Default + FloatConst + AsPrimitive<T>,
 {
     pub colinear: Vec<usize>,
-    delaunator: Option<Triangulation>,
+    delaunator: Triangulation,
     pub inedges: Vec<usize>,
     pub hull_index: Vec<usize>,
     pub half_edges: Vec<usize>,
@@ -37,35 +37,34 @@ where
     pub fy: Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>,
 }
 
-impl<'a, T> Default for Delaunay<T>
-where
-    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst,
-{
-    fn default() -> Self {
-        // let points = Vec::new();
-        return Self {
-            colinear: Vec::new(),
-            delaunator: None,
-            inedges: Vec::new(),
-            half_edges: Vec::new(),
-            hull: Vec::new(),
-            hull_index: Vec::new(),
-            points: Vec::new(),
-            projection: None,
-            fx: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.x()),
-            fy: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.y()),
-            triangles: Vec::new(),
-        };
-    }
-}
+// impl<'a, T> Default for Delaunay<T>
+// where
+//     T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst,
+// {
+//     fn default() -> Self {
+//         // let points = Vec::new();
+//         return Self {
+//             colinear: Vec::new(),
+//             delaunator: None,
+//             inedges: Vec::new(),
+//             half_edges: Vec::new(),
+//             hull: Vec::new(),
+//             hull_index: Vec::new(),
+//             points: Vec::new(),
+//             projection: None,
+//             fx: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.x()),
+//             fy: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.y()),
+//             triangles: Vec::new(),
+//         };
+//     }
+// }
 
 impl<'a, T> Delaunay<T>
 where
     T: AddAssign + AsPrimitive<T> + Default + CoordFloat + FloatConst + FromPrimitive + ToPrimitive,
 {
     pub fn new(points: Vec<Coordinate<T>>) -> Self {
-        let half = points.len() / 2;
-        // TODO conversion into delaunay point!!!
+        // conversion into delaunay point!!!
         let d_point_in: Vec<DPoint> = points
             .iter()
             .map(|p| DPoint {
@@ -73,100 +72,112 @@ where
                 y: p.y.to_f64().unwrap(),
             })
             .collect();
-        let delaunator_dpoint = triangulate(&d_point_in);
 
-        // let delaunator = delaunator_dpoint.iter().map(|p| => )
-        let delaunator = delaunator_dpoint;
+        let delaunator = match triangulate(&d_point_in) {
+            Some(d) => d,
+            None => {
+                // When triangulation fails the javascript response
+                // is mostly empty but hull has an value.
+                Triangulation {
+                    triangles: Vec::new(),
+                    halfedges: Vec::new(),
+                    hull: vec![0],
+                }
+            }
+        };
+
         let mut out = Self {
             delaunator,
-            inedges: Vec::with_capacity(half),
-            hull_index: Vec::with_capacity(half),
+            inedges: Vec::with_capacity(points.len()),
+            hull_index: Vec::with_capacity(points.len()),
             points,
-            ..Delaunay::default()
+            colinear: Vec::new(),
+            half_edges: Vec::new(),
+            hull: Vec::new(),
+            projection: None,
+            fx: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.x()),
+            fy: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.y()),
+            triangles: Vec::new(),
         };
-        {
-            out.init();
-        }
+
+        out.init();
+
         return out;
     }
 
     fn init(&mut self) {
-        let d = &self.delaunator;
-
-        match d {
-            None => {}
-            Some(d) => {
-                if d.hull.len() > 2usize && colinear(&self.points, &d) {
-                    let len = self.points.len() as u32 / 2;
-                    let mut colinear_vec: Vec<usize> = (0..len)
-                        .map(|i| {
-                            return i as usize;
-                        })
-                        .collect();
-                    colinear_vec.sort_by(|i, j| {
-                        let x_diff = self.points[*i].x - self.points[*j].x;
-                        if x_diff != T::zero() {
-                            if x_diff.is_sign_positive() {
-                                return Ordering::Greater;
-                            } else {
-                                return Ordering::Less;
-                            }
-                        } else {
-                            let y_diff = self.points[*i].y - self.points[*j].y;
-                            if y_diff.is_zero() {
-                                return Ordering::Equal;
-                            } else if y_diff.is_sign_positive() {
-                                return Ordering::Greater;
-                            } else {
-                                return Ordering::Less;
-                            }
-                        }
-                    });
-                    let e = self.colinear[0];
-                    let f = self.colinear[self.colinear.len() - 1];
-                    let bounds = [
-                        self.points[e].x,
-                        self.points[e].y,
-                        self.points[f].x,
-                        self.points[f].y,
-                    ];
-                    let r = T::from_f64(1e-8).unwrap()
-                        * (bounds[3] - bounds[1]).hypot(bounds[3] - bounds[0]);
-                    for i in 0..self.points.len() / 2 {
-                        let p = jitter(&self.points[i], r);
-                        self.points[i].x = p.x;
-                        self.points[i].y = p.y;
+        if self.delaunator.hull.len() > 1usize && colinear(&self.points, &self.delaunator) {
+            let len = self.points.len() as u32 / 2;
+            let mut colinear_vec: Vec<usize> = (0..len)
+                .map(|i| {
+                    return i as usize;
+                })
+                .collect();
+            colinear_vec.sort_by(|i, j| {
+                let x_diff = self.points[*i].x - self.points[*j].x;
+                if x_diff != T::zero() {
+                    if x_diff.is_sign_positive() {
+                        return Ordering::Greater;
+                    } else {
+                        return Ordering::Less;
                     }
-                    let d_point_in: Vec<DPoint> = self
-                        .points
-                        .iter()
-                        .map(|p| DPoint {
-                            x: p.x.to_f64().unwrap(),
-                            y: p.y.to_f64().unwrap(),
-                        })
-                        .collect();
-                    self.delaunator = triangulate(&d_point_in);
                 } else {
-                    self.colinear = Vec::new();
+                    let y_diff = self.points[*i].y - self.points[*j].y;
+                    if y_diff.is_zero() {
+                        return Ordering::Equal;
+                    } else if y_diff.is_sign_positive() {
+                        return Ordering::Greater;
+                    } else {
+                        return Ordering::Less;
+                    }
                 }
+            });
+            let e = self.colinear[0];
+            let f = self.colinear[self.colinear.len() - 1];
+            let bounds = [
+                self.points[e].x,
+                self.points[e].y,
+                self.points[f].x,
+                self.points[f].y,
+            ];
+            let r =
+                T::from_f64(1e-8).unwrap() * (bounds[3] - bounds[1]).hypot(bounds[3] - bounds[0]);
+            for i in 0..self.points.len() {
+                let p = jitter(&self.points[i], r);
+                self.points[i].x = p.x;
+                self.points[i].y = p.y;
             }
+            let d_point_in: Vec<DPoint> = self
+                .points
+                .iter()
+                .map(|p| DPoint {
+                    x: p.x.to_f64().unwrap(),
+                    y: p.y.to_f64().unwrap(),
+                })
+                .collect();
+
+            self.delaunator = match triangulate(&d_point_in) {
+                Some(d) => d,
+                None => {
+                    // When triangulation fails the javascript response
+                    // is mostly empty but hull has an value.
+                    Triangulation {
+                        triangles: Vec::new(),
+                        halfedges: Vec::new(),
+                        hull: vec![0],
+                    }
+                }
+            };
+        } else {
+            self.colinear.clear();
         }
 
-        let hull: Vec<usize>;
-        match &self.delaunator {
-            Some(d) => {
-                self.half_edges = d.halfedges.clone();
-                self.hull = d.hull.clone();
-                hull = self.hull.clone();
-                self.triangles = d.triangles.clone();
-            }
-            None => {
-                panic!("expected a delaunator.");
-            }
-        }
+        self.half_edges = self.delaunator.halfedges.clone();
 
-        // todo work out a appropiate work arround to not being
-        // able to use -1 as a invalid state.
+        self.hull = self.delaunator.hull.clone();
+        let hull = self.hull.clone();
+        self.triangles = self.delaunator.triangles.clone();
+
         self.inedges = Vec::new();
         self.hull_index = Vec::new();
         let len = self.points.len();
@@ -194,22 +205,22 @@ where
         }
 
         // degenerate case: 1 or 2 (distinct) points
-        let hull_len: u32 = hull.len() as u32;
-        if hull_len <= 2u32 && !hull.is_empty() {
-            // TODO work out the implications of not setting an invalid
-            // value here rust has a usize, javascript  allows -1 as invalid.
+        if hull.len() <= 2 && !hull.is_empty() {
             self.triangles = vec![EMPTY, EMPTY, EMPTY];
             self.half_edges = vec![EMPTY, EMPTY, EMPTY];
             self.triangles[0] = hull[0];
-            self.triangles[1] = hull[1];
-            self.triangles[2] = hull[1];
             self.inedges[hull[0]] = 1;
-            let hull_len: u32 = hull.len() as u32;
-            if hull_len == 2 {
+            if hull.len() == 2 {
+                // this is a deviation from the javascript.
+                // when hull[1] is undefined javascript
+                // the assignment triangles[1] = hull[1] is a noop.
+                self.triangles[1] = hull[1];
+                self.triangles[2] = hull[1];
                 self.inedges[hull[1]] = 0;
             }
         }
     }
+
     pub fn step(&self, i: usize, x: T, y: T) -> usize {
         if self.inedges[i] == EMPTY || self.points.is_empty() {
             return (i + 1) % (self.points.len() >> 1);

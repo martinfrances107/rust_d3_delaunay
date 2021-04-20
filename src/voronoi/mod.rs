@@ -27,23 +27,23 @@ where
     pub ymax: T,
 }
 
-impl<T> Default for Voronoi<T>
-where
-    T: AddAssign + AsPrimitive<T> + Default + CoordFloat + FloatConst + FromPrimitive,
-{
-    #[inline]
-    fn default() -> Voronoi<T> {
-        Voronoi {
-            delaunay: Delaunay::default(),
-            circumcenters: Vec::<Coordinate<T>>::new(),
-            vectors: VecDeque::new(),
-            xmin: T::from_f64(0f64).unwrap(),
-            xmax: T::from_f64(960.0f64).unwrap(),
-            ymin: T::from_f64(0.0f64).unwrap(),
-            ymax: T::from_f64(500f64).unwrap(),
-        }
-    }
-}
+// impl<T> Default for Voronoi<T>
+// where
+//     T: AddAssign + AsPrimitive<T> + Default + CoordFloat + FloatConst + FromPrimitive,
+// {
+//     #[inline]
+//     fn default() -> Voronoi<T> {
+//         Voronoi {
+//             delaunay: Delaunay::default(),
+//             circumcenters: Vec::<Coordinate<T>>::new(),
+//             vectors: VecDeque::new(),
+//             xmin: T::from_f64(0f64).unwrap(),
+//             xmax: T::from_f64(960.0f64).unwrap(),
+//             ymin: T::from_f64(0.0f64).unwrap(),
+//             ymax: T::from_f64(500f64).unwrap(),
+//         }
+//     }
+// }
 
 impl<T> Voronoi<T>
 where
@@ -206,7 +206,7 @@ where
     {
         let mut path = Path::<T>::default();
         self.render(&mut path);
-        path.value_str()
+        path.to_string()
     }
 
     pub fn render(&self, context: &mut impl RenderingContext2d<T>)
@@ -243,18 +243,33 @@ where
 
     // TODO implement render_bounds()
 
-    pub fn render_cell<C: RenderingContext2d<T>>(&self, i: usize, context: &mut C) -> String {
+    /// Wrapper function - a departure from the javascript version.
+    /// renderCell has been spit into two functions.
+    /// rust expects variable type to be determined statically
+    /// 'context' cannot be either a Path type of a RenderingContext2d.
+    pub fn render_cell_to_path(&self, i: usize) -> String
+    where
+        T: CoordFloat + Display,
+    {
+        let mut path = Path::default();
+        self.render_cell(i, &mut path);
+        path.to_string()
+    }
+
+    pub fn render_cell(&self, i: usize, context: &mut impl RenderingContext2d<T>)
+    where
+        T: CoordFloat + Display,
+    {
         let points = self.clip(i);
         return match points {
-            None => {
-                return "".to_string();
-            }
+            None => return,
             Some(points) => {
                 if points.is_empty() {
-                    return "".to_string();
+                    return;
                 }
 
-                context.move_to(&points[0].clone());
+                context.move_to(&points[0]);
+
                 let mut n = points.len();
                 while (points[0usize].x - points[n - 1].x).abs() < T::epsilon()
                     && (points[0].y - points[n - 1].y).abs() < T::epsilon()
@@ -270,17 +285,18 @@ where
                         context.line_to(&points[i].clone());
                     }
                 }
-                context.close_path();
 
-                context.value_str()
+                context.close_path();
             }
         };
     }
-
     //  cellPolgons*() is a generator which rustlang does not support.
     // in tests this is implemented as a for loop using cell_polygon().
 
-    pub fn cell_polygon(&self, i: usize) -> Vec<Coordinate<T>> {
+    pub fn cell_polygon(&self, i: usize) -> Vec<Coordinate<T>>
+    where
+        T: CoordFloat + Display,
+    {
         let mut polygon = Polygon::default();
         self.render_cell(i, &mut polygon);
         return polygon.value();

@@ -43,7 +43,7 @@ mod delaunay_test {
 
     #[test]
     fn test_handles_coincident_points() {
-        println!("Delaunay.from(array)");
+        println!("Delaunay.from(array) handles coincident points.");
 
         let points = vec![
             Coordinate { x: 0f64, y: 0f64 },
@@ -214,6 +214,16 @@ mod delaunay_test {
     //   test.equal(voronoi.renderCell(0), "M2,-1L2,2L-1,2L-1,-1Z");
     //   test.equal(voronoi.render(), null);
     // });
+
+    #[test]
+    fn test_delaunay_return_for_one_point() {
+        println!("delaunay.voronoi() for one point returns the bounding rectangle");
+        let points = vec![Coordinate { x: 0., y: 0. }];
+        let delaunay = Delaunay::new(points);
+        let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
+        // assert_eq!(voronoi.render_cell_to_path(0), "hello world");
+        // assert_eq!(voronoi.render(0), None);
+    }
 
     // tape("delaunay.voronoi() for two points", test => {
     //   let voronoi = Delaunay.from([[0, 0], [1, 0], [1, 0], [1, 0]]).voronoi([-1, -1, 2, 2]);

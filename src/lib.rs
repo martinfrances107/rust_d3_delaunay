@@ -8,7 +8,7 @@ use geo::CoordFloat;
 use geo::Coordinate;
 
 // use rust_d3_geo::projection::projection_mutator::ProjectionMutator;
-pub trait RenderingContext2d<T>
+pub trait RenderingContext2d<T>: ToString
 where
     T: CoordFloat,
 {
@@ -18,5 +18,4 @@ where
     fn move_to(&mut self, p: &Coordinate<T>);
     fn rect(&mut self, p: &Coordinate<T>, w: T, h: T);
     fn value(&self) -> Vec<Coordinate<T>>;
-    fn value_str(&self) -> String;
 }

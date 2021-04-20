@@ -3,6 +3,7 @@ use geo::CoordFloat;
 use geo::Coordinate;
 // use num_traits::float::Float;
 use std::fmt::Display;
+use std::string::ToString;
 
 #[derive(Clone, Debug)]
 pub struct Path<T>
@@ -26,6 +27,19 @@ where
             },
             p1: None,
             s: String::from(""),
+        }
+    }
+}
+
+impl<T> ToString for Path<T>
+where
+    T: CoordFloat,
+{
+    fn to_string(&self) -> String {
+        if self.s.is_empty() {
+            return "".to_string();
+        } else {
+            return self.s.clone();
         }
     }
 }
@@ -90,14 +104,6 @@ where
         self.p1 = Some(*p);
         self.s
             .push_str(&format!("M{},{},{}h{}v{}h{}Z", p.x, p.y, w, h, h, -w));
-    }
-
-    fn value_str(&self) -> String {
-        if self.s.is_empty() {
-            return "".to_string();
-        } else {
-            return self.s.clone();
-        }
     }
 
     fn value(&self) -> Vec<Coordinate<T>> {

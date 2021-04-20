@@ -18,6 +18,15 @@ where
     }
 }
 
+impl<T> ToString for Polygon<T>
+where
+    T: CoordFloat,
+{
+    fn to_string(&self) -> String {
+        return String::from("");
+    }
+}
+
 impl<T> RenderingContext2d<T> for Polygon<T>
 where
     T: CoordFloat,
@@ -38,9 +47,6 @@ where
 
     fn rect(&mut self, _p: &Coordinate<T>, _w: T, _h: T) {}
 
-    fn value_str(&self) -> String {
-        return String::from("");
-    }
     fn value(&self) -> Vec<Coordinate<T>> {
         self.p.clone()
     }
