@@ -27,24 +27,6 @@ where
     pub ymax: T,
 }
 
-// impl<T> Default for Voronoi<T>
-// where
-//     T: AddAssign + AsPrimitive<T> + Default + CoordFloat + FloatConst + FromPrimitive,
-// {
-//     #[inline]
-//     fn default() -> Voronoi<T> {
-//         Voronoi {
-//             delaunay: Delaunay::default(),
-//             circumcenters: Vec::<Coordinate<T>>::new(),
-//             vectors: VecDeque::new(),
-//             xmin: T::from_f64(0f64).unwrap(),
-//             xmax: T::from_f64(960.0f64).unwrap(),
-//             ymin: T::from_f64(0.0f64).unwrap(),
-//             ymax: T::from_f64(500f64).unwrap(),
-//         }
-//     }
-// }
-
 impl<T> Voronoi<T>
 where
     T: AddAssign + CoordFloat + Default + FloatConst + FromPrimitive + AsPrimitive<T>,
@@ -106,7 +88,6 @@ where
         let circumcenter_len = self.delaunay.triangles.len() / 3;
         // cannot use a slice cos need to be destermined at compile time.
         self.circumcenters = (&self.circumcenters[0..circumcenter_len]).to_vec();
-
         let triangles = &self.delaunay.triangles;
         let points = &self.delaunay.points;
         let hull = &self.delaunay.hull;
@@ -114,46 +95,83 @@ where
         let mut i = 0usize;
         let mut j = 0usize;
         let n = triangles.len();
-        let mut x: T;
-        let mut y: T;
-
         let t1e_minus_8 = T::from_f64(1e-8).unwrap();
-        let t1e_plus_8 = T::from_f64(1e8).unwrap();
         let t2f64 = T::from_f64(2f64).unwrap();
         loop {
-            let t1 = triangles[i];
-            let t2 = triangles[i + 1];
-            let t3 = triangles[i + 2];
-            let x1 = points[t1].x;
-            let y1 = points[t1].y;
-            let x2 = points[t2].x;
-            let y2 = points[t2].y;
-            let x3 = points[t3].x;
-            let y3 = points[t3].y;
+            let (x1, y1) = match triangles[i] {
+                EMPTY => (None, None),
+                t1 => (Some(points[t1].x), Some(points[t1].y)),
+            };
 
-            let dx = x2 - x1;
-            let dy = y2 - y1;
-            let ex = x3 - x1;
-            let ey = y3 - y1;
-            let bl = dx * dx + dy * dy;
-            let cl = ex * ex + ey * ey;
-            let ab = (dx * ey - dy * ex) * T::from_f64(2f64).unwrap();
+            let (x2, y2) = match triangles[i + 1] {
+                EMPTY => (None, None),
+                t2 => (Some(points[t2].x), Some(points[t2].y)),
+            };
 
-            if ab.is_zero() {
-                // degenerate case (collinear diagram)
-                x = (x1 + x3) / t2f64 - t1e_plus_8 * ey;
-                y = (y1 + y3) / t2f64 + t1e_plus_8 * ex;
-            } else if ab.abs() < t1e_minus_8 {
-                // almost equal points (degenerate triangle)
-                x = (x1 + x3) / t2f64;
-                y = (y1 + y3) / t2f64;
-            } else {
-                let d = T::one() / ab;
-                x = x1 + (ey * bl - dy * cl) * d;
-                y = y1 + (dx * cl - ex * bl) * d;
-            }
+            let (x3, y3) = match triangles[i + 2] {
+                EMPTY => (None, None),
+                t3 => (Some(points[t3].x), Some(points[t3].y)),
+            };
+
+            let (dx, dy) = match (x1, y1, x2, y2) {
+                (Some(x1), Some(y1), Some(x2), Some(y2)) => {
+                    let dx = x2 - x1;
+                    let dy = y2 - y1;
+                    (Some(dx), Some(dy))
+                }
+                _ => (None, None),
+            };
+
+            let (ex, ey) = match (x1, y1, x3, y3) {
+                (Some(x1), Some(y1), Some(x3), Some(y3)) => {
+                    let ex = x3 - x1;
+                    let ey = y3 - y1;
+                    (Some(ex), Some(ey))
+                }
+                _ => (None, None),
+            };
+            let ab = match (dx, dy, ex, ey) {
+                (Some(dx), Some(dy), Some(ex), Some(ey)) => {
+                    Some((dx * ey - dy * ex) * T::from_f64(2f64).unwrap())
+                }
+                _ => None,
+            };
+
+            let (x, y) = match ab {
+                None => (T::nan(), T::nan()),
+                Some(ab) => {
+                    if ab.abs() < t1e_minus_8 {
+                        // almost equal points (degenerate triangle)
+                        match (x1, y1, x3, y3) {
+                            (Some(x1), Some(y1), Some(x3), Some(y3)) => {
+                                ((x1 + x3) / t2f64, (y1 + y3) / t2f64)
+                            }
+                            _ => {
+                                panic!("not all variables defined.(degenerate triangle)");
+                            }
+                        }
+                    } else {
+                        let d = T::one() / ab;
+                        match (x1, y1, dx, dy, ex, ey) {
+                            (Some(x1), Some(y1), Some(dx), Some(dy), Some(ex), Some(ey)) => {
+                                let bl = dx * dx + dy * dy;
+                                let cl = ex * ex + ey * ey;
+                                (
+                                    (x1 + (ey * bl - dy * cl) * d),
+                                    (y1 + (dx * cl - ex * bl) * d),
+                                )
+                            }
+                            _ => {
+                                panic!("not all variables defined.");
+                            }
+                        }
+                    }
+                }
+            };
+
             self.circumcenters[j] = Coordinate { x, y };
             i += 3;
+
             j += 1;
             if i >= n {
                 break;

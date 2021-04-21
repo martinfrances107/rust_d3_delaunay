@@ -1,24 +1,19 @@
 #![allow(clippy::clippy::many_single_char_names)]
 
-use std::cmp::Ordering;
-use std::ops::AddAssign;
-
 mod colinear;
 mod jitter;
 
-/// Delaunay triangulation
-use colinear::colinear;
-// use proj::Proj;
+use std::cmp::Ordering;
+use std::ops::AddAssign;
 
+use colinear::colinear;
 use delaunator::{triangulate, Point as DPoint, Triangulation, EMPTY};
 use geo::Point;
 use geo::{CoordFloat, Coordinate};
-use rust_d3_geo::projection::projection_mutator::ProjectionMutator;
-
+use jitter::jitter;
 use num_traits::{float::FloatConst, AsPrimitive};
 use num_traits::{FromPrimitive, ToPrimitive};
-
-use jitter::jitter;
+use rust_d3_geo::projection::projection_mutator::ProjectionMutator;
 
 pub struct Delaunay<T>
 where
@@ -36,28 +31,6 @@ where
     pub fx: Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>,
     pub fy: Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>,
 }
-
-// impl<'a, T> Default for Delaunay<T>
-// where
-//     T: AddAssign + AsPrimitive<T> + CoordFloat + Default + FloatConst,
-// {
-//     fn default() -> Self {
-//         // let points = Vec::new();
-//         return Self {
-//             colinear: Vec::new(),
-//             delaunator: None,
-//             inedges: Vec::new(),
-//             half_edges: Vec::new(),
-//             hull: Vec::new(),
-//             hull_index: Vec::new(),
-//             points: Vec::new(),
-//             projection: None,
-//             fx: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.x()),
-//             fy: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.y()),
-//             triangles: Vec::new(),
-//         };
-//     }
-// }
 
 impl<'a, T> Delaunay<T>
 where

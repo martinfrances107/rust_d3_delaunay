@@ -127,6 +127,8 @@ mod voronoi_test {
         ]);
         let voronoi1 = Voronoi::new(d1, Some((40f64, 40f64, 440f64, 180f64)));
         assert_eq!(voronoi1.cell_polygon(0).len(), 4);
+        // TODO missing the last half of this test.
+        // need to implement now that cell_polygon is defined.
     }
 
     // tape("voronoi neighbors are clipped", test => {
