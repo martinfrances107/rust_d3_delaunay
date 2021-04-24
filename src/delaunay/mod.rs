@@ -15,6 +15,9 @@ use num_traits::{float::FloatConst, AsPrimitive};
 use num_traits::{FromPrimitive, ToPrimitive};
 use rust_d3_geo::projection::projection_mutator::ProjectionMutator;
 
+use crate::voronoi::Bounds;
+use crate::voronoi::Voronoi;
+
 pub struct Delaunay<T>
 where
     T: AddAssign + CoordFloat + Default + FloatConst + AsPrimitive<T>,
@@ -54,7 +57,7 @@ where
                 Triangulation {
                     triangles: Vec::new(),
                     halfedges: Vec::new(),
-                    hull: vec![0],
+                    hull: (0..d_point_in.len()).collect(),
                 }
             }
         };
@@ -78,8 +81,14 @@ where
         return out;
     }
 
+    #[inline]
+    pub fn voronoi(self, bounds: Option<Bounds<T>>) -> Voronoi<T> {
+        Voronoi::new(self, bounds)
+    }
+
     fn init(&mut self) {
-        if self.delaunator.hull.len() > 1usize && colinear(&self.points, &self.delaunator) {
+        // Check for colinear.
+        if self.delaunator.hull.len() > 2usize && colinear(&self.points, &self.delaunator) {
             let len = self.points.len() as u32 / 2;
             let mut colinear_vec: Vec<usize> = (0..len)
                 .map(|i| {
@@ -137,20 +146,18 @@ where
                     Triangulation {
                         triangles: Vec::new(),
                         halfedges: Vec::new(),
-                        hull: vec![0],
+                        hull: (0..d_point_in.len()).collect(),
                     }
                 }
             };
         } else {
             self.colinear.clear();
         }
-
         self.half_edges = self.delaunator.halfedges.clone();
 
         self.hull = self.delaunator.hull.clone();
         let hull = self.hull.clone();
         self.triangles = self.delaunator.triangles.clone();
-
         self.inedges = Vec::new();
         self.hull_index = Vec::new();
         let len = self.points.len();

@@ -1,13 +1,10 @@
 #[cfg(not(tarpaulin_include))]
 #[cfg(test)]
 mod voronoi_test {
-    // extern crate pretty_assertions;
     use geo::Coordinate;
 
     use rust_d3_delaunay::delaunay::Delaunay;
     use rust_d3_delaunay::path::Path;
-    use rust_d3_delaunay::voronoi::Voronoi;
-    use rust_d3_delaunay::RenderingContext2d;
 
     #[test]
     fn test_noop_for_coincident_points() {
@@ -18,9 +15,7 @@ mod voronoi_test {
             Coordinate { x: 0f64, y: 1f64 },
             Coordinate { x: 1f64, y: 0f64 },
         ];
-        let delaunay = Delaunay::new(points);
-
-        let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
+        let voronoi = Delaunay::new(points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         let mut path = Path::default();
         voronoi.render_cell(3, &mut path);
         assert_eq!(path.to_string(), String::from(""));
@@ -34,8 +29,7 @@ mod voronoi_test {
             Coordinate { x: 1f64, y: 0f64 },
             Coordinate { x: 0f64, y: 1f64 },
         ];
-        let delaunay = Delaunay::new(points);
-        let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
+        let voronoi = Delaunay::new(points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         let mut context1 = Path::default();
         {
             voronoi.render_cell(0, &mut context1);
@@ -69,8 +63,7 @@ mod voronoi_test {
             Coordinate { x: 0f64, y: 1f64 },
             Coordinate { x: 1f64, y: 0f64 },
         ];
-        let delaunay = Delaunay::new(points);
-        let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
+        let voronoi = Delaunay::new(points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         assert_eq!(voronoi.contains(3, 1f64, 0f64), false);
         assert_eq!(voronoi.contains(1, 1f64, 0f64), true);
     }
@@ -107,7 +100,8 @@ mod voronoi_test {
 
     #[test]
     fn zero_length_edges_are_removed() {
-        let d1 = Delaunay::new(vec![
+        println!("zero-length edges are removed");
+        let voronoi1 = Delaunay::new(vec![
             Coordinate {
                 x: 50.0f64,
                 y: 10.0f64,
@@ -124,11 +118,47 @@ mod voronoi_test {
                 x: 200.0f64,
                 y: 100.0f64,
             },
-        ]);
-        let voronoi1 = Voronoi::new(d1, Some((40f64, 40f64, 440f64, 180f64)));
+        ])
+        .voronoi(Some((40f64, 40f64, 440f64, 180f64)));
         assert_eq!(voronoi1.cell_polygon(0).len(), 4);
-        // TODO missing the last half of this test.
-        // need to implement now that cell_polygon is defined.
+
+        let voronoi2 = Delaunay::new(vec![
+            Coordinate {
+                x: 10.0f64,
+                y: 10.0f64,
+            },
+            Coordinate {
+                x: 20.0f64,
+                y: 10.0f64,
+            },
+        ])
+        .voronoi(Some((0f64, 0f64, 30f64, 20f64)));
+
+        assert_eq!(
+            voronoi2.cell_polygon(0),
+            vec![
+                Coordinate {
+                    x: 15.0f64,
+                    y: 20.0f64,
+                },
+                Coordinate {
+                    x: 0.0f64,
+                    y: 20.0f64,
+                },
+                Coordinate {
+                    x: 0.0f64,
+                    y: 0.0f64,
+                },
+                Coordinate {
+                    x: 15.0f64,
+                    y: 0.0f64,
+                },
+                Coordinate {
+                    x: 15.0f64,
+                    y: 20.0f64,
+                }
+            ]
+        );
     }
 
     // tape("voronoi neighbors are clipped", test => {
@@ -156,22 +186,30 @@ mod voronoi_test {
     //     println!("unnecessary points on the corners are avoided (#88)");
     //     let pattern = vec![(
     //         vec![
-    //             Coordinate { x: 289f64, y: 25f64 },
+    //             Coordinate {
+    //                 x: 289f64,
+    //                 y: 25f64,
+    //             },
     //             Coordinate { x: 3f64, y: 22f64 },
-    //             Coordinate { x: 93f64, y: 165f64 },
-    //             Coordinate { x: 282f64, y: 184f64 },
+    //             Coordinate {
+    //                 x: 93f64,
+    //                 y: 165f64,
+    //             },
+    //             Coordinate {
+    //                 x: 282f64,
+    //                 y: 184f64,
+    //             },
     //             Coordinate { x: 65f64, y: 89f64 },
     //         ],
     //         vec![6, 4, 6, 5, 6],
     //     )];
 
     //     for (coords, len_array) in pattern {
-    //         let delaunay = Delaunay::new(coords);
-    //         let voronoi = Voronoi::new(delaunay, Some((0., 0., 290., 190.)));
+    //         let voronoi = Delaunay::new(coords).voronoi(Some((0., 0., 290., 190.)));
 
     //         for i in 0..len_array.len() {
     //             let cell_array = voronoi.cell_polygon(i);
-    //             cell_array.map(|d|  d.length).collect();
+    //             cell_array.map(|d| d.length).collect();
     //         }
     //     }
     // }

@@ -219,8 +219,7 @@ mod delaunay_test {
     fn test_delaunay_return_for_one_point() {
         println!("delaunay.voronoi() for one point returns the bounding rectangle");
         let points = vec![Coordinate { x: 0., y: 0. }];
-        let delaunay = Delaunay::new(points);
-        let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
+        let voronoi = Delaunay::new(points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         assert_eq!(voronoi.render_cell_to_path(0), "M2,-1L2,2L-1,2L-1,-1Z");
         // assert_eq!(voronoi.render(0), None);
     }

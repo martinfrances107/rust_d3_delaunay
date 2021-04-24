@@ -14,6 +14,9 @@ use crate::path::Path;
 use crate::polygon::Polygon;
 use crate::RenderingContext2d;
 
+// xmin, ymin, xmax, ymax.
+pub(super) type Bounds<T> = (T, T, T, T);
+
 pub struct Voronoi<T>
 where
     T: AddAssign + AsPrimitive<T> + Default + CoordFloat + FloatConst,
@@ -31,26 +34,17 @@ impl<T> Voronoi<T>
 where
     T: AddAssign + CoordFloat + Default + FloatConst + FromPrimitive + AsPrimitive<T>,
 {
-    pub fn new(delaunay: Delaunay<T>, b_in: Option<(T, T, T, T)>) -> Self {
-        let b;
+    pub fn new(delaunay: Delaunay<T>, bounds: Option<Bounds<T>>) -> Self {
         let mut v: Voronoi<T>;
-        match b_in {
-            Some(b_in) => {
-                b = b_in;
-            }
-            None => {
-                b = (
-                    T::zero(),
-                    T::zero(),
-                    T::from_f64(960f64).unwrap(),
-                    T::from_f64(500f64).unwrap(),
-                );
-            }
-        }
-        let xmin = b.0;
-        let ymin = b.1;
-        let xmax = b.2;
-        let ymax = b.3;
+        let (xmin, ymin, xmax, ymax) = match bounds {
+            Some(bounds) => bounds,
+            None => (
+                T::zero(),
+                T::zero(),
+                T::from_f64(960f64).unwrap(),
+                T::from_f64(500f64).unwrap(),
+            ),
+        };
 
         if xmax < xmin || ymax < ymin {
             panic!("Invalid bounds");
@@ -113,59 +107,62 @@ where
                 t3 => (Some(points[t3].x), Some(points[t3].y)),
             };
 
-            let (dx, dy) = match (x1, y1, x2, y2) {
-                (Some(x1), Some(y1), Some(x2), Some(y2)) => {
-                    let dx = x2 - x1;
-                    let dy = y2 - y1;
-                    (Some(dx), Some(dy))
-                }
-                _ => (None, None),
+            let dx = match (x1, x2) {
+                (Some(x1), Some(x2)) => x2 - x1,
+                _ => T::nan(),
             };
 
-            let (ex, ey) = match (x1, y1, x3, y3) {
-                (Some(x1), Some(y1), Some(x3), Some(y3)) => {
-                    let ex = x3 - x1;
-                    let ey = y3 - y1;
-                    (Some(ex), Some(ey))
-                }
-                _ => (None, None),
-            };
-            let ab = match (dx, dy, ex, ey) {
-                (Some(dx), Some(dy), Some(ex), Some(ey)) => {
-                    Some((dx * ey - dy * ex) * T::from_f64(2f64).unwrap())
-                }
-                _ => None,
+            let dy = match (y1, y2) {
+                (Some(y1), Some(y2)) => y2 - y1,
+                _ => T::nan(),
             };
 
-            let (x, y) = match ab {
-                None => (T::nan(), T::nan()),
-                Some(ab) => {
-                    if ab.abs() < t1e_minus_8 {
-                        // almost equal points (degenerate triangle)
-                        match (x1, y1, x3, y3) {
-                            (Some(x1), Some(y1), Some(x3), Some(y3)) => {
-                                ((x1 + x3) / t2f64, (y1 + y3) / t2f64)
-                            }
-                            _ => {
-                                panic!("not all variables defined.(degenerate triangle)");
-                            }
-                        }
-                    } else {
-                        let d = T::one() / ab;
-                        match (x1, y1, dx, dy, ex, ey) {
-                            (Some(x1), Some(y1), Some(dx), Some(dy), Some(ex), Some(ey)) => {
-                                let bl = dx * dx + dy * dy;
-                                let cl = ex * ex + ey * ey;
-                                (
-                                    (x1 + (ey * bl - dy * cl) * d),
-                                    (y1 + (dx * cl - ex * bl) * d),
-                                )
-                            }
-                            _ => {
-                                panic!("not all variables defined.");
-                            }
-                        }
-                    }
+            // let ex = x3 - x1;
+            // let ey = y3 - y1;
+            let ex = match (x1, x3) {
+                (Some(x1), Some(x3)) => x3 - x1,
+                _ => T::nan(),
+            };
+
+            let ey = match (y1, y3) {
+                (Some(y1), Some(y3)) => y3 - y1,
+                _ => T::nan(),
+            };
+
+            let ab = (dx * ey - dy * ex) * T::from_f64(2f64).unwrap();
+            let two = T::from(2).unwrap();
+            let one_e_8 = T::from(1e8).unwrap();
+            // Out of bound checking is x and y type values are bound of bounds
+            // following the js closely dx and ex become nan
+            // JS is wierd !NAN === true
+            let (x, y) = if ab.is_zero() || ab.is_nan() {
+                // degenerate case (collinear diagram)
+                match (x1, y1, x3, y3) {
+                    (Some(x1), Some(y1), Some(x3), Some(y3)) => (
+                        (x1 + x3) / two - one_e_8 * ey,
+                        (y1 + y3) / two + one_e_8 * ex,
+                    ),
+                    _ => (T::nan(), T::nan()),
+                }
+            } else {
+                //NB if ab is not NAN then x1,y1 must be numbers.
+                let x1 = x1.unwrap();
+                let y1 = y1.unwrap();
+                if ab.abs() < t1e_minus_8 {
+                    // almost equal points (degenerate triangle)
+                    // NB if ab is not NAN then x3,y3 must be numbers.
+                    let x3 = x3.unwrap();
+                    let y3 = y3.unwrap();
+                    ((x1 + x3) / t2f64, (y1 + y3) / t2f64)
+                } else {
+                    let d = T::one() / ab;
+
+                    let bl = dx * dx + dy * dy;
+                    let cl = ex * ex + ey * ey;
+                    (
+                        (x1 + (ey * bl - dy * cl) * d),
+                        (y1 + (dx * cl - ex * bl) * d),
+                    )
                 }
             };
 
@@ -377,28 +374,24 @@ where
     fn clip(&self, i: usize) -> Option<VecDeque<Coordinate<T>>> {
         // degenerate case (1 valid point: return the box)
         if i == 0 && self.delaunay.hull.len() == 1 {
-            return Some(
-                vec![
-                    Coordinate {
-                        x: self.xmax,
-                        y: self.ymin,
-                    },
-                    Coordinate {
-                        x: self.xmax,
-                        y: self.ymax,
-                    },
-                    Coordinate {
-                        x: self.xmin,
-                        y: self.ymax,
-                    },
-                    Coordinate {
-                        x: self.xmin,
-                        y: self.ymin,
-                    },
-                ]
-                .into_iter()
-                .collect(),
-            );
+            return Some(VecDeque::from(vec![
+                Coordinate {
+                    x: self.xmax,
+                    y: self.ymin,
+                },
+                Coordinate {
+                    x: self.xmax,
+                    y: self.ymax,
+                },
+                Coordinate {
+                    x: self.xmin,
+                    y: self.ymax,
+                },
+                Coordinate {
+                    x: self.xmin,
+                    y: self.ymin,
+                },
+            ]));
         }
         match self.cell(i) {
             None => {
@@ -425,18 +418,15 @@ where
     }
 
     fn clip_finite(&self, i: usize, points: &VecDeque<Coordinate<T>>) -> VecDeque<Coordinate<T>> {
-        let n = points.len();
         #[allow(non_snake_case)]
         let mut P = VecDeque::new();
         let mut p0: Coordinate<T>;
-        let mut p1 = points[n - 1];
+        let mut p1 = points[points.len() - 1];
         let mut c0;
         let mut c1 = self.regioncode(p1);
         let mut e0;
-        // There is a bug/inconsitencey in the javascript implementation.
-        // e1 must be given a reasonable default value.
         let mut e1 = 0;
-        let t2 = T::from_f64(2f64).unwrap();
+        let two = T::from_f64(2f64).unwrap();
         for point in points {
             p0 = p1;
             p1 = *point;
@@ -512,8 +502,8 @@ where
             }
         } else if self.contains(
             i,
-            (self.xmin + self.xmax) / t2,
-            (self.ymin + self.ymax) / T::from_f64(2f64).unwrap(),
+            (self.xmin + self.xmax) / two,
+            (self.ymin + self.ymax) / two,
         ) {
             return vec![
                 Coordinate {
@@ -594,7 +584,7 @@ where
         vyn: T,
     ) -> VecDeque<Coordinate<T>> {
         #[allow(non_snake_case)]
-        let mut P: VecDeque<Coordinate<T>> = VecDeque::into(points.clone());
+        let mut P: VecDeque<Coordinate<T>> = points.clone();
         if let Some(p1) = self.project(P[0], vx0, vy0) {
             P.push_front(p1);
         }
@@ -617,7 +607,7 @@ where
                     j = self.edge(i, c0, c1, &mut P, j);
                     n = P.len();
                 }
-                j += 2;
+                j += 1;
                 if j >= n {
                     break;
                 }
@@ -654,7 +644,7 @@ where
     #[allow(non_snake_case)]
     fn edge(
         &self,
-        i: usize,
+        i_in: usize,
         e0_in: u8,
         e1: u8,
         P: &mut VecDeque<Coordinate<T>>,
@@ -716,23 +706,20 @@ where
                 }
             }
 
-            if ((P[j].x - x).abs() >= T::epsilon() || (P[j].y - y).abs() >= T::epsilon())
-                && self.contains(i, x, y)
-            {
+            // The JS version has subtle handling of out of bounds checks.
+            let out_of_bounds = j >= P.len();
+            if (out_of_bounds || P[j].x != x || P[j].y != y) && self.contains(i_in, x, y) {
                 P.insert(j, Coordinate { x, y });
                 j += 1;
             }
         }
+
         if P.len() > 2 {
             let mut i = 0;
             loop {
                 let j = (i + 1) % P.len();
                 let k = (i + 2) % P.len();
-                if (P[i].x - P[j].x).abs() < T::epsilon() && (P[j].x - P[k].x).abs() < T::epsilon()
-                    || (P[i].y - P[j].y).abs() < T::epsilon()
-                        && (P[j].y - P[k].y).abs() < T::epsilon()
-                {
-                    // P.splice(j, 2);
+                if P[i].x == P[j].x && P[j].x == P[k].x || P[i].y == P[j].y && P[j].y == P[k].y {
                     P.remove(j);
                     i -= 1;
                 }
