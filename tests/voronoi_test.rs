@@ -91,13 +91,6 @@ mod voronoi_test {
     //   test.deepEqual(p, [[-500, 500], [-500, -140], [-240, -140], [-140, 60], [-140, 500], [-500, 500]]);
     // });
 
-    // tape("zero-length edges are removed", test => {
-    //    const voronoi1 = Delaunay.from([[50, 10], [10, 50], [10, 10], [200, 100]]).voronoi([40, 40, 440, 180]);
-    //    test.equal(voronoi1.cellPolygon(0).length, 4);
-    //    const voronoi2 = Delaunay.from([[10, 10], [20, 10]]).voronoi([0, 0, 30, 20]);
-    //    test.deepEqual(voronoi2.cellPolygon(0), [[15, 20], [0, 20], [0, 0], [15, 0], [15, 20]]);
-    // });
-
     #[test]
     fn zero_length_edges_are_removed() {
         println!("zero-length edges are removed");
@@ -221,6 +214,73 @@ mod voronoi_test {
     //   test.equal(voronoi.cellPolygon(0).length, 4);
     // });
 
+    #[test]
+    fn a_degenerate_triangle_is_avoided() {
+        let pts = vec![
+            Coordinate {
+                x: 424.75,
+                y: 253.75,
+            },
+            Coordinate {
+                x: 424.75,
+                y: 253.74999999999997,
+            },
+            Coordinate {
+                x: 407.17640687119285,
+                y: 296.17640687119285,
+            },
+            Coordinate {
+                x: 364.75,
+                y: 313.75,
+            },
+            Coordinate {
+                x: 322.32359312880715,
+                y: 296.17640687119285,
+            },
+            Coordinate {
+                x: 304.75,
+                y: 253.75,
+            },
+            Coordinate {
+                x: 322.32359312880715,
+                y: 211.32359312880715,
+            },
+            Coordinate {
+                x: 364.75,
+                y: 193.75,
+            },
+            Coordinate {
+                x: 407.17640687119285,
+                y: 211.32359312880715,
+            },
+            Coordinate {
+                x: 624.75,
+                y: 253.75,
+            },
+            Coordinate {
+                x: 607.1764068711929,
+                y: 296.17640687119285,
+            },
+            Coordinate {
+                x: 564.75,
+                y: 313.75,
+            },
+            Coordinate {
+                x: 522.3235931288071,
+                y: 296.17640687119285,
+            },
+            Coordinate {
+                x: 504.75,
+                y: 253.75,
+            },
+            Coordinate {
+                x: 564.75,
+                y: 193.75,
+            },
+        ];
+        let voronoi = Delaunay::new(pts).voronoi(Some((10., 10., 960., 500.)));
+        assert_eq!(voronoi.cell_polygon(0).len(), 4);
+    }
     // tape("cellPolygons filter out empty cells and have the cell index as a property", test => {
     //   const pts = [[0, 0], [3, 3], [1, 1], [-3, -2]];
     //   const voronoi = Delaunay.from(pts).voronoi([0, 0, 2, 2]);
