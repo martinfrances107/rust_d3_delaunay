@@ -1,4 +1,6 @@
 #![allow(clippy::needless_return)]
+extern crate derivative;
+
 pub mod delaunay;
 pub mod path;
 pub mod polygon;

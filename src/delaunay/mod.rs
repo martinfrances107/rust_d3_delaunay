@@ -8,6 +8,7 @@ use std::ops::AddAssign;
 
 use colinear::colinear;
 use delaunator::{triangulate, Point as DPoint, Triangulation, EMPTY};
+use derivative::Derivative;
 use geo::Point;
 use geo::{CoordFloat, Coordinate};
 use jitter::jitter;
@@ -18,11 +19,14 @@ use rust_d3_geo::projection::projection_mutator::ProjectionMutator;
 use crate::voronoi::Bounds;
 use crate::voronoi::Voronoi;
 
+#[derive(Derivative)]
+#[derivative(Debug)]
 pub struct Delaunay<T>
 where
     T: AddAssign + CoordFloat + Default + FloatConst + AsPrimitive<T>,
 {
     pub colinear: Vec<usize>,
+    #[derivative(Debug = "ignore")]
     delaunator: Triangulation,
     pub inedges: Vec<usize>,
     pub hull_index: Vec<usize>,
@@ -31,7 +35,9 @@ where
     pub triangles: Vec<usize>,
     pub points: Vec<Coordinate<T>>,
     pub projection: Option<ProjectionMutator<T>>,
+    #[derivative(Debug = "ignore")]
     pub fx: Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>,
+    #[derivative(Debug = "ignore")]
     pub fy: Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>,
 }
 
