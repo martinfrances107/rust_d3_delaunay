@@ -19,7 +19,7 @@ pub(super) type Bounds<T> = (T, T, T, T);
 
 pub struct Voronoi<T>
 where
-    T: AddAssign + AsPrimitive<T> + Default + CoordFloat + FloatConst,
+    T: AddAssign + AsPrimitive<T> + Default + Display + CoordFloat + FloatConst,
 {
     pub circumcenters: Vec<Coordinate<T>>,
     delaunay: Delaunay<T>,
@@ -32,7 +32,7 @@ where
 
 impl<T> Voronoi<T>
 where
-    T: AddAssign + CoordFloat + Default + FloatConst + FromPrimitive + AsPrimitive<T>,
+    T: AddAssign + CoordFloat + Default + Display + FloatConst + FromPrimitive + AsPrimitive<T>,
 {
     pub fn new(delaunay: Delaunay<T>, bounds: Option<Bounds<T>>) -> Self {
         let mut v: Voronoi<T>;

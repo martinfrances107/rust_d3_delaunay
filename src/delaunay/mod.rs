@@ -4,6 +4,7 @@ mod colinear;
 mod jitter;
 
 use std::cmp::Ordering;
+use std::fmt::Display;
 use std::ops::AddAssign;
 
 use colinear::colinear;
@@ -23,7 +24,7 @@ use crate::voronoi::Voronoi;
 #[derivative(Debug)]
 pub struct Delaunay<T>
 where
-    T: AddAssign + CoordFloat + Default + FloatConst + AsPrimitive<T>,
+    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst,
 {
     pub colinear: Vec<usize>,
     #[derivative(Debug = "ignore")]
@@ -43,7 +44,14 @@ where
 
 impl<'a, T> Delaunay<T>
 where
-    T: AddAssign + AsPrimitive<T> + Default + CoordFloat + FloatConst + FromPrimitive + ToPrimitive,
+    T: AddAssign
+        + AsPrimitive<T>
+        + CoordFloat
+        + Default
+        + Display
+        + FloatConst
+        + FromPrimitive
+        + ToPrimitive,
 {
     pub fn new(points: Vec<Coordinate<T>>) -> Self {
         // conversion into delaunay point!!!
