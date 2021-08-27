@@ -2,9 +2,16 @@
 #[cfg(test)]
 mod voronoi_test {
     use geo::Coordinate;
+    use rust_d3_geo::clip::antimeridian::line::Line;
+    use rust_d3_geo::clip::antimeridian::pv::PV;
+    use rust_d3_geo::projection::gnomic::Gnomic;
+    use rust_d3_geo::stream::StreamDrainStub;
 
     use rust_d3_delaunay::delaunay::Delaunay;
     use rust_d3_delaunay::path::Path;
+
+    type DelaunayStub =
+        Delaunay<StreamDrainStub<f64>, Line<f64>, Gnomic<StreamDrainStub<f64>, f64>, PV<f64>, f64>;
 
     #[test]
     fn test_noop_for_coincident_points() {
@@ -15,7 +22,8 @@ mod voronoi_test {
             Coordinate { x: 0f64, y: 1f64 },
             Coordinate { x: 1f64, y: 0f64 },
         ];
-        let voronoi = Delaunay::new(points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
+        let d: DelaunayStub = Delaunay::new(points);
+        let voronoi = d.voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         let mut path = Path::default();
         voronoi.render_cell(3, &mut path);
         assert_eq!(path.to_string(), String::from(""));
@@ -29,7 +37,8 @@ mod voronoi_test {
             Coordinate { x: 1f64, y: 0f64 },
             Coordinate { x: 0f64, y: 1f64 },
         ];
-        let voronoi = Delaunay::new(points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
+        let d: DelaunayStub = Delaunay::new(points);
+        let voronoi = d.voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         let mut context1 = Path::default();
         {
             voronoi.render_cell(0, &mut context1);
@@ -63,7 +72,8 @@ mod voronoi_test {
             Coordinate { x: 0f64, y: 1f64 },
             Coordinate { x: 1f64, y: 0f64 },
         ];
-        let voronoi = Delaunay::new(points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
+        let d: DelaunayStub = Delaunay::new(points);
+        let voronoi = d.voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         assert_eq!(voronoi.contains(3, 1f64, 0f64), false);
         assert_eq!(voronoi.contains(1, 1f64, 0f64), true);
     }
@@ -94,7 +104,7 @@ mod voronoi_test {
     #[test]
     fn zero_length_edges_are_removed() {
         println!("zero-length edges are removed");
-        let voronoi1 = Delaunay::new(vec![
+        let d: DelaunayStub = Delaunay::new(vec![
             Coordinate {
                 x: 50.0f64,
                 y: 10.0f64,
@@ -111,11 +121,11 @@ mod voronoi_test {
                 x: 200.0f64,
                 y: 100.0f64,
             },
-        ])
-        .voronoi(Some((40f64, 40f64, 440f64, 180f64)));
+        ]);
+        let voronoi1 = d.voronoi(Some((40f64, 40f64, 440f64, 180f64)));
         assert_eq!(voronoi1.cell_polygon(0).len(), 4);
 
-        let voronoi2 = Delaunay::new(vec![
+        let d: DelaunayStub = Delaunay::new(vec![
             Coordinate {
                 x: 10.0f64,
                 y: 10.0f64,
@@ -124,8 +134,8 @@ mod voronoi_test {
                 x: 20.0f64,
                 y: 10.0f64,
             },
-        ])
-        .voronoi(Some((0f64, 0f64, 30f64, 20f64)));
+        ]);
+        let voronoi2 = d.voronoi(Some((0f64, 0f64, 30f64, 20f64)));
 
         assert_eq!(
             voronoi2.cell_polygon(0),
@@ -278,7 +288,8 @@ mod voronoi_test {
                 y: 193.75,
             },
         ];
-        let voronoi = Delaunay::new(pts).voronoi(Some((10., 10., 960., 500.)));
+        let d: DelaunayStub = Delaunay::new(pts);
+        let voronoi = d.voronoi(Some((10., 10., 960., 500.)));
         assert_eq!(voronoi.cell_polygon(0).len(), 4);
     }
     // tape("cellPolygons filter out empty cells and have the cell index as a property", test => {

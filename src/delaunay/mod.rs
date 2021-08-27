@@ -1,8 +1,13 @@
-#![allow(clippy::clippy::many_single_char_names)]
+#![allow(clippy::many_single_char_names)]
 
 mod colinear;
 mod jitter;
 
+use rust_d3_geo::clip::Line;
+use rust_d3_geo::clip::PointVisible;
+use rust_d3_geo::projection::projection::Projection;
+use rust_d3_geo::projection::Raw as ProjectionRaw;
+use rust_d3_geo::stream::Stream;
 use std::cmp::Ordering;
 use std::fmt::Display;
 use std::ops::AddAssign;
@@ -15,15 +20,18 @@ use geo::{CoordFloat, Coordinate};
 use jitter::jitter;
 use num_traits::{float::FloatConst, AsPrimitive};
 use num_traits::{FromPrimitive, ToPrimitive};
-use rust_d3_geo::projection::projection_mutator::ProjectionMutator;
 
 use crate::voronoi::Bounds;
 use crate::voronoi::Voronoi;
 
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct Delaunay<T>
+pub struct Delaunay<DRAIN, L, PR, PV, T>
 where
+    DRAIN: Stream<T = T>,
+    PR: ProjectionRaw<T>,
+    PV: PointVisible<T = T>,
+    L: Line,
     T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst,
 {
     pub colinear: Vec<usize>,
@@ -35,15 +43,19 @@ where
     pub hull: Vec<usize>,
     pub triangles: Vec<usize>,
     pub points: Vec<Coordinate<T>>,
-    pub projection: Option<ProjectionMutator<T>>,
+    pub projection: Option<Projection<DRAIN, L, PR, PV, T>>,
     #[derivative(Debug = "ignore")]
     pub fx: Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>,
     #[derivative(Debug = "ignore")]
     pub fy: Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>,
 }
 
-impl<'a, T> Delaunay<T>
+impl<'a, DRAIN, L, PR, PV, T> Delaunay<DRAIN, L, PR, PV, T>
 where
+    DRAIN: Stream<T = T>,
+    PR: ProjectionRaw<T>,
+    PV: PointVisible<T = T>,
+    L: Line,
     T: AddAssign
         + AsPrimitive<T>
         + CoordFloat
@@ -63,18 +75,23 @@ where
             })
             .collect();
 
-        let delaunator = match triangulate(&d_point_in) {
-            Some(d) => d,
-            None => {
-                // When triangulation fails the javascript response
-                // is mostly empty but hull has an value.
-                Triangulation {
-                    triangles: Vec::new(),
-                    halfedges: Vec::new(),
-                    hull: (0..d_point_in.len()).collect(),
-                }
-            }
-        };
+        // TODO breaking API change if all points are collinear
+        // now returning a special triangulaization where
+        // all point are on the hull... I am not sure about the
+        // implications of this yet.?????
+        let delaunator = triangulate(&d_point_in);
+        // let delaunator = match triangulate(&d_point_in) {
+        //     Some(d) => d,
+        //     None => {
+        //         // When triangulation fails the javascript response
+        //         // is mostly empty but hull has an value.
+        //         Triangulation {
+        //             triangles: Vec::new(),
+        //             halfedges: Vec::new(),
+        //             hull: (0..d_point_in.len()).collect(),
+        //         }
+        //     }
+        // };
 
         let mut out = Self {
             delaunator,
@@ -96,7 +113,7 @@ where
     }
 
     #[inline]
-    pub fn voronoi(self, bounds: Option<Bounds<T>>) -> Voronoi<T> {
+    pub fn voronoi(self, bounds: Option<Bounds<T>>) -> Voronoi<DRAIN, L, PR, PV, T> {
         Voronoi::new(self, bounds)
     }
 
@@ -152,18 +169,23 @@ where
                 })
                 .collect();
 
-            self.delaunator = match triangulate(&d_point_in) {
-                Some(d) => d,
-                None => {
-                    // When triangulation fails the javascript response
-                    // is mostly empty but hull has an value.
-                    Triangulation {
-                        triangles: Vec::new(),
-                        halfedges: Vec::new(),
-                        hull: (0..d_point_in.len()).collect(),
-                    }
-                }
-            };
+            // TODO breaking API change if all points are collinear
+            // now returning a special triangulaization where
+            // all point are on the hull... I am not sure about the
+            // implications of this yet.?????
+            self.delaunator = triangulate(&d_point_in);
+            // self.delaunator = match triangulate(&d_point_in) {
+            //     Some(d) => d,
+            //     None => {
+            //         // When triangulation fails the javascript response
+            //         // is mostly empty but hull has an value.
+            //         Triangulation {
+            //             triangles: Vec::new(),
+            //             halfedges: Vec::new(),
+            //             hull: (0..d_point_in.len()).collect(),
+            //         }
+            //     }
+            // };
         } else {
             self.colinear.clear();
         }

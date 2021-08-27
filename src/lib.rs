@@ -9,7 +9,6 @@ pub mod voronoi;
 use geo::CoordFloat;
 use geo::Coordinate;
 
-// use rust_d3_geo::projection::projection_mutator::ProjectionMutator;
 pub trait RenderingContext2d<T>: ToString
 where
     T: CoordFloat,

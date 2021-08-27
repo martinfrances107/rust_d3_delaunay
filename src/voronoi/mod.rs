@@ -1,5 +1,9 @@
-#![allow(clippy::clippy::many_single_char_names)]
+#![allow(clippy::many_single_char_names)]
 
+use rust_d3_geo::clip::Line;
+use rust_d3_geo::clip::PointVisible;
+use rust_d3_geo::projection::Raw as ProjectionRaw;
+use rust_d3_geo::stream::Stream;
 use std::collections::VecDeque;
 use std::fmt::Display;
 use std::ops::AddAssign;
@@ -17,12 +21,16 @@ use crate::RenderingContext2d;
 // xmin, ymin, xmax, ymax.
 pub(super) type Bounds<T> = (T, T, T, T);
 
-pub struct Voronoi<T>
+pub struct Voronoi<DRAIN, L, PR, PV, T>
 where
+    DRAIN: Stream<T = T>,
+    L: Line,
+    PR: ProjectionRaw<T>,
+    PV: PointVisible<T = T>,
     T: AddAssign + AsPrimitive<T> + Default + Display + CoordFloat + FloatConst,
 {
     pub circumcenters: Vec<Coordinate<T>>,
-    delaunay: Delaunay<T>,
+    delaunay: Delaunay<DRAIN, L, PR, PV, T>,
     pub vectors: VecDeque<Coordinate<T>>,
     pub xmin: T,
     pub ymin: T,
@@ -30,12 +38,16 @@ where
     pub ymax: T,
 }
 
-impl<T> Voronoi<T>
+impl<DRAIN, L, PR, PV, T> Voronoi<DRAIN, L, PR, PV, T>
 where
+    DRAIN: Stream<T = T>,
+    L: Line,
+    PR: ProjectionRaw<T>,
+    PV: PointVisible<T = T>,
     T: AddAssign + CoordFloat + Default + Display + FloatConst + FromPrimitive + AsPrimitive<T>,
 {
-    pub fn new(delaunay: Delaunay<T>, bounds: Option<Bounds<T>>) -> Self {
-        let mut v: Voronoi<T>;
+    pub fn new(delaunay: Delaunay<DRAIN, L, PR, PV, T>, bounds: Option<Bounds<T>>) -> Self {
+        let mut v: Voronoi<DRAIN, L, PR, PV, T>;
         let (xmin, ymin, xmax, ymax) = match bounds {
             Some(bounds) => bounds,
             None => (
