@@ -1,4 +1,5 @@
-#![allow(clippy::needless_return)]
+#![allow(clippy::pedantic)]
+#![warn(missing_debug_implementations)]
 extern crate derivative;
 
 pub mod delaunay;

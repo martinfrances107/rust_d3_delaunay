@@ -37,9 +37,9 @@ where
 {
     fn to_string(&self) -> String {
         if self.s.is_empty() {
-            return "".to_string();
+            "".to_string()
         } else {
-            return self.s.clone();
+            self.s.clone()
         }
     }
 }
@@ -107,6 +107,6 @@ where
     }
 
     fn value(&self) -> Vec<Coordinate<T>> {
-        return Vec::new();
+        Vec::new()
     }
 }

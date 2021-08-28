@@ -13,6 +13,7 @@ impl<T> Default for Polygon<T>
 where
     T: CoordFloat,
 {
+    #[inline]
     fn default() -> Self {
         Polygon { p: Vec::new() }
     }
@@ -22,8 +23,9 @@ impl<T> ToString for Polygon<T>
 where
     T: CoordFloat,
 {
+    #[inline]
     fn to_string(&self) -> String {
-        return String::from("");
+        String::from("")
     }
 }
 

@@ -109,7 +109,7 @@ where
 
         out.init();
 
-        return out;
+        out
     }
 
     #[inline]
@@ -121,27 +121,23 @@ where
         // Check for colinear.
         if self.delaunator.hull.len() > 2usize && colinear(&self.points, &self.delaunator) {
             let len = self.points.len() as u32 / 2;
-            let mut colinear_vec: Vec<usize> = (0..len)
-                .map(|i| {
-                    return i as usize;
-                })
-                .collect();
+            let mut colinear_vec: Vec<usize> = (0..len).map(|i| i as usize).collect();
             colinear_vec.sort_by(|i, j| {
                 let x_diff = self.points[*i].x - self.points[*j].x;
                 if x_diff != T::zero() {
                     if x_diff.is_sign_positive() {
-                        return Ordering::Greater;
+                        Ordering::Greater
                     } else {
-                        return Ordering::Less;
+                        Ordering::Less
                     }
                 } else {
                     let y_diff = self.points[*i].y - self.points[*j].y;
                     if y_diff.is_zero() {
-                        return Ordering::Equal;
+                        Ordering::Equal
                     } else if y_diff.is_sign_positive() {
-                        return Ordering::Greater;
+                        Ordering::Greater
                     } else {
-                        return Ordering::Less;
+                        Ordering::Less
                     }
                 }
             });
@@ -273,6 +269,6 @@ where
             }
         }
 
-        return c;
+        c
     }
 }

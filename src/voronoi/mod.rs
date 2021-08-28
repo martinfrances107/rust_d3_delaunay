@@ -21,6 +21,7 @@ use crate::RenderingContext2d;
 // xmin, ymin, xmax, ymax.
 pub(super) type Bounds<T> = (T, T, T, T);
 
+#[derive(Debug)]
 pub struct Voronoi<DRAIN, L, PR, PV, T>
 where
     DRAIN: Stream<T = T>,
@@ -86,7 +87,7 @@ where
         };
 
         v.init();
-        return v;
+        v
     }
 
     fn init(&mut self) {
@@ -288,8 +289,8 @@ where
         T: CoordFloat + Display,
     {
         let points = self.clip(i);
-        return match points {
-            None => return,
+        match points {
+            None => {}
             Some(points) => {
                 if points.is_empty() {
                     return;
@@ -315,7 +316,7 @@ where
 
                 context.close_path();
             }
-        };
+        }
     }
     //  cellPolgons*() is a generator which rustlang does not support.
     // in tests this is implemented as a for loop using cell_polygon().
@@ -326,7 +327,7 @@ where
     {
         let mut polygon = Polygon::default();
         self.render_cell(i, &mut polygon);
-        return polygon.value();
+        polygon.value()
     }
 
     fn render_segment(
@@ -351,8 +352,9 @@ where
         }
     }
 
+    #[inline]
     pub fn contains(&self, i: usize, x: T, y: T) -> bool {
-        return self.delaunay.step(i, x, y) == i;
+        self.delaunay.step(i, x, y) == i
     }
 
     // TODO place neighbours* here() rustlang does not yet support generator functions.
@@ -380,7 +382,7 @@ where
                 break;
             }
         }
-        return Some(points);
+        Some(points)
     }
 
     fn clip(&self, i: usize) -> Option<VecDeque<Coordinate<T>>> {
@@ -406,24 +408,15 @@ where
             ]));
         }
         match self.cell(i) {
-            None => {
-                return None;
-            }
+            None => None,
             Some(points) => {
                 #[allow(non_snake_case)]
                 let V = &self.vectors;
                 let v = i * 2;
                 if V[v].x != T::zero() || V[v].y != T::zero() {
-                    return Some(self.clip_infinite(
-                        i,
-                        &points,
-                        V[v].x,
-                        V[v].y,
-                        V[v + 1].x,
-                        V[v + 1].y,
-                    ));
+                    Some(self.clip_infinite(i, &points, V[v].x, V[v].y, V[v + 1].x, V[v + 1].y))
                 } else {
-                    return Some(self.clip_finite(i, &points));
+                    Some(self.clip_finite(i, &points))
                 }
             }
         }
@@ -538,7 +531,7 @@ where
             .into_iter()
             .collect();
         }
-        return P;
+        P
     }
 
     fn clip_segment(
@@ -650,7 +643,7 @@ where
             .into_iter()
             .collect();
         }
-        return P;
+        P
     }
 
     #[allow(non_snake_case)]
@@ -741,7 +734,7 @@ where
                 }
             }
         }
-        return j;
+        j
     }
 
     fn project(&self, p0: Coordinate<T>, vx: T, vy: T) -> Option<Coordinate<T>> {
@@ -798,7 +791,7 @@ where
                 y = p0.x + t * vy;
             }
         }
-        return Some(Coordinate { x, y });
+        Some(Coordinate { x, y })
     }
 
     fn edgecode(&self, p: Coordinate<T>) -> u8 {
@@ -822,7 +815,7 @@ where
             upper = 0b0000;
         }
 
-        return lower | upper;
+        lower | upper
     }
 
     fn regioncode(&self, p: Coordinate<T>) -> u8 {
@@ -846,6 +839,6 @@ where
             upper = 0b0000;
         }
 
-        return lower | upper;
+        lower | upper
     }
 }
