@@ -9,8 +9,6 @@ use rust_d3_geo::projection::projection::Projection;
 use rust_d3_geo::projection::Raw as ProjectionRaw;
 use rust_d3_geo::stream::Stream;
 use std::cmp::Ordering;
-use std::fmt::Display;
-use std::ops::AddAssign;
 
 use colinear::colinear;
 use delaunator::{triangulate, Point as DPoint, Triangulation, EMPTY};
@@ -18,8 +16,8 @@ use derivative::Derivative;
 use geo::Point;
 use geo::{CoordFloat, Coordinate};
 use jitter::jitter;
-use num_traits::{float::FloatConst, AsPrimitive};
-use num_traits::{FromPrimitive, ToPrimitive};
+use num_traits::float::FloatConst;
+use num_traits::FromPrimitive;
 
 use crate::voronoi::Bounds;
 use crate::voronoi::Voronoi;
@@ -32,7 +30,7 @@ where
     PR: ProjectionRaw<T>,
     PV: PointVisible<T = T>,
     L: Line,
-    T: AddAssign + AsPrimitive<T> + CoordFloat + Default + Display + FloatConst,
+    T: CoordFloat + FloatConst,
 {
     pub colinear: Vec<usize>,
     #[derivative(Debug = "ignore")]
@@ -56,14 +54,7 @@ where
     PR: ProjectionRaw<T>,
     PV: PointVisible<T = T>,
     L: Line,
-    T: AddAssign
-        + AsPrimitive<T>
-        + CoordFloat
-        + Default
-        + Display
-        + FloatConst
-        + FromPrimitive
-        + ToPrimitive,
+    T: CoordFloat + FloatConst + FromPrimitive,
 {
     pub fn new(points: Vec<Coordinate<T>>) -> Self {
         // conversion into delaunay point!!!

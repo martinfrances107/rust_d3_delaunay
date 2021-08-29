@@ -6,12 +6,11 @@ use rust_d3_geo::projection::Raw as ProjectionRaw;
 use rust_d3_geo::stream::Stream;
 use std::collections::VecDeque;
 use std::fmt::Display;
-use std::ops::AddAssign;
 
 use delaunator::EMPTY;
 use geo::CoordFloat;
 use geo::Coordinate;
-use num_traits::{AsPrimitive, Float, FloatConst, FromPrimitive};
+use num_traits::{Float, FloatConst, FromPrimitive};
 
 use crate::delaunay::Delaunay;
 use crate::path::Path;
@@ -28,7 +27,7 @@ where
     L: Line,
     PR: ProjectionRaw<T>,
     PV: PointVisible<T = T>,
-    T: AddAssign + AsPrimitive<T> + Default + Display + CoordFloat + FloatConst,
+    T: CoordFloat + FloatConst,
 {
     pub circumcenters: Vec<Coordinate<T>>,
     delaunay: Delaunay<DRAIN, L, PR, PV, T>,
@@ -45,7 +44,7 @@ where
     L: Line,
     PR: ProjectionRaw<T>,
     PV: PointVisible<T = T>,
-    T: AddAssign + CoordFloat + Default + Display + FloatConst + FromPrimitive + AsPrimitive<T>,
+    T: CoordFloat + FloatConst + FromPrimitive,
 {
     pub fn new(delaunay: Delaunay<DRAIN, L, PR, PV, T>, bounds: Option<Bounds<T>>) -> Self {
         let mut v: Voronoi<DRAIN, L, PR, PV, T>;
@@ -277,7 +276,7 @@ where
     /// 'context' cannot be either a Path type of a RenderingContext2d.
     pub fn render_cell_to_path(&self, i: usize) -> String
     where
-        T: CoordFloat + Display,
+        T: CoordFloat + Display + FloatConst,
     {
         let mut path = Path::default();
         self.render_cell(i, &mut path);
