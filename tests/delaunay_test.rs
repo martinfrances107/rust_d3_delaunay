@@ -58,9 +58,9 @@ mod delaunay_test {
             Coordinate { x: 0f64, y: 1f64 },
             Coordinate { x: 1f64, y: 0f64 },
         ];
-        // TODO must fix
-        // let delaunay: Delaunay<f64> = Delaunay::new(points);
-        // assert_eq!(delaunay.inedges, vec![2, 1, 0, EMPTY]);
+
+        let delaunay: DelaunayStub = Delaunay::new(points);
+        assert_eq!(delaunay.inedges, vec![2, 1, 0, EMPTY]);
 
         // Cannot reproduce neighbors tests...
         // neighbors is part of rust_d3_geo_voronoi.delaunay.
