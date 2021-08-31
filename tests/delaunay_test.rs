@@ -211,10 +211,11 @@ mod delaunay_test {
 
     #[test]
     fn test_delaunay_return_for_zero_points() {
-        // println!("delaunay.voronoi() for zero point returns expected values");
-        // let delaunay = Delaunay::new(vec![]);
+        println!("delaunay.voronoi() for zero point returns expected values");
+        let delaunay: DelaunayStub = Delaunay::new(vec![]);
         // let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
-        // assert_eq!(voronoi.render(), None);
+        // TODO must fix.
+        // assert_eq!(voronoi.render_to_string(), "hello");
     }
 
     // tape("delaunay.voronoi() for one point returns the bounding rectangle", test => {
@@ -239,6 +240,40 @@ mod delaunay_test {
     //   test.equal(voronoi.delaunay.find(-1,0), 0);
     //   test.equal(voronoi.delaunay.find(2,0), 1);
     // });
+
+    fn test_delaunay_return_for_two_point() {
+        println!("delaunay.voronoi() for one point returns the bounding rectangle");
+        let points = vec![
+            Coordinate { x: 0f64, y: 0f64 },
+            Coordinate { x: 1f64, y: 0f64 },
+            Coordinate { x: 1f64, y: 0f64 },
+            Coordinate { x: 1f64, y: 0f64 },
+        ];
+        let d: DelaunayStub = Delaunay::new(points.clone());
+        let voronoi = d.voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
+        //This string is equivalent to the JS version but not identical.
+        // The points are a circular right shift of the original points
+        // here is the original "M-1,2L-1,-1L0.5,-1L0.5,2Z"
+        assert_eq!(voronoi.render_cell_to_path(0), "M0.5,2L-1,2L-1,-1L0.5,-1Z");
+        assert_eq!(
+            voronoi.delaunay.find(
+                Coordinate {
+                    x: -1_f64,
+                    y: 0_f64
+                },
+                None
+            ),
+            0
+        );
+        let d: DelaunayStub = Delaunay::new(points);
+        let voronoi = d.voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
+        assert_eq!(
+            voronoi
+                .delaunay
+                .find(Coordinate { x: 2_f64, y: 0_f64 }, None),
+            1
+        );
+    }
 
     // tape("delaunay.voronoi() for collinear points", test => {
     //   let voronoi = Delaunay.from([[0, 0], [1, 0], [-1, 0]]).voronoi([-1, -1, 2, 2]);

@@ -221,17 +221,30 @@ where
         }
     }
 
-    pub fn step(&self, i: usize, x: T, y: T) -> usize {
+    pub fn find(self, p: Coordinate<T>, i: Option<usize>) -> usize {
+        // Skip return early if p is invalid.
+        let mut i: usize = i.unwrap_or(0usize);
+        let i0 = i;
+        let mut c = self.step(i, p);
+
+        while c != EMPTY && c != i && c != i0 {
+            i = c;
+            c = self.step(i, p)
+        }
+        c
+    }
+
+    pub fn step(&self, i: usize, p: Coordinate<T>) -> usize {
         if self.inedges[i] == EMPTY || self.points.is_empty() {
             return (i + 1) % (self.points.len() >> 1);
         };
         let mut c = i;
-        let mut dc = (x - self.points[i].x).powi(2) + (y - self.points[i].y).powi(2);
+        let mut dc = (p.x - self.points[i].x).powi(2) + (p.y - self.points[i].y).powi(2);
         let e0 = self.inedges[i];
         let mut e = e0;
         loop {
             let t = self.triangles[e];
-            let dt = (x - self.points[t].x).powi(2) + (y - self.points[t].y).powi(2);
+            let dt = (p.x - self.points[t].x).powi(2) + (p.y - self.points[t].y).powi(2);
             if dt < dc {
                 dc = dt;
                 c = t;
@@ -250,7 +263,9 @@ where
             e = self.half_edges[e];
             if e == EMPTY {
                 e = self.hull[(self.hull_index[i] + 1) % self.hull.len()];
-                if e != t && (x - self.points[e].x).powi(2) + (y - self.points[e].y).powi(2) < dc {
+                if e != t
+                    && (p.x - self.points[e].x).powi(2) + (p.y - self.points[e].y).powi(2) < dc
+                {
                     return e;
                 }
                 break;

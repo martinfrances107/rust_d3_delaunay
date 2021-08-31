@@ -1,3 +1,4 @@
+#![allow(clippy::pedantic)]
 #[cfg(not(tarpaulin_include))]
 #[cfg(test)]
 mod voronoi_test {
@@ -67,15 +68,18 @@ mod voronoi_test {
     fn test_contains_false_for_coincident() {
         println!("voronoi.contains(i, x, y) is false for coincident points");
         let points = vec![
-            Coordinate { x: 0f64, y: 0f64 },
-            Coordinate { x: 1f64, y: 0f64 },
-            Coordinate { x: 0f64, y: 1f64 },
-            Coordinate { x: 1f64, y: 0f64 },
+            Coordinate { x: 0_f64, y: 0_f64 },
+            Coordinate { x: 1_f64, y: 0_f64 },
+            Coordinate { x: 0_f64, y: 1_f64 },
+            Coordinate { x: 1_f64, y: 0_f64 },
         ];
         let d: DelaunayStub = Delaunay::new(points);
-        let voronoi = d.voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
-        assert_eq!(voronoi.contains(3, 1f64, 0f64), false);
-        assert_eq!(voronoi.contains(1, 1f64, 0f64), true);
+        let voronoi = d.voronoi(Some((-1_f64, -1_f64, 2_f64, 2_f64)));
+        assert_eq!(
+            voronoi.contains(3, Coordinate { x: 1_f64, y: 0_f64 }),
+            false
+        );
+        assert_eq!(voronoi.contains(1, Coordinate { x: 1_f64, y: 0_f64 }), true);
     }
 
     // tape("voronoi.update() updates the voronoi", test => {

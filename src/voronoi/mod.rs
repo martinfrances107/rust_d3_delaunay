@@ -30,7 +30,7 @@ where
     T: CoordFloat + FloatConst,
 {
     pub circumcenters: Vec<Coordinate<T>>,
-    delaunay: Delaunay<DRAIN, L, PR, PV, T>,
+    pub delaunay: Delaunay<DRAIN, L, PR, PV, T>,
     pub vectors: VecDeque<Coordinate<T>>,
     pub xmin: T,
     pub ymin: T,
@@ -352,8 +352,8 @@ where
     }
 
     #[inline]
-    pub fn contains(&self, i: usize, x: T, y: T) -> bool {
-        self.delaunay.step(i, x, y) == i
+    pub fn contains(&self, i: usize, p: Coordinate<T>) -> bool {
+        self.delaunay.step(i, p) == i
     }
 
     // TODO place neighbours* here() rustlang does not yet support generator functions.
@@ -506,8 +506,10 @@ where
             }
         } else if self.contains(
             i,
-            (self.xmin + self.xmax) / two,
-            (self.ymin + self.ymax) / two,
+            Coordinate {
+                x: (self.xmin + self.xmax) / two,
+                y: (self.ymin + self.ymax) / two,
+            },
         ) {
             return vec![
                 Coordinate {
@@ -618,8 +620,10 @@ where
             }
         } else if self.contains(
             i,
-            (self.xmin + self.xmax) / t2,
-            (self.ymin + self.ymax) / t2,
+            Coordinate {
+                x: (self.xmin + self.xmax) / t2,
+                y: (self.ymin + self.ymax) / t2,
+            },
         ) {
             P = vec![
                 Coordinate {
@@ -712,7 +716,9 @@ where
 
             // The JS version has subtle handling of out of bounds checks.
             let out_of_bounds = j >= P.len();
-            if (out_of_bounds || P[j].x != x || P[j].y != y) && self.contains(i_in, x, y) {
+            if (out_of_bounds || P[j].x != x || P[j].y != y)
+                && self.contains(i_in, Coordinate { x, y })
+            {
                 P.insert(j, Coordinate { x, y });
                 j += 1;
             }
