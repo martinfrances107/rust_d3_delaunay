@@ -269,11 +269,29 @@ mod delaunay_test {
     //   test.deepEqual(Array.from(voronoi.delaunay.neighbors(2)), [0]);
     // });
 
-    // tape("delaunay.find(x, y) returns the index of the cell that contains the specified point", test => {
-    //   let delaunay = Delaunay.from([[0, 0], [300, 0], [0, 300], [300, 300], [100, 100]]);
-    //   test.equal(delaunay.find(49, 49), 0);
-    //   test.equal(delaunay.find(51, 51), 4);
-    // });
+    #[test]
+    fn test_find_x_y_returns_index_for_speficied_point() {
+        println!(
+            "delaunay.find(x, y) returns the index of the cell that contains the specified point"
+        );
+
+        let delaunay: DelaunayStub = Delaunay::new(vec![
+            Coordinate { x: 0., y: 0. },
+            Coordinate { x: 300., y: 0. },
+            Coordinate { x: 0., y: 300. },
+            Coordinate { x: 300., y: 300. },
+            Coordinate { x: 100., y: 100. },
+        ]);
+        assert_eq!(delaunay.find(Coordinate { x: 49., y: 49. }, None), 0);
+        let delaunay: DelaunayStub = Delaunay::new(vec![
+            Coordinate { x: 0., y: 0. },
+            Coordinate { x: 300., y: 0. },
+            Coordinate { x: 0., y: 300. },
+            Coordinate { x: 300., y: 300. },
+            Coordinate { x: 100., y: 100. },
+        ]);
+        assert_eq!(delaunay.find(Coordinate { x: 51., y: 51. }, None), 4);
+    }
 
     // tape("delaunay.find(x, y) works with one or two points", test => {
     //   const points = [[0, 1], [0, 2]];
@@ -361,15 +379,334 @@ mod delaunay_test {
     //   test.ok(delaunay.find(0,0,1) > -1);
     // });
 
-    // tape("delaunay.find(x, y, i) traverses the convex hull", test => {
-    //   let delaunay = new Delaunay(Float64Array.of(509,253,426,240,426,292,567,272,355,356,413,392,319,408,374,285,327,303,381,215,475,319,301,352,247,426,532,334,234,366,479,375,251,302,340,170,160,377,626,317,177,296,322,243,195,422,241,232,585,358,666,406,689,343,172,198,527,401,766,350,444,432,117,316,267,170,580,412,754,425,117,231,725,300,700,222,438,165,703,168,558,221,475,211,491,125,216,166,240,108,783,266,640,258,184,77,387,90,162,125,621,162,296,78,532,154,763,199,132,165,422,343,312,128,125,77,450,95,635,106,803,415,714,63,529,87,388,152,575,126,573,64,726,381,773,143,787,67,690,117,813,203,811,319));
-    //   test.equal(delaunay.find(49, 311), 31);
-    //   test.equal(delaunay.find(49, 311, 22), 31);
-    // });
+    #[test]
+    fn delaunay_find_tranverses_the_convex_hull() {
+        println!("delaunay.find(x, y, i) traverses the convex hull");
+        let points = vec![
+            Coordinate {
+                x: 509_f64,
+                y: 253_f64,
+            },
+            Coordinate {
+                x: 426_f64,
+                y: 240_f64,
+            },
+            Coordinate {
+                x: 426_f64,
+                y: 292_f64,
+            },
+            Coordinate {
+                x: 567_f64,
+                y: 272_f64,
+            },
+            Coordinate {
+                x: 355_f64,
+                y: 356_f64,
+            },
+            Coordinate {
+                x: 413_f64,
+                y: 392_f64,
+            },
+            Coordinate {
+                x: 319_f64,
+                y: 408_f64,
+            },
+            Coordinate {
+                x: 374_f64,
+                y: 285_f64,
+            },
+            Coordinate {
+                x: 327_f64,
+                y: 303_f64,
+            },
+            Coordinate {
+                x: 381_f64,
+                y: 215_f64,
+            },
+            Coordinate {
+                x: 475_f64,
+                y: 319_f64,
+            },
+            Coordinate {
+                x: 301_f64,
+                y: 352_f64,
+            },
+            Coordinate {
+                x: 247_f64,
+                y: 426_f64,
+            },
+            Coordinate {
+                x: 532_f64,
+                y: 334_f64,
+            },
+            Coordinate {
+                x: 234_f64,
+                y: 366_f64,
+            },
+            Coordinate {
+                x: 479_f64,
+                y: 375_f64,
+            },
+            Coordinate {
+                x: 251_f64,
+                y: 302_f64,
+            },
+            Coordinate {
+                x: 340_f64,
+                y: 170_f64,
+            },
+            Coordinate {
+                x: 160_f64,
+                y: 377_f64,
+            },
+            Coordinate {
+                x: 626_f64,
+                y: 317_f64,
+            },
+            Coordinate {
+                x: 177_f64,
+                y: 296_f64,
+            },
+            Coordinate {
+                x: 322_f64,
+                y: 243_f64,
+            },
+            Coordinate {
+                x: 195_f64,
+                y: 422_f64,
+            },
+            Coordinate {
+                x: 241_f64,
+                y: 232_f64,
+            },
+            Coordinate {
+                x: 585_f64,
+                y: 358_f64,
+            },
+            Coordinate {
+                x: 666_f64,
+                y: 406_f64,
+            },
+            Coordinate {
+                x: 689_f64,
+                y: 343_f64,
+            },
+            Coordinate {
+                x: 172_f64,
+                y: 198_f64,
+            },
+            Coordinate {
+                x: 527_f64,
+                y: 401_f64,
+            },
+            Coordinate {
+                x: 766_f64,
+                y: 350_f64,
+            },
+            Coordinate {
+                x: 444_f64,
+                y: 432_f64,
+            },
+            Coordinate {
+                x: 117_f64,
+                y: 316_f64,
+            },
+            Coordinate {
+                x: 267_f64,
+                y: 170_f64,
+            },
+            Coordinate {
+                x: 580_f64,
+                y: 412_f64,
+            },
+            Coordinate {
+                x: 754_f64,
+                y: 425_f64,
+            },
+            Coordinate {
+                x: 117_f64,
+                y: 231_f64,
+            },
+            Coordinate {
+                x: 725_f64,
+                y: 300_f64,
+            },
+            Coordinate {
+                x: 700_f64,
+                y: 222_f64,
+            },
+            Coordinate {
+                x: 438_f64,
+                y: 165_f64,
+            },
+            Coordinate {
+                x: 703_f64,
+                y: 168_f64,
+            },
+            Coordinate {
+                x: 558_f64,
+                y: 221_f64,
+            },
+            Coordinate {
+                x: 475_f64,
+                y: 211_f64,
+            },
+            Coordinate {
+                x: 491_f64,
+                y: 125_f64,
+            },
+            Coordinate {
+                x: 216_f64,
+                y: 166_f64,
+            },
+            Coordinate {
+                x: 240_f64,
+                y: 108_f64,
+            },
+            Coordinate {
+                x: 783_f64,
+                y: 266_f64,
+            },
+            Coordinate {
+                x: 640_f64,
+                y: 258_f64,
+            },
+            Coordinate {
+                x: 184_f64,
+                y: 77_f64,
+            },
+            Coordinate {
+                x: 387_f64,
+                y: 90_f64,
+            },
+            Coordinate {
+                x: 162_f64,
+                y: 125_f64,
+            },
+            Coordinate {
+                x: 621_f64,
+                y: 162_f64,
+            },
+            Coordinate {
+                x: 296_f64,
+                y: 78_f64,
+            },
+            Coordinate {
+                x: 532_f64,
+                y: 154_f64,
+            },
+            Coordinate {
+                x: 763_f64,
+                y: 199_f64,
+            },
+            Coordinate {
+                x: 132_f64,
+                y: 165_f64,
+            },
+            Coordinate {
+                x: 422_f64,
+                y: 343_f64,
+            },
+            Coordinate {
+                x: 312_f64,
+                y: 128_f64,
+            },
+            Coordinate {
+                x: 125_f64,
+                y: 77_f64,
+            },
+            Coordinate {
+                x: 450_f64,
+                y: 95_f64,
+            },
+            Coordinate {
+                x: 635_f64,
+                y: 106_f64,
+            },
+            Coordinate {
+                x: 803_f64,
+                y: 415_f64,
+            },
+            Coordinate {
+                x: 714_f64,
+                y: 63_f64,
+            },
+            Coordinate {
+                x: 529_f64,
+                y: 87_f64,
+            },
+            Coordinate {
+                x: 388_f64,
+                y: 152_f64,
+            },
+            Coordinate {
+                x: 575_f64,
+                y: 126_f64,
+            },
+            Coordinate {
+                x: 573_f64,
+                y: 64_f64,
+            },
+            Coordinate {
+                x: 726_f64,
+                y: 381_f64,
+            },
+            Coordinate {
+                x: 773_f64,
+                y: 143_f64,
+            },
+            Coordinate {
+                x: 787_f64,
+                y: 67_f64,
+            },
+            Coordinate {
+                x: 690_f64,
+                y: 117_f64,
+            },
+            Coordinate {
+                x: 813_f64,
+                y: 203_f64,
+            },
+            Coordinate {
+                x: 811_f64,
+                y: 319_f64,
+            },
+        ];
 
-    // tape("delaunay.renderHull(context) is closed", test => {
-    //   let delaunay = Delaunay.from([[0, 0], [1, 0], [0, 1], [1, 1]]);
-    //   let context = new Context;
-    //   test.equal((delaunay.renderHull(context), context.toString()), `M0,1L1,1L1,0L0,0Z`);
-    // });
+        let delaunay: DelaunayStub = Delaunay::new(points.clone());
+        assert_eq!(
+            delaunay.find(
+                Coordinate {
+                    x: 49_f64,
+                    y: 311_f64
+                },
+                None
+            ),
+            31
+        );
+        let delaunay2: DelaunayStub = Delaunay::new(points.clone());
+        assert_eq!(
+            delaunay2.find(
+                Coordinate {
+                    x: 49_f64,
+                    y: 311_f64
+                },
+                None
+            ),
+            31
+        )
+    }
+    #[test]
+    fn test_hull_context_is_closed() {
+        println!("delaunay.renderHull(context) is closed");
+        let points = vec![
+            Coordinate { x: 0f64, y: 0f64 },
+            Coordinate { x: 1f64, y: 0f64 },
+            Coordinate { x: 0f64, y: 1f64 },
+            Coordinate { x: 1f64, y: 1f64 },
+        ];
+        // let d: DelaunayStub = Delaunay::new(points);
+        let delaunay: DelaunayStub = Delaunay::new(points);
+        assert_eq!(delaunay.render_hull_to_string(), "M0,1L1,1L1,0L0,0Z");
+    }
 }

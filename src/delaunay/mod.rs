@@ -3,12 +3,15 @@
 mod colinear;
 mod jitter;
 
+use crate::path::Path;
+use crate::RenderingContext2d;
 use rust_d3_geo::clip::Line;
 use rust_d3_geo::clip::PointVisible;
 use rust_d3_geo::projection::projection::Projection;
 use rust_d3_geo::projection::Raw as ProjectionRaw;
 use rust_d3_geo::stream::Stream;
 use std::cmp::Ordering;
+use std::fmt::Display;
 
 use colinear::colinear;
 use delaunator::{triangulate, Point as DPoint, Triangulation, EMPTY};
@@ -281,7 +284,34 @@ where
     // TODO Mising functions :-
     // fn render()
     // fn rednerPoints
-    // render hulll
+
+    /// Output the hull to a string.
+    ///
+    /// Wrapper function - a departure from the javascript version.
+    /// render() has been spit into two functions.
+    /// rust expects variable type to be determined statically
+    /// 'context' cannot be either a Path type of a RenderingContext2d.
+    pub fn render_hull_to_string(&self) -> String
+    where
+        T: CoordFloat + Display,
+    {
+        let mut path = Path::<T>::default();
+        self.render_hull(&mut path);
+        path.to_string()
+    }
+
+    /// Dumps the hull to the render context.
+    pub fn render_hull(&self, context: &mut impl RenderingContext2d<T>) {
+        let h = self.hull[0];
+        let n = self.hull.len();
+        context.move_to(&self.points[h]);
+        for i in 1..n {
+            let h = self.hull[i];
+            context.line_to(&self.points[h]);
+        }
+        context.close_path();
+    }
+
     // hullPolygon
     // renderTriangle
     // trianglePolygon
