@@ -6,7 +6,9 @@ mod delaunay_test {
     use delaunator::EMPTY;
     use geo::Coordinate;
     use rust_d3_delaunay::delaunay::Delaunay;
+    use rust_d3_delaunay::path::Path;
     use rust_d3_delaunay::voronoi::Voronoi;
+    use rust_d3_delaunay::RenderingContext2d;
     use rust_d3_geo::clip::antimeridian::line::Line;
     use rust_d3_geo::clip::antimeridian::pv::PV;
     use rust_d3_geo::projection::gnomic::Gnomic;
@@ -212,6 +214,29 @@ mod delaunay_test {
         println!("delaunay.voronoi() for zero point returns expected values");
         let v: VoronoiStub = Delaunay::new(vec![]).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         assert_eq!(v.render_to_string(), "");
+    }
+
+    #[test]
+    fn test_delaunay_render_points_accepts_r() {
+        println!("delaunay.voronoi() for zero point returns expected values");
+        let points = vec![Coordinate {
+            x: 0.0_f64,
+            y: 0.0_f64,
+        }];
+        let d: DelaunayStub = Delaunay::new(points);
+
+        assert_eq!(
+            d.render_points_to_string(None),
+            "M2,0A2,2,0,1,1,-2,0A2,2,0,1,1,2,0"
+        );
+        assert_eq!(
+            d.render_points_to_string(Some(5_f64)),
+            "M5,0A5,5,0,1,1,-5,0A5,5,0,1,1,5,0"
+        );
+
+        let mut path = Path::default();
+        d.render_points(&mut path, Some(3_f64));
+        assert_eq!(path.to_string(), "M3,0A3,3,0,1,1,-3,0A3,3,0,1,1,3,0");
     }
 
     #[test]

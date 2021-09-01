@@ -283,7 +283,50 @@ where
 
     // TODO Mising functions :-
     // fn render()
+    // render(&self, context: &mut impl RenderingContext2d<T>)
+
+    /// Output the hull to a string.
+    ///
+    /// Wrapper function - a departure from the javascript version.
+    /// render() has been spit into two functions.
+    /// rust expects variable type to be determined statically
+    /// 'context' cannot be either a Path type of a RenderingContext2d.
+    /// Output the hull to a string.
+    ///
+    /// Wrapper function - a departure from the javascript version.
+    /// render() has been spit into two functions.
+    /// rust expects variable type to be determined statically
+    /// 'context' cannot be either a Path type of a RenderingContext2d.
+    pub fn render_points_to_string(&self, r: Option<T>) -> String
+    where
+        T: CoordFloat + Display,
+    {
+        let mut path = Path::<T>::default();
+        self.render_points(&mut path, r);
+        path.to_string()
+    }
+
     // fn rednerPoints
+    pub fn render_points(&self, context: &mut impl RenderingContext2d<T>, r: Option<T>) {
+        // if (r === undefined && (!context || typeof context.moveTo !== "function")) r = context, context = null;
+        // r = r == undefined ? 2 : +r;
+
+        let tau = T::from(2_f64).unwrap() * T::PI();
+
+        let r = match r {
+            Some(r) => r,
+            None => T::from(2.0).unwrap(),
+        };
+        // const buffer = context == null ? context = new Path : undefined;
+        // const {points} = this;
+        // for (let i = 0, n = self.points.length; i < n; i += 2) {
+        for p in &self.points {
+            //   let x = points[i], y = points[i + 1];
+            context.move_to(&Coordinate { x: p.x + r, y: p.y });
+            context.arc(p, r, T::zero(), tau);
+        }
+        // return buffer && buffer.value();
+    }
 
     /// Output the hull to a string.
     ///

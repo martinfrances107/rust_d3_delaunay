@@ -25,7 +25,16 @@ where
 {
     #[inline]
     fn to_string(&self) -> String {
-        String::from("")
+        todo!("Do I need this.");
+    }
+}
+
+impl<T> Polygon<T>
+where
+    T: CoordFloat,
+{
+    pub fn value(&self) -> Vec<Coordinate<T>> {
+        self.p.clone()
     }
 }
 
@@ -33,7 +42,9 @@ impl<T> RenderingContext2d<T> for Polygon<T>
 where
     T: CoordFloat,
 {
-    fn arc(&mut self, _p: &Coordinate<T>, _r: T) {}
+    fn arc(&mut self, _p: &Coordinate<T>, _r: T, _start: T, _stop: T) {
+        todo!("must implement.");
+    }
 
     fn move_to(&mut self, p: &Coordinate<T>) {
         self.p.push(*p);
@@ -48,8 +59,4 @@ where
     }
 
     fn rect(&mut self, _p: &Coordinate<T>, _w: T, _h: T) {}
-
-    fn value(&self) -> Vec<Coordinate<T>> {
-        self.p.clone()
-    }
 }

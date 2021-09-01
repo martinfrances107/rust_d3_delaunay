@@ -66,7 +66,7 @@ where
         self.s.push_str(&format!("L{},{}", p.x, p.y));
     }
 
-    fn arc(&mut self, p: &Coordinate<T>, r: T) {
+    fn arc(&mut self, p: &Coordinate<T>, r: T, _start: T, _stop: T) {
         let x0 = p.x + r;
         let y0 = p.y;
         if r < T::zero() {
@@ -82,7 +82,7 @@ where
                 }
                 self.p1 = Some(*p1);
                 self.s.push_str(&format!(
-                    "AS{},{},0,1,1,{},{}AS{},{},0,1,1{},{}",
+                    "A{},{},0,1,1,{},{}A{},{},0,1,1,{},{}",
                     r,
                     r,
                     p.x - r,
@@ -104,9 +104,5 @@ where
         self.p1 = Some(*p);
         self.s
             .push_str(&format!("M{},{},{}h{}v{}h{}Z", p.x, p.y, w, h, h, -w));
-    }
-
-    fn value(&self) -> Vec<Coordinate<T>> {
-        Vec::new()
     }
 }
