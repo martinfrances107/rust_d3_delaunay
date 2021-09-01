@@ -3,7 +3,6 @@
 mod delaunay_test {
     extern crate pretty_assertions;
 
-    // use delaunator::Point;
     use delaunator::EMPTY;
     use geo::Coordinate;
     use rust_d3_delaunay::delaunay::Delaunay;
@@ -15,6 +14,9 @@ mod delaunay_test {
 
     type DelaunayStub =
         Delaunay<StreamDrainStub<f64>, Line<f64>, Gnomic<StreamDrainStub<f64>, f64>, PV<f64>, f64>;
+
+    type VoronoiStub =
+        Voronoi<StreamDrainStub<f64>, Line<f64>, Gnomic<StreamDrainStub<f64>, f64>, PV<f64>, f64>;
 
     #[test]
     fn test_from_array() {
@@ -40,7 +42,7 @@ mod delaunay_test {
         assert_eq!(delaunay.half_edges, vec![EMPTY, 5, EMPTY, EMPTY, EMPTY, 1]);
         assert_eq!(delaunay.inedges, vec![2, 4, 0, 3]);
 
-        // Cannot reproduce neighbors tests...neighbors is a genrator function!
+        // Cannot reproduce neighbors tests...neighbors is a generator function!
 
         // test.deepEqual(Array.from(delaunay.neighbors(0)), [1, 2]);
         //   test.deepEqual(Array.from(delaunay.neighbors(1)), [2, 0]);
@@ -105,8 +107,7 @@ mod delaunay_test {
             Coordinate { x: 1f64, y: 1f64 },
         ];
 
-        let delaunay: DelaunayStub = Delaunay::new(points);
-        let voronoi = Voronoi::new(delaunay, None);
+        let voronoi: VoronoiStub = Delaunay::new(points).voronoi(None);
         assert_eq!(voronoi.xmin, 0f64);
         assert_eq!(voronoi.ymin, 0f64);
         assert_eq!(voronoi.xmax, 960f64);
@@ -123,8 +124,7 @@ mod delaunay_test {
             Coordinate { x: 1f64, y: 1f64 },
         ];
 
-        let delaunay: DelaunayStub = Delaunay::new(points);
-        let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
+        let voronoi: VoronoiStub = Delaunay::new(points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         assert_eq!(voronoi.xmin, -1f64);
         assert_eq!(voronoi.ymin, -1f64);
         assert_eq!(voronoi.xmax, 2f64);
@@ -141,8 +141,7 @@ mod delaunay_test {
             Coordinate { x: 1f64, y: 1f64 },
         ];
 
-        let delaunay: DelaunayStub = Delaunay::new(points);
-        let voronoi = Voronoi::new(delaunay, None);
+        let voronoi: VoronoiStub = Delaunay::new(points).voronoi(None);
         assert_eq!(
             voronoi.circumcenters,
             vec![Coordinate { x: 0.5, y: 0.5 }, Coordinate { x: 0.5, y: 0.5 }]
@@ -190,8 +189,7 @@ mod delaunay_test {
             Coordinate { x: 1f64, y: 0f64 },
         ];
 
-        let delaunay: DelaunayStub = Delaunay::new(points);
-        let voronoi = Voronoi::new(delaunay, None);
+        let voronoi: VoronoiStub = Delaunay::new(points).voronoi(None);
 
         assert_eq!(voronoi.circumcenters, vec![Coordinate { x: 0.5, y: 0.5 }]);
         assert_eq!(
@@ -212,17 +210,9 @@ mod delaunay_test {
     #[test]
     fn test_delaunay_return_for_zero_points() {
         println!("delaunay.voronoi() for zero point returns expected values");
-        let delaunay: DelaunayStub = Delaunay::new(vec![]);
-        // let voronoi = Voronoi::new(delaunay, Some((-1f64, -1f64, 2f64, 2f64)));
-        // TODO must fix.
-        // assert_eq!(voronoi.render_to_string(), "hello");
+        let v: VoronoiStub = Delaunay::new(vec![]).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
+        assert_eq!(v.render_to_string(), "");
     }
-
-    // tape("delaunay.voronoi() for one point returns the bounding rectangle", test => {
-    //   let voronoi = Delaunay.from([[0, 0]]).voronoi([-1, -1, 2, 2]);
-    //   test.equal(voronoi.renderCell(0), "M2,-1L2,2L-1,2L-1,-1Z");
-    //   test.equal(voronoi.render(), null);
-    // });
 
     #[test]
     fn test_delaunay_return_for_one_point() {
@@ -230,17 +220,11 @@ mod delaunay_test {
         let points = vec![Coordinate { x: 0., y: 0. }];
         let d: DelaunayStub = Delaunay::new(points);
         let voronoi = d.voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
-        assert_eq!(voronoi.render_cell_to_path(0), "M2,-1L2,2L-1,2L-1,-1Z");
-        // assert_eq!(voronoi.render(0), None);
+        assert_eq!(voronoi.render_cell_to_string(0), "M2,-1L2,2L-1,2L-1,-1Z");
+        assert_eq!(voronoi.render_to_string(), "");
     }
 
-    // tape("delaunay.voronoi() for two points", test => {
-    //   let voronoi = Delaunay.from([[0, 0], [1, 0], [1, 0], [1, 0]]).voronoi([-1, -1, 2, 2]);
-    //   test.equal(voronoi.renderCell(0), "M0.5,2L-1,2L-1,-1L0.5,-1Z");
-    //   test.equal(voronoi.delaunay.find(-1,0), 0);
-    //   test.equal(voronoi.delaunay.find(2,0), 1);
-    // });
-
+    #[test]
     fn test_delaunay_return_for_two_point() {
         println!("delaunay.voronoi() for one point returns the bounding rectangle");
         let points = vec![
@@ -251,10 +235,13 @@ mod delaunay_test {
         ];
         let d: DelaunayStub = Delaunay::new(points.clone());
         let voronoi = d.voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
-        //This string is equivalent to the JS version but not identical.
-        // The points are a circular right shift of the original points
+        // This string is equivalent to the JS version but not identical.
+        // The points are a circular right shift of the original,
         // here is the original "M-1,2L-1,-1L0.5,-1L0.5,2Z"
-        assert_eq!(voronoi.render_cell_to_path(0), "M0.5,2L-1,2L-1,-1L0.5,-1Z");
+        assert_eq!(
+            voronoi.render_cell_to_string(0),
+            "M0.5,2L-1,2L-1,-1L0.5,-1Z"
+        );
         assert_eq!(
             voronoi.delaunay.find(
                 Coordinate {

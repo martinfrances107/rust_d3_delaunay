@@ -277,4 +277,12 @@ where
 
         c
     }
+
+    // TODO Mising functions :-
+    // fn render()
+    // fn rednerPoints
+    // render hulll
+    // hullPolygon
+    // renderTriangle
+    // trianglePolygon
 }

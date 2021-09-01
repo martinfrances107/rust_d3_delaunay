@@ -10,6 +10,7 @@ use std::fmt::Display;
 use delaunator::EMPTY;
 use geo::CoordFloat;
 use geo::Coordinate;
+use num_traits::Zero;
 use num_traits::{Float, FloatConst, FromPrimitive};
 
 use crate::delaunay::Delaunay;
@@ -101,101 +102,100 @@ where
         let mut i = 0usize;
         let mut j = 0usize;
         let n = triangles.len();
-        let t1e_minus_8 = T::from_f64(1e-8).unwrap();
-        let t2f64 = T::from_f64(2f64).unwrap();
-        loop {
-            let (x1, y1) = match triangles[i] {
-                EMPTY => (None, None),
-                t1 => (Some(points[t1].x), Some(points[t1].y)),
-            };
+        if !n.is_zero() {
+            let t1e_minus_8 = T::from_f64(1e-8).unwrap();
+            let t2f64 = T::from_f64(2f64).unwrap();
+            loop {
+                dbg!(i);
+                let (x1, y1) = match triangles[i] {
+                    EMPTY => (None, None),
+                    t1 => (Some(points[t1].x), Some(points[t1].y)),
+                };
 
-            let (x2, y2) = match triangles[i + 1] {
-                EMPTY => (None, None),
-                t2 => (Some(points[t2].x), Some(points[t2].y)),
-            };
+                let (x2, y2) = match triangles[i + 1] {
+                    EMPTY => (None, None),
+                    t2 => (Some(points[t2].x), Some(points[t2].y)),
+                };
 
-            let (x3, y3) = match triangles[i + 2] {
-                EMPTY => (None, None),
-                t3 => (Some(points[t3].x), Some(points[t3].y)),
-            };
+                let (x3, y3) = match triangles[i + 2] {
+                    EMPTY => (None, None),
+                    t3 => (Some(points[t3].x), Some(points[t3].y)),
+                };
 
-            let dx = match (x1, x2) {
-                (Some(x1), Some(x2)) => x2 - x1,
-                _ => T::nan(),
-            };
+                let dx = match (x1, x2) {
+                    (Some(x1), Some(x2)) => x2 - x1,
+                    _ => T::nan(),
+                };
 
-            let dy = match (y1, y2) {
-                (Some(y1), Some(y2)) => y2 - y1,
-                _ => T::nan(),
-            };
+                let dy = match (y1, y2) {
+                    (Some(y1), Some(y2)) => y2 - y1,
+                    _ => T::nan(),
+                };
 
-            // let ex = x3 - x1;
-            // let ey = y3 - y1;
-            let ex = match (x1, x3) {
-                (Some(x1), Some(x3)) => x3 - x1,
-                _ => T::nan(),
-            };
+                // let ex = x3 - x1;
+                // let ey = y3 - y1;
+                let ex = match (x1, x3) {
+                    (Some(x1), Some(x3)) => x3 - x1,
+                    _ => T::nan(),
+                };
 
-            let ey = match (y1, y3) {
-                (Some(y1), Some(y3)) => y3 - y1,
-                _ => T::nan(),
-            };
+                let ey = match (y1, y3) {
+                    (Some(y1), Some(y3)) => y3 - y1,
+                    _ => T::nan(),
+                };
 
-            let ab = (dx * ey - dy * ex) * T::from_f64(2f64).unwrap();
-            let two = T::from(2).unwrap();
-            let one_e_8 = T::from(1e8).unwrap();
-            // Out of bound checking is x and y type values are bound of bounds
-            // following the js closely dx and ex become nan
-            // JS is wierd !NAN === true
-            let (x, y) = if ab.is_zero() || ab.is_nan() {
-                // degenerate case (collinear diagram)
-                match (x1, y1, x3, y3) {
-                    (Some(x1), Some(y1), Some(x3), Some(y3)) => (
-                        (x1 + x3) / two - one_e_8 * ey,
-                        (y1 + y3) / two + one_e_8 * ex,
-                    ),
-                    _ => (T::nan(), T::nan()),
-                }
-            } else {
-                //NB if ab is not NAN then x1,y1 must be numbers.
-                let x1 = x1.unwrap();
-                let y1 = y1.unwrap();
-                if ab.abs() < t1e_minus_8 {
-                    // almost equal points (degenerate triangle)
-                    // NB if ab is not NAN then x3,y3 must be numbers.
-                    let x3 = x3.unwrap();
-                    let y3 = y3.unwrap();
-                    ((x1 + x3) / t2f64, (y1 + y3) / t2f64)
+                let ab = (dx * ey - dy * ex) * T::from_f64(2f64).unwrap();
+                let two = T::from(2).unwrap();
+                let one_e_8 = T::from(1e8).unwrap();
+                // Out of bound checking is x and y type values are bound of bounds
+                // following the js closely dx and ex become nan
+                // JS is wierd !NAN === true
+                let (x, y) = if ab.is_zero() || ab.is_nan() {
+                    // degenerate case (collinear diagram)
+                    match (x1, y1, x3, y3) {
+                        (Some(x1), Some(y1), Some(x3), Some(y3)) => (
+                            (x1 + x3) / two - one_e_8 * ey,
+                            (y1 + y3) / two + one_e_8 * ex,
+                        ),
+                        _ => (T::nan(), T::nan()),
+                    }
                 } else {
-                    let d = T::one() / ab;
+                    //NB if ab is not NAN then x1,y1 must be numbers.
+                    let x1 = x1.unwrap();
+                    let y1 = y1.unwrap();
+                    if ab.abs() < t1e_minus_8 {
+                        // almost equal points (degenerate triangle)
+                        // NB if ab is not NAN then x3,y3 must be numbers.
+                        let x3 = x3.unwrap();
+                        let y3 = y3.unwrap();
+                        ((x1 + x3) / t2f64, (y1 + y3) / t2f64)
+                    } else {
+                        let d = T::one() / ab;
 
-                    let bl = dx * dx + dy * dy;
-                    let cl = ex * ex + ey * ey;
-                    (
-                        (x1 + (ey * bl - dy * cl) * d),
-                        (y1 + (dx * cl - ex * bl) * d),
-                    )
+                        let bl = dx * dx + dy * dy;
+                        let cl = ex * ex + ey * ey;
+                        (
+                            (x1 + (ey * bl - dy * cl) * d),
+                            (y1 + (dx * cl - ex * bl) * d),
+                        )
+                    }
+                };
+
+                self.circumcenters[j] = Coordinate { x, y };
+                i += 3;
+
+                j += 1;
+                if i >= n {
+                    break;
                 }
-            };
-
-            self.circumcenters[j] = Coordinate { x, y };
-            i += 3;
-
-            j += 1;
-            if i >= n {
-                break;
             }
         }
 
-        // Compute exterior cell rays.
-        let h = self.delaunay.hull[self.delaunay.hull.len() - 1];
-        let mut p0: usize;
-        let mut p1 = h * 2;
-        let mut x0;
-        let mut x1 = points[h].x;
-        let mut y0;
-        let mut y1 = points[h].y;
-
+        // JS used fill() here
+        // VecDeque has no fill() unlike Vec
+        // This is because VecDecque unlike Vec is not a
+        // contiguous memory element.
+        // .. is this going to be slow!!!
         let vectors_len = self.vectors.len();
         self.vectors.clear();
         for _ in 0..vectors_len {
@@ -205,28 +205,44 @@ where
             });
         }
 
-        for h in hull {
-            p0 = p1;
-            x0 = x1;
-            y0 = y1;
-            p1 = h * 2;
-            x1 = points[*h].x;
-            y1 = points[*h].y;
-            let xdiff = x1 - x0;
-            let ydiff = y0 - y1;
-            // clip infinte pushed to both the front and back of this queue.
-            // remove() then insert() here is inefficient .. but will only be done
-            // once during init().  clip_finite() is a common operation.
-            self.vectors.remove(p0 + 1);
-            self.vectors
-                .insert(p0 + 1, Coordinate { x: ydiff, y: xdiff });
-            self.vectors.remove(p1);
-            self.vectors.insert(p1, Coordinate { x: ydiff, y: xdiff });
+        // deviation from JS ... resolves index out of bounds issues
+        // indexing using a negative value in JS returns undefined.
+        // causes panic in rust.
+        if !hull.is_empty() {
+            // Compute exterior cell rays.
+            let h = self.delaunay.hull[self.delaunay.hull.len() - 1];
+            let mut p0: usize;
+            let mut p1 = h * 2;
+            let mut x0;
+            let mut x1 = points[h].x;
+            let mut y0;
+            let mut y1 = points[h].y;
+
+            for h in hull {
+                p0 = p1;
+                x0 = x1;
+                y0 = y1;
+                p1 = h * 2;
+                x1 = points[*h].x;
+                y1 = points[*h].y;
+                let xdiff = x1 - x0;
+                let ydiff = y0 - y1;
+                // clip infinte pushed to both the front and back of this queue.
+                // remove() then insert() here is inefficient .. but will only be done
+                // once during init().  clip_finite() is a common operation.
+                self.vectors.remove(p0 + 1);
+                self.vectors
+                    .insert(p0 + 1, Coordinate { x: ydiff, y: xdiff });
+                self.vectors.remove(p1);
+                self.vectors.insert(p1, Coordinate { x: ydiff, y: xdiff });
+            }
         }
     }
 
-    // This function does not exits in javascript version.
-    // It permits a simplification of render().
+    /// Wrapper function - a departure from the javascript version.
+    /// render() has been spit into two functions.
+    /// rust expects variable type to be determined statically
+    /// 'context' cannot be either a Path type of a RenderingContext2d.
     pub fn render_to_string(&self) -> String
     where
         T: CoordFloat + Display,
@@ -240,6 +256,10 @@ where
     where
         T: CoordFloat + Display,
     {
+        if self.delaunay.hull.len() <= 1 {
+            return;
+        }
+
         // let circumcenters = self.circumcenters;
         for i in 0..self.delaunay.half_edges.len() {
             let j = self.delaunay.half_edges[i];
@@ -271,10 +291,10 @@ where
     // TODO implement render_bounds()
 
     /// Wrapper function - a departure from the javascript version.
-    /// renderCell has been spit into two functions.
+    /// render_cell() has been spit into two functions.
     /// rust expects variable type to be determined statically
     /// 'context' cannot be either a Path type of a RenderingContext2d.
-    pub fn render_cell_to_path(&self, i: usize) -> String
+    pub fn render_cell_to_string(&self, i: usize) -> String
     where
         T: CoordFloat + Display + FloatConst,
     {

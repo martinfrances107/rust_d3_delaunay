@@ -3,6 +3,7 @@
 #[cfg(test)]
 mod voronoi_test {
     use geo::Coordinate;
+    use rust_d3_delaunay::voronoi::Voronoi;
     use rust_d3_geo::clip::antimeridian::line::Line;
     use rust_d3_geo::clip::antimeridian::pv::PV;
     use rust_d3_geo::projection::gnomic::Gnomic;
@@ -13,6 +14,8 @@ mod voronoi_test {
 
     type DelaunayStub =
         Delaunay<StreamDrainStub<f64>, Line<f64>, Gnomic<StreamDrainStub<f64>, f64>, PV<f64>, f64>;
+    type VoronoiStub =
+        Voronoi<StreamDrainStub<f64>, Line<f64>, Gnomic<StreamDrainStub<f64>, f64>, PV<f64>, f64>;
 
     #[test]
     fn test_noop_for_coincident_points() {
@@ -23,8 +26,7 @@ mod voronoi_test {
             Coordinate { x: 0f64, y: 1f64 },
             Coordinate { x: 1f64, y: 0f64 },
         ];
-        let d: DelaunayStub = Delaunay::new(points);
-        let voronoi = d.voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
+        let voronoi: VoronoiStub = Delaunay::new(points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         let mut path = Path::default();
         voronoi.render_cell(3, &mut path);
         assert_eq!(path.to_string(), String::from(""));
@@ -38,8 +40,7 @@ mod voronoi_test {
             Coordinate { x: 1f64, y: 0f64 },
             Coordinate { x: 0f64, y: 1f64 },
         ];
-        let d: DelaunayStub = Delaunay::new(points);
-        let voronoi = d.voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
+        let voronoi: VoronoiStub = Delaunay::new(points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         let mut context1 = Path::default();
         {
             voronoi.render_cell(0, &mut context1);
@@ -73,8 +74,9 @@ mod voronoi_test {
             Coordinate { x: 0_f64, y: 1_f64 },
             Coordinate { x: 1_f64, y: 0_f64 },
         ];
-        let d: DelaunayStub = Delaunay::new(points);
-        let voronoi = d.voronoi(Some((-1_f64, -1_f64, 2_f64, 2_f64)));
+
+        let voronoi: VoronoiStub =
+            Delaunay::new(points).voronoi(Some((-1_f64, -1_f64, 2_f64, 2_f64)));
         assert_eq!(
             voronoi.contains(3, Coordinate { x: 1_f64, y: 0_f64 }),
             false
