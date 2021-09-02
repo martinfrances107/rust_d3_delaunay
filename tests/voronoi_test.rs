@@ -18,6 +18,23 @@ mod voronoi_test {
         Voronoi<StreamDrainStub<f64>, Line<f64>, Gnomic<StreamDrainStub<f64>, f64>, PV<f64>, f64>;
 
     #[test]
+    fn test_simple() {
+        let points = vec![
+            Coordinate { x: -20., y: 20. },
+            Coordinate { x: 20., y: 20. },
+        ];
+        let voronoi: VoronoiStub = Delaunay::new(points).voronoi(None);
+
+        // TODO is this test meaningful.
+        assert_eq!(voronoi.render_cell_to_string(0), "");
+        assert_eq!(
+            voronoi.render_cell_to_string(1),
+            "M960,0L960,500L0,500L0,0Z"
+        );
+        assert_eq!(voronoi.render_to_string(), "M0,20L0,0M0,20L0,500");
+    }
+
+    #[test]
     fn test_noop_for_coincident_points() {
         println!("voronoi.renderCell(i, context) is a noop for coincident points");
         let points = vec![
@@ -110,7 +127,7 @@ mod voronoi_test {
     #[test]
     fn zero_length_edges_are_removed() {
         println!("zero-length edges are removed");
-        let d: DelaunayStub = Delaunay::new(vec![
+        let voronoi1: VoronoiStub = Delaunay::new(vec![
             Coordinate {
                 x: 50.0f64,
                 y: 10.0f64,
@@ -127,11 +144,11 @@ mod voronoi_test {
                 x: 200.0f64,
                 y: 100.0f64,
             },
-        ]);
-        let voronoi1 = d.voronoi(Some((40f64, 40f64, 440f64, 180f64)));
+        ])
+        .voronoi(Some((40f64, 40f64, 440f64, 180f64)));
         assert_eq!(voronoi1.cell_polygon(0).len(), 4);
 
-        let d: DelaunayStub = Delaunay::new(vec![
+        let voronoi2: VoronoiStub = Delaunay::new(vec![
             Coordinate {
                 x: 10.0f64,
                 y: 10.0f64,
@@ -140,17 +157,13 @@ mod voronoi_test {
                 x: 20.0f64,
                 y: 10.0f64,
             },
-        ]);
-        let voronoi2 = d.voronoi(Some((0f64, 0f64, 30f64, 20f64)));
+        ])
+        .voronoi(Some((0f64, 0f64, 30f64, 20f64)));
 
         assert_eq!(
             voronoi2.cell_polygon(0),
             vec![
                 Coordinate {
-                    x: 15.0f64,
-                    y: 20.0f64,
-                },
-                Coordinate {
                     x: 0.0f64,
                     y: 20.0f64,
                 },
@@ -164,6 +177,10 @@ mod voronoi_test {
                 },
                 Coordinate {
                     x: 15.0f64,
+                    y: 20.0f64,
+                },
+                Coordinate {
+                    x: 0.0f64,
                     y: 20.0f64,
                 }
             ]

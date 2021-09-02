@@ -260,12 +260,9 @@ mod delaunay_test {
         ];
         let d: DelaunayStub = Delaunay::new(points.clone());
         let voronoi = d.voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
-        // This string is equivalent to the JS version but not identical.
-        // The points are a circular right shift of the original,
-        // here is the original "M-1,2L-1,-1L0.5,-1L0.5,2Z"
         assert_eq!(
             voronoi.render_cell_to_string(0),
-            "M0.5,2L-1,2L-1,-1L0.5,-1Z"
+            "M-1,2L-1,-1L0.5,-1L0.5,2Z"
         );
         assert_eq!(
             voronoi.delaunay.find(

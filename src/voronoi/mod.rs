@@ -106,7 +106,6 @@ where
             let t1e_minus_8 = T::from_f64(1e-8).unwrap();
             let t2f64 = T::from_f64(2f64).unwrap();
             loop {
-                dbg!(i);
                 let (x1, y1) = match triangles[i] {
                     EMPTY => (None, None),
                     t1 => (Some(points[t1].x), Some(points[t1].y)),
@@ -146,17 +145,39 @@ where
 
                 let ab = (dx * ey - dy * ex) * T::from_f64(2f64).unwrap();
                 let two = T::from(2).unwrap();
-                let one_e_8 = T::from(1e8).unwrap();
                 // Out of bound checking is x and y type values are bound of bounds
                 // following the js closely dx and ex become nan
                 // JS is wierd !NAN === true
+
                 let (x, y) = if ab.is_zero() || ab.is_nan() {
                     // degenerate case (collinear diagram)
+                    // almost equal points (degenerate triangle)
+                    // the circumcenter is at the infinity, in a
+                    // direction that is:
+                    // 1. orthogonal to the halfedge.
+                    let mut a = T::from(1e9).unwrap();
+                    // 2. points away from the center; since the list of triangles starts
+                    // in the center, the first point of the first triangle
+                    // will be our reference
+                    let r = triangles[0];
+                    // In the JS original Math.sign() is used here
+                    // Math.sign(0) return 0... not +/-1
+                    // rust takes a different line.
+                    //     +0.signum() is 1.
+                    //     -0.signum() is -1.
+                    // so I must special case -0 and +0 here.
+                    let delta = (points[r].x - x1.unwrap()) * ey - (points[r].y - y1.unwrap()) * ex;
+                    if delta.is_zero() {
+                        a = T::zero();
+                    } else {
+                        a = a
+                            * ((points[r].x - x1.unwrap()) * ey - (points[r].y - y1.unwrap()) * ex)
+                                .signum();
+                    }
                     match (x1, y1, x3, y3) {
-                        (Some(x1), Some(y1), Some(x3), Some(y3)) => (
-                            (x1 + x3) / two - one_e_8 * ey,
-                            (y1 + y3) / two + one_e_8 * ex,
-                        ),
+                        (Some(x1), Some(y1), Some(x3), Some(y3)) => {
+                            ((x1 + x3) / two - a * ey, (y1 + y3) / two + a * ex)
+                        }
                         _ => (T::nan(), T::nan()),
                     }
                 } else {
@@ -180,7 +201,6 @@ where
                         )
                     }
                 };
-
                 self.circumcenters[j] = Coordinate { x, y };
                 i += 3;
 
@@ -204,7 +224,6 @@ where
                 y: T::zero(),
             });
         }
-
         // deviation from JS ... resolves index out of bounds issues
         // indexing using a negative value in JS returns undefined.
         // causes panic in rust.
@@ -263,7 +282,7 @@ where
         // let circumcenters = self.circumcenters;
         for i in 0..self.delaunay.half_edges.len() {
             let j = self.delaunay.half_edges[i];
-            if j < i {
+            if j < i || j == EMPTY {
                 continue;
             }
             let ti = (i as f64 / 3.).floor() as usize;
@@ -281,7 +300,7 @@ where
             let t = (self.delaunay.inedges[h1] as f64 / 3.).floor() as usize;
             let pi = self.circumcenters[t];
             let v = h0 * 2;
-            let p = self.project(pi, self.vectors[v + 2].x, self.vectors[v + 2].y);
+            let p = self.project(pi, self.vectors[v + 1].x, self.vectors[v + 1].y);
             if let Some(p) = p {
                 self.render_segment(pi, p, context);
             }
@@ -360,13 +379,13 @@ where
         let c1 = self.regioncode(p1);
         if c0 == 0 && c1 == 0 {
             context.move_to(&p0);
-            context.move_to(&p1);
+            context.line_to(&p1);
         } else {
             s = self.clip_segment(p0, p1, c0, c1);
 
             if let Some(s) = s {
                 context.move_to(&s[0]);
-                context.move_to(&s[2]);
+                context.line_to(&s[2]);
             }
         }
     }
@@ -751,9 +770,10 @@ where
                 let k = (i + 2) % P.len();
                 if P[i].x == P[j].x && P[j].x == P[k].x || P[i].y == P[j].y && P[j].y == P[k].y {
                     P.remove(j);
-                    i -= 1;
+                    // Skip increment
+                } else {
+                    i += 1;
                 }
-                i += 1;
                 if i >= P.len() {
                     break;
                 }
