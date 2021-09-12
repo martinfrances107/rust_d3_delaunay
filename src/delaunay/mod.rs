@@ -4,12 +4,10 @@ mod colinear;
 mod jitter;
 
 use crate::path::Path;
+use crate::voronoi::Bounds;
+use crate::voronoi::Voronoi;
 use crate::RenderingContext2d;
-use rust_d3_geo::clip::Line;
-use rust_d3_geo::clip::PointVisible;
-use rust_d3_geo::projection::projection::Projection;
-use rust_d3_geo::projection::Raw as ProjectionRaw;
-use rust_d3_geo::stream::Stream;
+
 use std::cmp::Ordering;
 use std::fmt::Display;
 
@@ -21,9 +19,12 @@ use geo::{CoordFloat, Coordinate};
 use jitter::jitter;
 use num_traits::float::FloatConst;
 use num_traits::FromPrimitive;
+use rust_d3_geo::clip::Line;
 
-use crate::voronoi::Bounds;
-use crate::voronoi::Voronoi;
+use rust_d3_geo::clip::PointVisible;
+use rust_d3_geo::projection::projection::Projection;
+use rust_d3_geo::projection::Raw as ProjectionRaw;
+use rust_d3_geo::stream::Stream;
 
 #[derive(Derivative)]
 #[derivative(Debug)]
