@@ -664,26 +664,23 @@ where
                 y: (self.ymin + self.ymax) / t2,
             },
         ) {
-            P = vec![
-                Coordinate {
-                    x: self.xmin,
-                    y: self.ymin,
-                },
-                Coordinate {
-                    x: self.xmax,
-                    y: self.ymin,
-                },
-                Coordinate {
-                    x: self.xmax,
-                    y: self.ymax,
-                },
-                Coordinate {
-                    x: self.xmin,
-                    y: self.ymax,
-                },
-            ]
-            .into_iter()
-            .collect();
+            P = VecDeque::with_capacity(4);
+            P.push_back(Coordinate {
+                x: self.xmin,
+                y: self.ymin,
+            });
+            P.push_back(Coordinate {
+                x: self.xmax,
+                y: self.ymin,
+            });
+            P.push_back(Coordinate {
+                x: self.xmax,
+                y: self.ymax,
+            });
+            P.push_back(Coordinate {
+                x: self.xmin,
+                y: self.ymax,
+            });
         }
         P
     }

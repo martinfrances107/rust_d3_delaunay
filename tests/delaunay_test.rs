@@ -8,7 +8,6 @@ mod delaunay_test {
     use rust_d3_delaunay::delaunay::Delaunay;
     use rust_d3_delaunay::path::Path;
     use rust_d3_delaunay::voronoi::Voronoi;
-    use rust_d3_delaunay::RenderingContext2d;
     use rust_d3_geo::clip::antimeridian::line::Line;
     use rust_d3_geo::clip::antimeridian::pv::PV;
     use rust_d3_geo::projection::gnomic::Gnomic;
