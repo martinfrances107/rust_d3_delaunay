@@ -33,6 +33,7 @@ impl<T> Polygon<T>
 where
     T: CoordFloat,
 {
+    #[inline]
     pub fn value(&self) -> Vec<Coordinate<T>> {
         self.p.clone()
     }
@@ -46,17 +47,21 @@ where
         todo!("must implement.");
     }
 
+    #[inline]
     fn move_to(&mut self, p: &Coordinate<T>) {
         self.p.push(*p);
     }
 
+    #[inline]
     fn close_path(&mut self) {
         self.p.push(self.p[0]);
     }
 
+    #[inline]
     fn line_to(&mut self, p: &Coordinate<T>) {
         self.p.push(*p);
     }
 
+    #[inline]
     fn rect(&mut self, _p: &Coordinate<T>, _w: T, _h: T) {}
 }
