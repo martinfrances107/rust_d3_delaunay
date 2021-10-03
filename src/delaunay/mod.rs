@@ -34,7 +34,7 @@ where
     PR: ProjectionRaw<T>,
     PV: PointVisible<T = T>,
     L: Line,
-    T: CoordFloat + FloatConst,
+    T: 'static + CoordFloat + FloatConst,
 {
     pub colinear: Vec<usize>,
     #[derivative(Debug = "ignore")]

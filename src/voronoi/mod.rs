@@ -28,7 +28,7 @@ where
     L: Line,
     PR: ProjectionRaw<T>,
     PV: PointVisible<T = T>,
-    T: CoordFloat + FloatConst,
+    T: 'static + CoordFloat + FloatConst,
 {
     pub circumcenters: Vec<Coordinate<T>>,
     pub delaunay: Delaunay<DRAIN, L, PR, PV, T>,
