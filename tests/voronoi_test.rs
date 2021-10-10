@@ -23,7 +23,7 @@ mod voronoi_test {
             Coordinate { x: -20., y: 20. },
             Coordinate { x: 20., y: 20. },
         ];
-        let voronoi: VoronoiStub = Delaunay::new(points).voronoi(None);
+        let voronoi: VoronoiStub = Delaunay::new(&points).voronoi(None);
 
         // TODO is this test meaningful.
         assert_eq!(voronoi.render_cell_to_string(0), "");
@@ -43,7 +43,7 @@ mod voronoi_test {
             Coordinate { x: 0f64, y: 1f64 },
             Coordinate { x: 1f64, y: 0f64 },
         ];
-        let voronoi: VoronoiStub = Delaunay::new(points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
+        let voronoi: VoronoiStub = Delaunay::new(&points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         let mut path = Path::default();
         voronoi.render_cell(3, &mut path);
         assert_eq!(path.to_string(), String::from(""));
@@ -57,7 +57,7 @@ mod voronoi_test {
             Coordinate { x: 1f64, y: 0f64 },
             Coordinate { x: 0f64, y: 1f64 },
         ];
-        let voronoi: VoronoiStub = Delaunay::new(points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
+        let voronoi: VoronoiStub = Delaunay::new(&points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         let mut context1 = Path::default();
         {
             voronoi.render_cell(0, &mut context1);
@@ -93,7 +93,7 @@ mod voronoi_test {
         ];
 
         let voronoi: VoronoiStub =
-            Delaunay::new(points).voronoi(Some((-1_f64, -1_f64, 2_f64, 2_f64)));
+            Delaunay::new(&points).voronoi(Some((-1_f64, -1_f64, 2_f64, 2_f64)));
         assert_eq!(
             voronoi.contains(3, Coordinate { x: 1_f64, y: 0_f64 }),
             false
@@ -127,7 +127,7 @@ mod voronoi_test {
     #[test]
     fn zero_length_edges_are_removed() {
         println!("zero-length edges are removed");
-        let voronoi1: VoronoiStub = Delaunay::new(vec![
+        let voronoi1: VoronoiStub = Delaunay::new(&vec![
             Coordinate {
                 x: 50.0f64,
                 y: 10.0f64,
@@ -148,7 +148,7 @@ mod voronoi_test {
         .voronoi(Some((40f64, 40f64, 440f64, 180f64)));
         assert_eq!(voronoi1.cell_polygon(0).len(), 4);
 
-        let voronoi2: VoronoiStub = Delaunay::new(vec![
+        let voronoi2: VoronoiStub = Delaunay::new(&vec![
             Coordinate {
                 x: 10.0f64,
                 y: 10.0f64,
@@ -311,7 +311,7 @@ mod voronoi_test {
                 y: 193.75,
             },
         ];
-        let d: DelaunayStub = Delaunay::new(pts);
+        let d: DelaunayStub = Delaunay::new(&pts);
         let voronoi = d.voronoi(Some((10., 10., 960., 500.)));
         assert_eq!(voronoi.cell_polygon(0).len(), 4);
     }

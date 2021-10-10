@@ -28,7 +28,7 @@ mod delaunay_test {
             Coordinate { x: 0f64, y: 1f64 },
             Coordinate { x: 1f64, y: 1f64 },
         ];
-        let delaunay: DelaunayStub = Delaunay::new(points);
+        let delaunay: DelaunayStub = Delaunay::new(&points);
         assert_eq!(
             delaunay.points,
             vec![
@@ -62,7 +62,7 @@ mod delaunay_test {
             Coordinate { x: 1f64, y: 0f64 },
         ];
 
-        let delaunay: DelaunayStub = Delaunay::new(points);
+        let delaunay: DelaunayStub = Delaunay::new(&points);
         assert_eq!(delaunay.inedges, vec![2, 1, 0, EMPTY]);
 
         // Cannot reproduce neighbors tests...
@@ -108,7 +108,7 @@ mod delaunay_test {
             Coordinate { x: 1f64, y: 1f64 },
         ];
 
-        let voronoi: VoronoiStub = Delaunay::new(points).voronoi(None);
+        let voronoi: VoronoiStub = Delaunay::new(&points).voronoi(None);
         assert_eq!(voronoi.xmin, 0f64);
         assert_eq!(voronoi.ymin, 0f64);
         assert_eq!(voronoi.xmax, 960f64);
@@ -125,7 +125,7 @@ mod delaunay_test {
             Coordinate { x: 1f64, y: 1f64 },
         ];
 
-        let voronoi: VoronoiStub = Delaunay::new(points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
+        let voronoi: VoronoiStub = Delaunay::new(&points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         assert_eq!(voronoi.xmin, -1f64);
         assert_eq!(voronoi.ymin, -1f64);
         assert_eq!(voronoi.xmax, 2f64);
@@ -142,7 +142,7 @@ mod delaunay_test {
             Coordinate { x: 1f64, y: 1f64 },
         ];
 
-        let voronoi: VoronoiStub = Delaunay::new(points).voronoi(None);
+        let voronoi: VoronoiStub = Delaunay::new(&points).voronoi(None);
         assert_eq!(
             voronoi.circumcenters,
             vec![Coordinate { x: 0.5, y: 0.5 }, Coordinate { x: 0.5, y: 0.5 }]
@@ -190,7 +190,7 @@ mod delaunay_test {
             Coordinate { x: 1f64, y: 0f64 },
         ];
 
-        let voronoi: VoronoiStub = Delaunay::new(points).voronoi(None);
+        let voronoi: VoronoiStub = Delaunay::new(&points).voronoi(None);
 
         assert_eq!(voronoi.circumcenters, vec![Coordinate { x: 0.5, y: 0.5 }]);
         assert_eq!(
@@ -211,7 +211,7 @@ mod delaunay_test {
     #[test]
     fn test_delaunay_return_for_zero_points() {
         println!("delaunay.voronoi() for zero point returns expected values");
-        let v: VoronoiStub = Delaunay::new(vec![]).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
+        let v: VoronoiStub = Delaunay::new(&vec![]).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         assert_eq!(v.render_to_string(), "");
     }
 
@@ -222,7 +222,7 @@ mod delaunay_test {
             x: 0.0_f64,
             y: 0.0_f64,
         }];
-        let d: DelaunayStub = Delaunay::new(points);
+        let d: DelaunayStub = Delaunay::new(&points);
 
         assert_eq!(
             d.render_points_to_string(None),
@@ -242,7 +242,7 @@ mod delaunay_test {
     fn test_delaunay_return_for_one_point() {
         println!("delaunay.voronoi() for one point returns the bounding rectangle");
         let points = vec![Coordinate { x: 0., y: 0. }];
-        let d: DelaunayStub = Delaunay::new(points);
+        let d: DelaunayStub = Delaunay::new(&points);
         let voronoi = d.voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         assert_eq!(voronoi.render_cell_to_string(0), "M2,-1L2,2L-1,2L-1,-1Z");
         assert_eq!(voronoi.render_to_string(), "");
@@ -257,7 +257,7 @@ mod delaunay_test {
             Coordinate { x: 1f64, y: 0f64 },
             Coordinate { x: 1f64, y: 0f64 },
         ];
-        let d: DelaunayStub = Delaunay::new(points.clone());
+        let d: DelaunayStub = Delaunay::new(&points);
         let voronoi = d.voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         assert_eq!(
             voronoi.render_cell_to_string(0),
@@ -273,7 +273,7 @@ mod delaunay_test {
             ),
             0
         );
-        let d: DelaunayStub = Delaunay::new(points);
+        let d: DelaunayStub = Delaunay::new(&points);
         let voronoi = d.voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         assert_eq!(
             voronoi
@@ -296,7 +296,7 @@ mod delaunay_test {
             "delaunay.find(x, y) returns the index of the cell that contains the specified point"
         );
 
-        let delaunay: DelaunayStub = Delaunay::new(vec![
+        let delaunay: DelaunayStub = Delaunay::new(&vec![
             Coordinate { x: 0., y: 0. },
             Coordinate { x: 300., y: 0. },
             Coordinate { x: 0., y: 300. },
@@ -304,7 +304,7 @@ mod delaunay_test {
             Coordinate { x: 100., y: 100. },
         ]);
         assert_eq!(delaunay.find(Coordinate { x: 49., y: 49. }, None), 0);
-        let delaunay: DelaunayStub = Delaunay::new(vec![
+        let delaunay: DelaunayStub = Delaunay::new(&vec![
             Coordinate { x: 0., y: 0. },
             Coordinate { x: 300., y: 0. },
             Coordinate { x: 0., y: 300. },
@@ -694,7 +694,7 @@ mod delaunay_test {
             },
         ];
 
-        let delaunay: DelaunayStub = Delaunay::new(points.clone());
+        let delaunay: DelaunayStub = Delaunay::new(&points.clone());
         assert_eq!(
             delaunay.find(
                 Coordinate {
@@ -705,7 +705,7 @@ mod delaunay_test {
             ),
             31
         );
-        let delaunay2: DelaunayStub = Delaunay::new(points.clone());
+        let delaunay2: DelaunayStub = Delaunay::new(&points.clone());
         assert_eq!(
             delaunay2.find(
                 Coordinate {
@@ -727,7 +727,7 @@ mod delaunay_test {
             Coordinate { x: 1f64, y: 1f64 },
         ];
         // let d: DelaunayStub = Delaunay::new(points);
-        let delaunay: DelaunayStub = Delaunay::new(points);
+        let delaunay: DelaunayStub = Delaunay::new(&points);
         assert_eq!(delaunay.render_hull_to_string(), "M0,1L1,1L1,0L0,0Z");
     }
 }

@@ -60,7 +60,7 @@ where
     L: Line,
     T: CoordFloat + FloatConst + FromPrimitive,
 {
-    pub fn new(points: Vec<Coordinate<T>>) -> Self {
+    pub fn new(points: &Vec<Coordinate<T>>) -> Self {
         // conversion into delaunay point!!!
         let d_point_in: Vec<DPoint> = points
             .iter()
@@ -92,7 +92,7 @@ where
             delaunator,
             inedges: Vec::with_capacity(points.len()),
             hull_index: Vec::with_capacity(points.len()),
-            points,
+            points: points.to_vec(),
             colinear: Vec::new(),
             half_edges: Vec::new(),
             hull: Vec::new(),
