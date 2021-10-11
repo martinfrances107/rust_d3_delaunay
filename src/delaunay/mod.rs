@@ -26,6 +26,9 @@ use rust_d3_geo::projection::projection::Projection;
 use rust_d3_geo::projection::Raw as ProjectionRaw;
 use rust_d3_geo::stream::Stream;
 
+/// Wrapper stores data associated with delaunator Triangulation.
+///
+/// hull and hald_edge data.
 #[derive(Derivative)]
 #[derivative(Debug)]
 pub struct Delaunay<DRAIN, L, PR, PV, T>
@@ -60,7 +63,7 @@ where
     L: Line,
     T: CoordFloat + FloatConst + FromPrimitive,
 {
-    pub fn new(points: &Vec<Coordinate<T>>) -> Self {
+    pub fn new(points: &[Coordinate<T>]) -> Self {
         // conversion into delaunay point!!!
         let d_point_in: Vec<DPoint> = points
             .iter()
@@ -292,12 +295,6 @@ where
     /// render() has been spit into two functions.
     /// rust expects variable type to be determined statically
     /// 'context' cannot be either a Path type of a RenderingContext2d.
-    /// Output the hull to a string.
-    ///
-    /// Wrapper function - a departure from the javascript version.
-    /// render() has been spit into two functions.
-    /// rust expects variable type to be determined statically
-    /// 'context' cannot be either a Path type of a RenderingContext2d.
     pub fn render_points_to_string(&self, r: Option<T>) -> String
     where
         T: CoordFloat + Display,
@@ -356,7 +353,7 @@ where
         context.close_path();
     }
 
-    // hullPolygon
-    // renderTriangle
-    // trianglePolygon
+    // TODO hullPolygon
+    // TODO renderTriangle
+    // TODO trianglePolygon
 }
