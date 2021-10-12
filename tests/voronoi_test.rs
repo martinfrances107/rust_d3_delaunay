@@ -2,7 +2,11 @@
 #[cfg(not(tarpaulin_include))]
 #[cfg(test)]
 mod voronoi_test {
+    extern crate pretty_assertions;
+
     use geo::Coordinate;
+    use pretty_assertions::assert_eq;
+    use pretty_assertions::assert_ne;
     use rust_d3_delaunay::voronoi::Voronoi;
     use rust_d3_geo::clip::antimeridian::line::Line;
     use rust_d3_geo::clip::antimeridian::pv::PV;

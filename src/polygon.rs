@@ -1,6 +1,8 @@
 use crate::RenderingContext2d;
 use geo::CoordFloat;
 use geo::Coordinate;
+
+/// A Vector of point which implements RenderingContext2d.
 #[derive(Clone, Debug)]
 pub struct Polygon<T>
 where

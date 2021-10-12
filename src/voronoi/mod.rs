@@ -1,5 +1,6 @@
 #![allow(clippy::many_single_char_names)]
 
+use approx::AbsDiffEq;
 use rust_d3_geo::clip::Line;
 use rust_d3_geo::clip::PointVisible;
 use rust_d3_geo::projection::Raw as ProjectionRaw;
@@ -28,7 +29,7 @@ where
     L: Line,
     PR: ProjectionRaw<T>,
     PV: PointVisible<T = T>,
-    T: 'static + CoordFloat + FloatConst,
+    T: 'static + AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
 {
     pub circumcenters: Vec<Coordinate<T>>,
     pub delaunay: Delaunay<DRAIN, L, PR, PV, T>,
@@ -45,7 +46,7 @@ where
     L: Line,
     PR: ProjectionRaw<T>,
     PV: PointVisible<T = T>,
-    T: CoordFloat + FloatConst + FromPrimitive,
+    T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst + FromPrimitive,
 {
     pub fn new(delaunay: Delaunay<DRAIN, L, PR, PV, T>, bounds: Option<Bounds<T>>) -> Self {
         let mut v: Voronoi<DRAIN, L, PR, PV, T>;

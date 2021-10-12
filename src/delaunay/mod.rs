@@ -11,9 +11,10 @@ use crate::RenderingContext2d;
 use std::cmp::Ordering;
 use std::fmt::Display;
 
+use approx::AbsDiffEq;
 use colinear::colinear;
 use delaunator::{triangulate, Point as DPoint, Triangulation, EMPTY};
-use derivative::Derivative;
+use derivative::*;
 use geo::Point;
 use geo::{CoordFloat, Coordinate};
 use jitter::jitter;
@@ -37,7 +38,7 @@ where
     PR: ProjectionRaw<T>,
     PV: PointVisible<T = T>,
     L: Line,
-    T: 'static + CoordFloat + FloatConst,
+    T: 'static + AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
 {
     pub colinear: Vec<usize>,
     #[derivative(Debug = "ignore")]
@@ -61,7 +62,7 @@ where
     PR: ProjectionRaw<T>,
     PV: PointVisible<T = T>,
     L: Line,
-    T: CoordFloat + FloatConst + FromPrimitive,
+    T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst + FromPrimitive,
 {
     pub fn new(points: &[Coordinate<T>]) -> Self {
         // conversion into delaunay point!!!
