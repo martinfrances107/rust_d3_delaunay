@@ -379,8 +379,8 @@ where
         let c0 = self.regioncode(p0);
         let c1 = self.regioncode(p1);
         if c0 == 0 && c1 == 0 {
-            context.move_to(&p0);
-            context.line_to(&p1);
+            context.move_to(p0);
+            context.line_to(p1);
         } else {
             s = self.clip_segment(p0, p1, c0, c1);
 
