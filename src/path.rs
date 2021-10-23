@@ -6,6 +6,7 @@ use std::fmt::Display;
 use std::string::ToString;
 
 #[derive(Clone, Debug)]
+/// Produces a string into response to RendingContext2d API calls.
 pub struct Path<T>
 where
     T: CoordFloat,
@@ -19,6 +20,7 @@ impl<T> Default for Path<T>
 where
     T: CoordFloat,
 {
+    #[inline]
     fn default() -> Self {
         Path {
             p0: Coordinate {
