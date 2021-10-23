@@ -6,15 +6,14 @@ mod voronoi_test {
 
     use geo::Coordinate;
     use pretty_assertions::assert_eq;
-    use pretty_assertions::assert_ne;
+
+    use rust_d3_delaunay::delaunay::Delaunay;
+    use rust_d3_delaunay::path::Path;
     use rust_d3_delaunay::voronoi::Voronoi;
     use rust_d3_geo::clip::antimeridian::line::Line;
     use rust_d3_geo::clip::antimeridian::pv::PV;
     use rust_d3_geo::projection::gnomic::Gnomic;
     use rust_d3_geo::stream::StreamDrainStub;
-
-    use rust_d3_delaunay::delaunay::Delaunay;
-    use rust_d3_delaunay::path::Path;
 
     type DelaunayStub =
         Delaunay<StreamDrainStub<f64>, Line<f64>, Gnomic<StreamDrainStub<f64>, f64>, PV<f64>, f64>;
@@ -24,7 +23,10 @@ mod voronoi_test {
     #[test]
     fn test_simple() {
         let points = vec![
-            Coordinate { x: -20., y: 20. },
+            Coordinate {
+                x: -20.0_f64,
+                y: 20.0_f64,
+            },
             Coordinate { x: 20., y: 20. },
         ];
         let voronoi: VoronoiStub = Delaunay::new(&points).voronoi(None);
@@ -99,10 +101,13 @@ mod voronoi_test {
         let voronoi: VoronoiStub =
             Delaunay::new(&points).voronoi(Some((-1_f64, -1_f64, 2_f64, 2_f64)));
         assert_eq!(
-            voronoi.contains(3, Coordinate { x: 1_f64, y: 0_f64 }),
+            voronoi.contains(3, &Coordinate { x: 1_f64, y: 0_f64 }),
             false
         );
-        assert_eq!(voronoi.contains(1, Coordinate { x: 1_f64, y: 0_f64 }), true);
+        assert_eq!(
+            voronoi.contains(1, &Coordinate { x: 1_f64, y: 0_f64 }),
+            true
+        );
     }
 
     // tape("voronoi.update() updates the voronoi", test => {

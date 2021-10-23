@@ -229,7 +229,7 @@ where
         }
     }
 
-    pub fn find(self, p: Coordinate<T>, i: Option<usize>) -> usize {
+    pub fn find(self, p: &Coordinate<T>, i: Option<usize>) -> usize {
         // Skip return early if p is invalid.
         let mut i: usize = i.unwrap_or(0usize);
         let i0 = i;
@@ -242,7 +242,7 @@ where
         c
     }
 
-    pub fn step(&self, i: usize, p: Coordinate<T>) -> usize {
+    pub fn step(&self, i: usize, p: &Coordinate<T>) -> usize {
         if self.inedges[i] == EMPTY || self.points.is_empty() {
             return (i + 1) % (self.points.len() >> 1);
         };

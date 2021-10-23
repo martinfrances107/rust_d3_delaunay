@@ -266,7 +266,7 @@ mod delaunay_test {
         );
         assert_eq!(
             voronoi.delaunay.find(
-                Coordinate {
+                &Coordinate {
                     x: -1_f64,
                     y: 0_f64
                 },
@@ -279,7 +279,7 @@ mod delaunay_test {
         assert_eq!(
             voronoi
                 .delaunay
-                .find(Coordinate { x: 2_f64, y: 0_f64 }, None),
+                .find(&Coordinate { x: 2_f64, y: 0_f64 }, None),
             1
         );
     }
@@ -304,7 +304,7 @@ mod delaunay_test {
             Coordinate { x: 300., y: 300. },
             Coordinate { x: 100., y: 100. },
         ]);
-        assert_eq!(delaunay.find(Coordinate { x: 49., y: 49. }, None), 0);
+        assert_eq!(delaunay.find(&Coordinate { x: 49., y: 49. }, None), 0);
         let delaunay: DelaunayStub = Delaunay::new(&vec![
             Coordinate { x: 0., y: 0. },
             Coordinate { x: 300., y: 0. },
@@ -312,7 +312,7 @@ mod delaunay_test {
             Coordinate { x: 300., y: 300. },
             Coordinate { x: 100., y: 100. },
         ]);
-        assert_eq!(delaunay.find(Coordinate { x: 51., y: 51. }, None), 4);
+        assert_eq!(delaunay.find(&Coordinate { x: 51., y: 51. }, None), 4);
     }
 
     // tape("delaunay.find(x, y) works with one or two points", test => {
@@ -698,7 +698,7 @@ mod delaunay_test {
         let delaunay: DelaunayStub = Delaunay::new(&points.clone());
         assert_eq!(
             delaunay.find(
-                Coordinate {
+                &Coordinate {
                     x: 49_f64,
                     y: 311_f64
                 },
@@ -709,7 +709,7 @@ mod delaunay_test {
         let delaunay2: DelaunayStub = Delaunay::new(&points.clone());
         assert_eq!(
             delaunay2.find(
-                Coordinate {
+                &Coordinate {
                     x: 49_f64,
                     y: 311_f64
                 },

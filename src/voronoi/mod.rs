@@ -290,7 +290,7 @@ where
             let tj = (j as f64 / 3.).floor() as usize;
             let pi = self.circumcenters[ti];
             let pj = self.circumcenters[tj];
-            self.render_segment(pi, pj, context);
+            self.render_segment(&pi, &pj, context);
         }
 
         let mut h0;
@@ -301,9 +301,9 @@ where
             let t = (self.delaunay.inedges[h1] as f64 / 3.).floor() as usize;
             let pi = self.circumcenters[t];
             let v = h0 * 2;
-            let p = self.project(pi, self.vectors[v + 1].x, self.vectors[v + 1].y);
+            let p = self.project(&pi, self.vectors[v + 1].x, self.vectors[v + 1].y);
             if let Some(p) = p {
-                self.render_segment(pi, p, context);
+                self.render_segment(&pi, &p, context);
             }
         }
     }
@@ -371,8 +371,8 @@ where
 
     fn render_segment(
         &self,
-        p0: Coordinate<T>,
-        p1: Coordinate<T>,
+        p0: &Coordinate<T>,
+        p1: &Coordinate<T>,
         context: &mut impl RenderingContext2d<T>,
     ) {
         let s;
@@ -392,7 +392,7 @@ where
     }
 
     #[inline]
-    pub fn contains(&self, i: usize, p: Coordinate<T>) -> bool {
+    pub fn contains(&self, i: usize, p: &Coordinate<T>) -> bool {
         self.delaunay.step(i, p) == i
     }
 
@@ -467,7 +467,7 @@ where
         let mut p0: Coordinate<T>;
         let mut p1 = points[points.len() - 1];
         let mut c0;
-        let mut c1 = self.regioncode(p1);
+        let mut c1 = self.regioncode(&p1);
         let mut e0;
         let mut e1 = 0;
         let two = T::from_f64(2f64).unwrap();
@@ -475,7 +475,7 @@ where
             p0 = p1;
             p1 = *point;
             c0 = c1;
-            c1 = self.regioncode(p1);
+            c1 = self.regioncode(&p1);
             if c0 == 0 && c1 == 0 {
                 // e0 = e1;
                 e1 = 0;
@@ -490,7 +490,7 @@ where
                 let s0: Coordinate<T>;
                 let s1: Coordinate<T>;
                 if c0 == 0 {
-                    S = self.clip_segment(p0, p1, c0, c1);
+                    S = self.clip_segment(&p0, &p1, c0, c1);
                     match S {
                         None => {
                             continue;
@@ -502,7 +502,7 @@ where
                         }
                     }
                 } else {
-                    S = self.clip_segment(p1, p0, c1, c0);
+                    S = self.clip_segment(&p1, &p0, c1, c0);
                     match S {
                         None => {
                             continue;
@@ -511,7 +511,7 @@ where
                             s1 = s[0];
                             s0 = s[1];
                             e0 = e1;
-                            e1 = self.edgecode(s0);
+                            e1 = self.edgecode(&s0);
                             if e0 != 0u8 && e1 != 0u8 {
                                 let len = P.len();
                                 self.edge(i, e0, e1, &mut P, len);
@@ -525,7 +525,7 @@ where
                     }
                 }
                 e0 = e1;
-                e1 = self.edgecode(s1);
+                e1 = self.edgecode(&s1);
                 if e0 != 0u8 && e1 != 0u8 {
                     let len = P.len();
                     self.edge(i, e0, e1, &mut P, len);
@@ -539,14 +539,14 @@ where
         }
         if !P.is_empty() {
             e0 = e1;
-            e1 = self.edgecode(P[0]);
+            e1 = self.edgecode(&P[0]);
             if e0 != 0u8 && e1 != 0u8 {
                 let len = P.len();
                 self.edge(i, e0, e1, &mut P, len);
             }
         } else if self.contains(
             i,
-            Coordinate {
+            &Coordinate {
                 x: (self.xmin + self.xmax) / two,
                 y: (self.ymin + self.ymax) / two,
             },
@@ -577,13 +577,13 @@ where
 
     fn clip_segment(
         &self,
-        p0_in: Coordinate<T>,
-        p1_in: Coordinate<T>,
+        p0_in: &Coordinate<T>,
+        p1_in: &Coordinate<T>,
         c0_in: u8,
         c1_in: u8,
     ) -> Option<Vec<Coordinate<T>>> {
-        let mut p0 = p0_in;
-        let mut p1 = p1_in;
+        let mut p0 = *p0_in;
+        let mut p1 = *p1_in;
         let mut c0 = c0_in;
         let mut c1 = c1_in;
         loop {
@@ -612,10 +612,10 @@ where
             }
             if c0 != 0 {
                 p0 = Coordinate { x, y };
-                c0 = self.regioncode(p0);
+                c0 = self.regioncode(&p0);
             } else {
                 p1 = Coordinate { x, y };
-                c1 = self.regioncode(p1);
+                c1 = self.regioncode(&p1);
             }
         }
     }
@@ -631,11 +631,11 @@ where
     ) -> VecDeque<Coordinate<T>> {
         #[allow(non_snake_case)]
         let mut P: VecDeque<Coordinate<T>> = points.clone();
-        if let Some(p1) = self.project(P[0], vx0, vy0) {
+        if let Some(p1) = self.project(&P[0], vx0, vy0) {
             P.push_front(p1);
         }
 
-        if let Some(p2) = self.project(P[P.len() - 1], vxn, vyn) {
+        if let Some(p2) = self.project(&P[P.len() - 1], vxn, vyn) {
             P.push_back(p2);
         }
 
@@ -644,11 +644,11 @@ where
         if !P.is_empty() {
             let mut n = P.len();
             let mut c0;
-            let mut c1 = self.edgecode(P[n - 1]);
+            let mut c1 = self.edgecode(&P[n - 1]);
             let mut j = 0;
             loop {
                 c0 = c1;
-                c1 = self.edgecode(P[j]);
+                c1 = self.edgecode(&P[j]);
                 if c0 != 0 && c1 != 0 {
                     j = self.edge(i, c0, c1, &mut P, j);
                     n = P.len();
@@ -660,7 +660,7 @@ where
             }
         } else if self.contains(
             i,
-            Coordinate {
+            &Coordinate {
                 x: (self.xmin + self.xmax) / t2,
                 y: (self.ymin + self.ymax) / t2,
             },
@@ -754,7 +754,7 @@ where
             // The JS version has subtle handling of out of bounds checks.
             let out_of_bounds = j >= P.len();
             if (out_of_bounds || P[j].x != x || P[j].y != y)
-                && self.contains(i_in, Coordinate { x, y })
+                && self.contains(i_in, &Coordinate { x, y })
             {
                 P.insert(j, Coordinate { x, y });
                 j += 1;
@@ -780,7 +780,7 @@ where
         j
     }
 
-    fn project(&self, p0: Coordinate<T>, vx: T, vy: T) -> Option<Coordinate<T>> {
+    fn project(&self, p0: &Coordinate<T>, vx: T, vy: T) -> Option<Coordinate<T>> {
         let mut t = Float::infinity();
         let mut c;
         // The is a mistake in the javascript implementation
@@ -837,7 +837,7 @@ where
         Some(Coordinate { x, y })
     }
 
-    fn edgecode(&self, p: Coordinate<T>) -> u8 {
+    fn edgecode(&self, p: &Coordinate<T>) -> u8 {
         // Lower and upper nibbles.
         let lower: u8;
         let upper: u8;
@@ -861,7 +861,7 @@ where
         lower | upper
     }
 
-    fn regioncode(&self, p: Coordinate<T>) -> u8 {
+    fn regioncode(&self, p: &Coordinate<T>) -> u8 {
         // Lower and upper nibbles.
         let lower: u8;
         let upper: u8;
