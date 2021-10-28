@@ -1,6 +1,14 @@
 #![allow(clippy::pedantic)]
 #![warn(missing_docs)]
 #![warn(missing_debug_implementations)]
+//! A port of [d3/d3-delaunay](<https://github.com/d3/d3-delaunay>).
+//!
+//! Compute the Voronoi diagram of a set of two-dimensional points.
+//!
+//! <hr>
+//!
+//! Repository [rust_d3_geo](<https://github.com/martinfrances107/rust_d3_delaunay>)
+
 extern crate derivative;
 
 pub mod delaunay;
