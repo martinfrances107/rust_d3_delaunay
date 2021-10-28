@@ -294,7 +294,7 @@ where
     ///
     /// Wrapper function - a departure from the javascript version.
     /// render() has been spit into two functions.
-    /// rust expects variable type to be determined statically
+    /// rust expects variable type to be determined statically.
     /// 'context' cannot be either a Path type of a RenderingContext2d.
     pub fn render_points_to_string(&self, r: Option<T>) -> String
     where
@@ -331,7 +331,7 @@ where
     ///
     /// Wrapper function - a departure from the javascript version.
     /// render() has been spit into two functions.
-    /// rust expects variable type to be determined statically
+    /// rust expects variable type to be determined statically.
     /// 'context' cannot be either a Path type of a RenderingContext2d.
     pub fn render_hull_to_string(&self) -> String
     where
