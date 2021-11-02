@@ -38,16 +38,16 @@ where
     PV: PointVisible<T = T>,
     T: 'static + AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
 {
-    pub colinear: Vec<usize>,
+    colinear: Vec<usize>,
     #[derivative(Debug = "ignore")]
     delaunator: Triangulation,
     pub inedges: Vec<usize>,
-    pub hull_index: Vec<usize>,
+    hull_index: Vec<usize>,
     pub half_edges: Vec<usize>,
     pub hull: Vec<usize>,
     pub triangles: Vec<usize>,
     pub points: Vec<Coordinate<T>>,
-    pub projection: Option<Projection<DRAIN, PR, PV, T>>,
+    projection: Option<Projection<DRAIN, PR, PV, T>>,
     #[derivative(Debug = "ignore")]
     pub fx: Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>,
     #[derivative(Debug = "ignore")]

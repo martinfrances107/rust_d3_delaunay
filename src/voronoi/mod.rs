@@ -1,18 +1,19 @@
 #![allow(clippy::many_single_char_names)]
 
-use approx::AbsDiffEq;
-use rust_d3_geo::clip::Line;
-use rust_d3_geo::clip::PointVisible;
-use rust_d3_geo::projection::Raw as ProjectionRaw;
-use rust_d3_geo::stream::Stream;
 use std::collections::VecDeque;
 use std::fmt::Display;
+
+use approx::AbsDiffEq;
 
 use delaunator::EMPTY;
 use geo::CoordFloat;
 use geo::Coordinate;
 use num_traits::Zero;
 use num_traits::{Float, FloatConst, FromPrimitive};
+
+use rust_d3_geo::clip::PointVisible;
+use rust_d3_geo::projection::Raw as ProjectionRaw;
+use rust_d3_geo::stream::Stream;
 
 use crate::delaunay::Delaunay;
 use crate::path::Path;

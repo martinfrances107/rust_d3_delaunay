@@ -18,14 +18,19 @@ pub mod voronoi;
 
 use geo::CoordFloat;
 use geo::Coordinate;
-
+/// Interface in web browser.
 pub trait RenderingContext2d<T>: ToString
 where
     T: CoordFloat,
 {
+    /// draws an arc.
     fn arc(&mut self, p: &Coordinate<T>, r: T, start: T, stop: T);
+    /// signals path is closed.
     fn close_path(&mut self);
+    /// draws line from current point to p specified.
     fn line_to(&mut self, p: &Coordinate<T>);
+    /// Sets the current point.
     fn move_to(&mut self, p: &Coordinate<T>);
+    /// draw rectangle.
     fn rect(&mut self, p: &Coordinate<T>, w: T, h: T);
 }
