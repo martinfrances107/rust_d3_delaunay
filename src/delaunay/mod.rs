@@ -47,7 +47,7 @@ where
     pub hull: Vec<usize>,
     pub triangles: Vec<usize>,
     pub points: Vec<Coordinate<T>>,
-    projection: Option<Projection<DRAIN, PR, PV, T>>,
+    pub projection: Option<Projection<DRAIN, PR, PV, T>>,
     #[derivative(Debug = "ignore")]
     pub fx: Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>,
     #[derivative(Debug = "ignore")]
