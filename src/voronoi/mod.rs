@@ -23,16 +23,15 @@ use crate::RenderingContext2d;
 pub(super) type Bounds<T> = (T, T, T, T);
 
 #[derive(Debug)]
-pub struct Voronoi<DRAIN, L, PR, PV, T>
+pub struct Voronoi<DRAIN, PR, PV, T>
 where
     DRAIN: Stream<T = T>,
-    L: Line,
     PR: ProjectionRaw<T>,
     PV: PointVisible<T = T>,
     T: 'static + AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
 {
     pub circumcenters: Vec<Coordinate<T>>,
-    pub delaunay: Delaunay<DRAIN, L, PR, PV, T>,
+    pub delaunay: Delaunay<DRAIN, PR, PV, T>,
     pub vectors: VecDeque<Coordinate<T>>,
     pub xmin: T,
     pub ymin: T,
@@ -40,16 +39,15 @@ where
     pub ymax: T,
 }
 
-impl<DRAIN, L, PR, PV, T> Voronoi<DRAIN, L, PR, PV, T>
+impl<DRAIN, PR, PV, T> Voronoi<DRAIN, PR, PV, T>
 where
     DRAIN: Stream<T = T>,
-    L: Line,
     PR: ProjectionRaw<T>,
     PV: PointVisible<T = T>,
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst + FromPrimitive,
 {
-    pub fn new(delaunay: Delaunay<DRAIN, L, PR, PV, T>, bounds: Option<Bounds<T>>) -> Self {
-        let mut v: Voronoi<DRAIN, L, PR, PV, T>;
+    pub fn new(delaunay: Delaunay<DRAIN, PR, PV, T>, bounds: Option<Bounds<T>>) -> Self {
+        let mut v: Voronoi<DRAIN, PR, PV, T>;
         let (xmin, ymin, xmax, ymax) = match bounds {
             Some(bounds) => bounds,
             None => (

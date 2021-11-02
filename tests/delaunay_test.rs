@@ -9,16 +9,15 @@ mod delaunay_test {
     use rust_d3_delaunay::delaunay::Delaunay;
     use rust_d3_delaunay::path::Path;
     use rust_d3_delaunay::voronoi::Voronoi;
-    use rust_d3_geo::clip::antimeridian::line::Line;
     use rust_d3_geo::clip::antimeridian::pv::PV;
     use rust_d3_geo::projection::gnomic::Gnomic;
     use rust_d3_geo::stream::StreamDrainStub;
 
     type DelaunayStub =
-        Delaunay<StreamDrainStub<f64>, Line<f64>, Gnomic<StreamDrainStub<f64>, f64>, PV<f64>, f64>;
+        Delaunay<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, PV<f64>, f64>;
 
     type VoronoiStub =
-        Voronoi<StreamDrainStub<f64>, Line<f64>, Gnomic<StreamDrainStub<f64>, f64>, PV<f64>, f64>;
+        Voronoi<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, PV<f64>, f64>;
 
     #[test]
     fn test_from_array() {
