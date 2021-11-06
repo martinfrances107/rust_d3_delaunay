@@ -361,7 +361,7 @@ where
     {
         let mut polygon = Polygon::default();
         self.render_cell(i, &mut polygon);
-        polygon.value()
+        polygon.p
     }
 
     fn render_segment(
@@ -834,48 +834,42 @@ where
 
     fn edgecode(&self, p: &Coordinate<T>) -> u8 {
         // Lower and upper nibbles.
-        let lower: u8;
-        let upper: u8;
-
-        if (p.x - self.xmin).abs() < T::epsilon() {
-            lower = 0b0001;
-        } else if (p.x - self.xmax).abs() < T::epsilon() {
-            lower = 0b0010;
+        let lower = if p.x == self.xmin {
+            0b0001
+        } else if p.x == self.xmax {
+            0b0010
         } else {
-            lower = 0b0000;
-        }
+            0b0000
+        };
 
-        if (p.y - self.ymin).abs() < T::epsilon() {
-            upper = 0b0100;
-        } else if (p.y - self.ymax).abs() < T::epsilon() {
-            upper = 0b1000;
+        let upper = if p.y == self.ymin {
+            0b0100
+        } else if p.y == self.ymax {
+            0b1000
         } else {
-            upper = 0b0000;
-        }
+            0b0000
+        };
 
         lower | upper
     }
 
     fn regioncode(&self, p: &Coordinate<T>) -> u8 {
         // Lower and upper nibbles.
-        let lower: u8;
-        let upper: u8;
-
-        if p.x < self.xmin {
-            lower = 0b001;
+        let lower = if p.x < self.xmin {
+            0b001
         } else if p.x > self.xmax {
-            lower = 0b0010;
+            0b0010
         } else {
-            lower = 0b0000;
-        }
+            0b0000
+        };
 
-        if p.y < self.ymin {
-            upper = 0b0100;
+        let upper = if p.y < self.ymin {
+            0b0100
         } else if p.y > self.ymax {
-            upper = 0b1000;
+            0b1000
         } else {
-            upper = 0b0000;
-        }
+            0b0000
+        };
 
         lower | upper
     }

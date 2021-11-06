@@ -8,7 +8,7 @@ pub struct Polygon<T>
 where
     T: CoordFloat,
 {
-    p: Vec<Coordinate<T>>,
+    pub p: Vec<Coordinate<T>>,
 }
 
 impl<T> Default for Polygon<T>

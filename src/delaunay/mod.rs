@@ -40,11 +40,11 @@ where
 {
     colinear: Vec<usize>,
     #[derivative(Debug = "ignore")]
+    /// A Triangulation stores the computed results from a delaunay mesh.
     pub delaunator: Triangulation,
     pub inedges: Vec<usize>,
     hull_index: Vec<usize>,
     pub half_edges: Vec<usize>,
-    // pub hull: Vec<usize>,
     pub triangles: Vec<usize>,
     pub points: Vec<Coordinate<T>>,
     pub projection: Option<Projection<DRAIN, PR, PV, T>>,
@@ -61,6 +61,7 @@ where
     PV: PointVisible<T = T>,
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst + FromPrimitive,
 {
+    /// Computes a delanay triangularization and stores the results.
     pub fn new(points: &[Coordinate<T>]) -> Self {
         // conversion into delaunay point!!!
         let d_point_in: Vec<DPoint> = points
@@ -108,6 +109,7 @@ where
     }
 
     #[inline]
+    /// Use the stored delaunay mesh data to compute the assoicated voronoi mesh.
     pub fn voronoi(self, bounds: Option<Bounds<T>>) -> Voronoi<DRAIN, PR, PV, T> {
         Voronoi::new(self, bounds)
     }

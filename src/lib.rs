@@ -14,6 +14,7 @@ extern crate derivative;
 pub mod delaunay;
 pub mod path;
 pub mod polygon;
+/// Storage a helpers for a  voronoi mesh.
 pub mod voronoi;
 
 use geo::CoordFloat;
