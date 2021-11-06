@@ -216,13 +216,9 @@ where
         // This is because VecDecque unlike Vec is not a
         // contiguous memory element.
         // .. is this going to be slow!!!
-        let vectors_len = self.vectors.len();
-        self.vectors.clear();
-        for _ in 0..vectors_len {
-            self.vectors.push_back(Coordinate {
-                x: T::zero(),
-                y: T::zero(),
-            });
+        for v in &mut self.vectors {
+            v.x = T::zero();
+            v.y = T::zero();
         }
         // deviation from JS ... resolves index out of bounds issues
         // indexing using a negative value in JS returns undefined.
@@ -285,8 +281,8 @@ where
             if j < i || j == EMPTY {
                 continue;
             }
-            let ti = (i as f64 / 3.).floor() as usize;
-            let tj = (j as f64 / 3.).floor() as usize;
+            let ti = i / 3;
+            let tj = j / 3;
             let pi = self.circumcenters[ti];
             let pj = self.circumcenters[tj];
             self.render_segment(&pi, &pj, context);
