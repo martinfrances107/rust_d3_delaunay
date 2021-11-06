@@ -777,7 +777,7 @@ where
 
     fn project(&self, p0: &Coordinate<T>, vx: T, vy: T) -> Option<Coordinate<T>> {
         let mut t = Float::infinity();
-        let mut c;
+        // let mut c;
         // The is a mistake in the javascript implementation
         // if vy and vx == 0 then x, y are undefined.
         let mut x = T::zero();
@@ -787,7 +787,7 @@ where
             if p0.y <= self.ymin {
                 return None;
             }
-            c = (self.ymin - p0.y) / vy;
+            let c = (self.ymin - p0.y) / vy;
             if c < t {
                 y = self.ymin;
                 t = c;
@@ -798,7 +798,7 @@ where
             if p0.y >= self.ymax {
                 return None;
             }
-            c = (self.ymax - p0.y) / vy;
+            let c = (self.ymax - p0.y) / vy;
             if c < t {
                 y = self.ymax;
                 t = c;
@@ -811,7 +811,7 @@ where
             if p0.x >= self.xmax {
                 return None;
             }
-            c = (self.xmax - p0.x) / vx;
+            let c = (self.xmax - p0.x) / vx;
             if c < t {
                 x = self.xmax;
                 t = c;
@@ -822,7 +822,7 @@ where
             if p0.x <= self.xmin {
                 return None;
             }
-            c = (self.xmin - p0.x) / vx;
+            let c = (self.xmin - p0.x) / vx;
             if c < t {
                 x = self.xmin;
                 t = c;
