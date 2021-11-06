@@ -337,17 +337,13 @@ where
                 context.move_to(&points[0]);
 
                 let mut n = points.len();
-                while (points[0usize].x - points[n - 1].x).abs() < T::epsilon()
-                    && (points[0].y - points[n - 1].y).abs() < T::epsilon()
-                    && n > 1
+                while points[0usize].x == points[n - 1].x && points[0].y == points[n - 1].y && n > 1
                 {
                     n -= 1;
                 }
 
                 for i in 1..n {
-                    if (points[i].x - points[i - 1].x).abs() >= T::epsilon()
-                        || (points[i].y - points[i - 1].y).abs() >= T::epsilon()
-                    {
+                    if points[i].x != points[i - 1].x || points[i].y != points[i - 1].y {
                         context.line_to(&points[i].clone());
                     }
                 }
