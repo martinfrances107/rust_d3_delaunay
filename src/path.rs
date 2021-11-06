@@ -1,9 +1,11 @@
-use super::RenderingContext2d;
-use geo::CoordFloat;
-use geo::Coordinate;
-// use num_traits::float::Float;
 use std::fmt::Display;
 use std::string::ToString;
+
+use geo::CoordFloat;
+use geo::Coordinate;
+use rust_d3_geo::math::EPSILON;
+
+use super::RenderingContext2d;
 
 #[derive(Clone, Debug)]
 /// Produces a string into response to RendingContext2d API calls.
@@ -14,6 +16,7 @@ where
     p0: Coordinate<T>,
     p1: Option<Coordinate<T>>,
     s: String,
+    epsilon: T,
 }
 
 impl<T> Default for Path<T>
@@ -29,6 +32,7 @@ where
             },
             p1: None,
             s: String::from(""),
+            epsilon: T::from(EPSILON).unwrap(),
         }
     }
 }
@@ -76,7 +80,7 @@ where
         }
         match &self.p1 {
             Some(p1) => {
-                if (p1.x - x0).abs() > T::epsilon() || (p1.y - y0).abs() > T::epsilon() {
+                if (p1.x - x0).abs() > self.epsilon || (p1.y - y0).abs() > self.epsilon {
                     self.s.push_str(&format!("L{},{}", x0, y0));
                 }
                 if r == T::zero() {
