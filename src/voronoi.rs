@@ -23,6 +23,7 @@ use crate::RenderingContext2d;
 // xmin, ymin, xmax, ymax.
 pub(super) type Bounds<T> = (T, T, T, T);
 
+/// Data stores for a voronoi mesh.
 #[derive(Debug)]
 pub struct Voronoi<DRAIN, PR, PV, T>
 where
@@ -34,9 +35,13 @@ where
     pub circumcenters: Vec<Coordinate<T>>,
     pub delaunay: Delaunay<DRAIN, PR, PV, T>,
     pub vectors: VecDeque<Coordinate<T>>,
+    /// Bounds component.
     pub xmin: T,
+    /// Bounds component.
     pub ymin: T,
+    /// Bounds component.
     pub xmax: T,
+    /// Bounds component.
     pub ymax: T,
 }
 
@@ -93,7 +98,7 @@ where
     fn init(&mut self) {
         // Compute circumcenters.
         let circumcenter_len = self.delaunay.triangles.len() / 3;
-        // cannot use a slice cos need to be destermined at compile time.
+        // Cannot use a slice cos need to be destermined at compile time.
         self.circumcenters = (&self.circumcenters[0..circumcenter_len]).to_vec();
         let triangles = &self.delaunay.triangles;
         let points = &self.delaunay.points;
@@ -131,8 +136,6 @@ where
                     _ => T::nan(),
                 };
 
-                // let ex = x3 - x1;
-                // let ey = y3 - y1;
                 let ex = match (x1, x3) {
                     (Some(x1), Some(x3)) => x3 - x1,
                     _ => T::nan(),
@@ -267,6 +270,7 @@ where
         path.to_string()
     }
 
+    /// Render all segments.
     pub fn render(&self, context: &mut impl RenderingContext2d<T>)
     where
         T: CoordFloat + Display,
@@ -275,7 +279,6 @@ where
             return;
         }
 
-        // let circumcenters = self.circumcenters;
         for i in 0..self.delaunay.half_edges.len() {
             let j = self.delaunay.half_edges[i];
             if j < i || j == EMPTY {
@@ -318,6 +321,7 @@ where
         path.to_string()
     }
 
+    /// Renders cells of the voronoi mesh to a context.
     pub fn render_cell(&self, i: usize, context: &mut impl RenderingContext2d<T>)
     where
         T: CoordFloat + Display,
@@ -355,6 +359,7 @@ where
     //  cellPolgons*() is a generator which rustlang does not support.
     // in tests this is implemented as a for loop using cell_polygon().
 
+    /// Returns a vec points that for a voronoi cell.
     pub fn cell_polygon(&self, i: usize) -> Vec<Coordinate<T>>
     where
         T: CoordFloat + Display,
@@ -777,8 +782,7 @@ where
 
     fn project(&self, p0: &Coordinate<T>, vx: T, vy: T) -> Option<Coordinate<T>> {
         let mut t = Float::infinity();
-        // let mut c;
-        // The is a mistake in the javascript implementation
+        // There is a mistake in the javascript implementation
         // if vy and vx == 0 then x, y are undefined.
         let mut x = T::zero();
         let mut y = T::zero();
