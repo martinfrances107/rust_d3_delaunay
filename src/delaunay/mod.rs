@@ -40,11 +40,11 @@ where
 {
     colinear: Vec<usize>,
     #[derivative(Debug = "ignore")]
-    delaunator: Triangulation,
+    pub delaunator: Triangulation,
     pub inedges: Vec<usize>,
     hull_index: Vec<usize>,
     pub half_edges: Vec<usize>,
-    pub hull: Vec<usize>,
+    // pub hull: Vec<usize>,
     pub triangles: Vec<usize>,
     pub points: Vec<Coordinate<T>>,
     pub projection: Option<Projection<DRAIN, PR, PV, T>>,
@@ -91,12 +91,11 @@ where
 
         let mut out = Self {
             delaunator,
-            inedges: Vec::with_capacity(points.len()),
-            hull_index: Vec::with_capacity(points.len()),
+            inedges: Vec::with_capacity(points.len() / 2),
+            hull_index: Vec::with_capacity(points.len() / 2),
             points: points.to_vec(),
             colinear: Vec::new(),
             half_edges: Vec::new(),
-            hull: Vec::new(),
             projection: None,
             fx: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.x()),
             fy: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.y()),
@@ -183,8 +182,6 @@ where
         }
         self.half_edges = self.delaunator.halfedges.clone();
 
-        self.hull = self.delaunator.hull.clone();
-        let hull = self.hull.clone();
         self.triangles = self.delaunator.triangles.clone();
         self.inedges = Vec::new();
         self.hull_index = Vec::new();
@@ -208,20 +205,20 @@ where
             }
         }
 
-        for (i, h) in hull.iter().enumerate() {
+        for (i, h) in self.delaunator.hull.iter().enumerate() {
             self.hull_index[*h] = i;
         }
 
         // degenerate case: 1 or 2 (distinct) points
-        if hull.len() <= 2 && !hull.is_empty() {
+        if self.delaunator.hull.len() <= 2 && !self.delaunator.hull.is_empty() {
             self.triangles = vec![EMPTY, EMPTY, EMPTY];
             self.half_edges = vec![EMPTY, EMPTY, EMPTY];
-            self.triangles[0] = hull[0];
-            self.inedges[hull[0]] = 1;
-            if hull.len() == 2 {
-                self.triangles[1] = hull[1];
-                self.triangles[2] = hull[1];
-                self.inedges[hull[1]] = 0;
+            self.triangles[0] = self.delaunator.hull[0];
+            self.inedges[self.delaunator.hull[0]] = 1;
+            if self.delaunator.hull.len() == 2 {
+                self.triangles[1] = self.delaunator.hull[1];
+                self.triangles[2] = self.delaunator.hull[1];
+                self.inedges[self.delaunator.hull[1]] = 0;
             }
         }
     }
@@ -267,7 +264,7 @@ where
             }
             e = self.half_edges[e];
             if e == EMPTY {
-                e = self.hull[(self.hull_index[i] + 1) % self.hull.len()];
+                e = self.delaunator.hull[(self.hull_index[i] + 1) % self.delaunator.hull.len()];
                 if e != t
                     && (p.x - self.points[e].x).powi(2) + (p.y - self.points[e].y).powi(2) < dc
                 {
@@ -341,11 +338,11 @@ where
 
     /// Dumps the hull to the render context.
     pub fn render_hull(&self, context: &mut impl RenderingContext2d<T>) {
-        let h = self.hull[0];
-        let n = self.hull.len();
+        let h = self.delaunator.hull[0];
+        let n = self.delaunator.hull.len();
         context.move_to(&self.points[h]);
         for i in 1..n {
-            let h = self.hull[i];
+            let h = self.delaunator.hull[i];
             context.line_to(&self.points[h]);
         }
         context.close_path();

@@ -97,7 +97,7 @@ where
         self.circumcenters = (&self.circumcenters[0..circumcenter_len]).to_vec();
         let triangles = &self.delaunay.triangles;
         let points = &self.delaunay.points;
-        let hull = &self.delaunay.hull;
+        let hull = &self.delaunay.delaunator.hull;
 
         let mut i = 0usize;
         let mut j = 0usize;
@@ -229,7 +229,7 @@ where
         // causes panic in rust.
         if !hull.is_empty() {
             // Compute exterior cell rays.
-            let h = self.delaunay.hull[self.delaunay.hull.len() - 1];
+            let h = self.delaunay.delaunator.hull[self.delaunay.delaunator.hull.len() - 1];
             let mut p0: usize;
             let mut p1 = h * 2;
             let mut x0;
@@ -275,7 +275,7 @@ where
     where
         T: CoordFloat + Display,
     {
-        if self.delaunay.hull.len() <= 1 {
+        if self.delaunay.delaunator.hull.len() <= 1 {
             return;
         }
 
@@ -293,10 +293,10 @@ where
         }
 
         let mut h0;
-        let mut h1 = *self.delaunay.hull.last().unwrap();
-        for i in 0..self.delaunay.hull.len() {
+        let mut h1 = *self.delaunay.delaunator.hull.last().unwrap();
+        for i in 0..self.delaunay.delaunator.hull.len() {
             h0 = h1;
-            h1 = self.delaunay.hull[i];
+            h1 = self.delaunay.delaunator.hull[i];
             let t = (self.delaunay.inedges[h1] as f64 / 3.).floor() as usize;
             let pi = self.circumcenters[t];
             let v = h0 * 2;
@@ -425,7 +425,7 @@ where
 
     fn clip(&self, i: usize) -> Option<VecDeque<Coordinate<T>>> {
         // degenerate case (1 valid point: return the box)
-        if i == 0 && self.delaunay.hull.len() == 1 {
+        if i == 0 && self.delaunay.delaunator.hull.len() == 1 {
             return Some(VecDeque::from(vec![
                 Coordinate {
                     x: self.xmax,
