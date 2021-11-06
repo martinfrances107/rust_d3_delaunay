@@ -293,7 +293,7 @@ where
         for i in 0..self.delaunay.delaunator.hull.len() {
             h0 = h1;
             h1 = self.delaunay.delaunator.hull[i];
-            let t = (self.delaunay.inedges[h1] as f64 / 3.).floor() as usize;
+            let t = self.delaunay.inedges[h1] / 3;
             let pi = self.circumcenters[t];
             let v = h0 * 2;
             let p = self.project(&pi, self.vectors[v + 1].x, self.vectors[v + 1].y);
@@ -402,7 +402,7 @@ where
         let mut points: VecDeque<Coordinate<T>> = VecDeque::new();
         let mut e = e0;
         loop {
-            let t = (e as f64 / 3f64).floor() as usize;
+            let t = e / 3;
             points.push_back(self.circumcenters[t]);
             e = match e % 3 {
                 2 => e - 2,
