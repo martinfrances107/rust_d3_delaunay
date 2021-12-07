@@ -11,7 +11,12 @@ use geo::Coordinate;
 use num_traits::Zero;
 use num_traits::{Float, FloatConst, FromPrimitive};
 
+use rust_d3_geo::clip::buffer::Buffer;
+use rust_d3_geo::clip::post_clip_node::PostClipNode;
+use rust_d3_geo::clip::Line;
 use rust_d3_geo::clip::PointVisible;
+use rust_d3_geo::projection::resample::ResampleNode;
+use rust_d3_geo::projection::stream_node::StreamNode;
 use rust_d3_geo::projection::Raw as ProjectionRaw;
 use rust_d3_geo::stream::Stream;
 
@@ -25,15 +30,19 @@ pub(super) type Bounds<T> = (T, T, T, T);
 
 /// Data stores for a voronoi mesh.
 #[derive(Debug)]
-pub struct Voronoi<DRAIN, PR, PV, T>
+pub struct Voronoi<DRAIN, LINE, PR, PV, T>
 where
-    DRAIN: Stream<T = T>,
+    DRAIN: Stream<EP = DRAIN, T = T>,
+    LINE: Line,
     PR: ProjectionRaw<T>,
     PV: PointVisible<T = T>,
     T: 'static + AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
+    StreamNode<Buffer<T>, LINE, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
+    StreamNode<DRAIN, LINE, ResampleNode<DRAIN, PR, PostClipNode<DRAIN, DRAIN, T>, T>, T>:
+        Stream<EP = DRAIN, T = T>,
 {
     pub circumcenters: Vec<Coordinate<T>>,
-    pub delaunay: Delaunay<DRAIN, PR, PV, T>,
+    pub delaunay: Delaunay<DRAIN, LINE, PR, PV, T>,
     pub vectors: VecDeque<Coordinate<T>>,
     /// Bounds component.
     pub xmin: T,
@@ -45,15 +54,19 @@ where
     pub ymax: T,
 }
 
-impl<DRAIN, PR, PV, T> Voronoi<DRAIN, PR, PV, T>
+impl<DRAIN, LINE, PR, PV, T> Voronoi<DRAIN, LINE, PR, PV, T>
 where
-    DRAIN: Stream<T = T>,
+    DRAIN: Stream<EP = DRAIN, T = T>,
+    LINE: Line,
     PR: ProjectionRaw<T>,
     PV: PointVisible<T = T>,
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst + FromPrimitive,
+    StreamNode<Buffer<T>, LINE, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
+    StreamNode<DRAIN, LINE, ResampleNode<DRAIN, PR, PostClipNode<DRAIN, DRAIN, T>, T>, T>:
+        Stream<EP = DRAIN, T = T>,
 {
-    pub fn new(delaunay: Delaunay<DRAIN, PR, PV, T>, bounds: Option<Bounds<T>>) -> Self {
-        let mut v: Voronoi<DRAIN, PR, PV, T>;
+    pub fn new(delaunay: Delaunay<DRAIN, LINE, PR, PV, T>, bounds: Option<Bounds<T>>) -> Self {
+        let mut v: Voronoi<DRAIN, LINE, PR, PV, T>;
         let (xmin, ymin, xmax, ymax) = match bounds {
             Some(bounds) => bounds,
             None => (
