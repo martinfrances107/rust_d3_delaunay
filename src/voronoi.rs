@@ -4,12 +4,13 @@ use std::collections::VecDeque;
 use std::fmt::Display;
 
 use approx::AbsDiffEq;
-
 use delaunator::EMPTY;
 use geo::CoordFloat;
 use geo::Coordinate;
+use num_traits::Float;
+use num_traits::FloatConst;
+use num_traits::FromPrimitive;
 use num_traits::Zero;
-use num_traits::{Float, FloatConst, FromPrimitive};
 
 use rust_d3_geo::clip::buffer::Buffer;
 use rust_d3_geo::clip::post_clip_node::PostClipNode;
