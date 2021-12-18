@@ -492,7 +492,7 @@ where
                 if !P.is_empty() {
                     P.push_back(p1);
                 } else {
-                    P = vec![p1].into_iter().collect();
+                    P = VecDeque::from(vec![p1])
                 }
             } else {
                 #[allow(non_snake_case)]
@@ -529,7 +529,7 @@ where
                             if !P.is_empty() {
                                 P.push_back(s0);
                             } else {
-                                P = vec![s0].into_iter().collect();
+                                P = VecDeque::from(vec![s0]);
                             }
                         }
                     }
@@ -543,7 +543,7 @@ where
                 if !P.is_empty() {
                     P.push_back(s1);
                 } else {
-                    P = vec![s1].into_iter().collect();
+                    P = VecDeque::from(vec![s1]);
                 };
             }
         }
@@ -561,7 +561,7 @@ where
                 y: (self.ymin + self.ymax) / two,
             },
         ) {
-            return vec![
+            return VecDeque::from(vec![
                 Coordinate {
                     x: self.xmax,
                     y: self.ymin,
@@ -578,9 +578,7 @@ where
                     x: self.xmin,
                     y: self.ymin,
                 },
-            ]
-            .into_iter()
-            .collect();
+            ]);
         }
         P
     }
