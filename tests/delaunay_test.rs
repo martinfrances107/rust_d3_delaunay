@@ -325,6 +325,27 @@ mod delaunay_test {
     //   test.equal(delaunay.find(0, -1), 0);
     //   test.equal(delaunay.find(0, 1.2), 0);
     // });
+    #[test]
+    fn find_works_with_one_or_two_points() {
+        println!("delaunay.find(x, y) works with one or two points");
+
+        let points = vec![Coordinate { x: 0., y: 1. }, Coordinate { x: 0., y: 2. }];
+        let mut delaunay: DelaunayStub = Delaunay::new(&points);
+        assert_eq!(
+            points[delaunay.find(&Coordinate { x: 0., y: -1. }, None)].y,
+            1.
+        );
+        assert_eq!(
+            points[delaunay.find(&Coordinate { x: 0., y: 2.2 }, None)].y,
+            2.
+        );
+
+        // TODO must complete this test when update() is implemented.
+        // delaunay.points.fill(Coordinate { x: 0., y: 0. });
+        // delaunay.update();
+        // assert_eq(delaynay.find(&Coordinate { x: 0., y: -1 }, None), 0);
+        // assert_eq(delaynay.find(&Coordinate { x: 0., y: 1.2 }, None), 0);
+    }
 
     // tape("delaunay.find(x, y) works with collinear points", test => {
     //   const points = [[0, 1], [0, 2], [0, 4], [0, 0], [0, 3], [0, 4], [0, 4]];
@@ -336,6 +357,47 @@ mod delaunay_test {
     //   test.equal(points[delaunay.find(10, 10)][1], 4);
     //   test.equal(points[delaunay.find(10, 10, 0)][1], 4);
     // });
+
+    #[test]
+    fn find_works_with_collinear_points() {
+        println!("delaunay.find(x, y) works with collinear points");
+
+        let points = vec![
+            Coordinate { x: 0., y: 1. },
+            Coordinate { x: 0., y: 2. },
+            Coordinate { x: 0., y: 4. },
+            Coordinate { x: 0., y: 0. },
+            Coordinate { x: 0., y: 3. },
+            Coordinate { x: 0., y: 4. },
+            Coordinate { x: 0., y: 4. },
+        ];
+        let delaunay: DelaunayStub = Delaunay::new(&points);
+        assert_eq!(
+            points[delaunay.find(&Coordinate { x: 0., y: -1. }, None)].y,
+            0.0
+        );
+        assert_eq!(
+            points[delaunay.find(&Coordinate { x: 0., y: 1.2 }, None)].y,
+            1.
+        );
+
+        assert_eq!(
+            points[delaunay.find(&Coordinate { x: 1., y: 1.9 }, None)].y,
+            2.
+        );
+        assert_eq!(
+            points[delaunay.find(&Coordinate { x: -1., y: 3.3 }, None)].y,
+            3.
+        );
+        assert_eq!(
+            points[delaunay.find(&Coordinate { x: 10., y: 10. }, None)].y,
+            4.
+        );
+        assert_eq!(
+            points[delaunay.find(&Coordinate { x: 10., y: 10. }, Some(0))].y,
+            4.
+        );
+    }
 
     // tape("delaunay.find(x, y) works with collinear points 2", test => {
     //   const points = Array.from({ length: 120 }, (_, i) => [i * 4, i / 3 + 100]);

@@ -47,7 +47,7 @@ where
     StreamNode<DRAIN, LINE, ResampleNode<DRAIN, PR, PostClipNode<DRAIN, DRAIN, T>, T>, T>:
         Stream<EP = DRAIN, T = T>,
 {
-    colinear: Vec<usize>,
+    // colinear: Vec<usize>,
     #[derivative(Debug = "ignore")]
     /// A Triangulation stores the computed results from a delaunay mesh.
     pub delaunator: Triangulation,
@@ -108,7 +108,6 @@ where
             inedges: Vec::with_capacity(points.len() / 2),
             hull_index: Vec::with_capacity(points.len() / 2),
             points: points.to_vec(),
-            colinear: Vec::new(),
             half_edges: Vec::new(),
             projection: None,
             fx: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.x()),
@@ -130,8 +129,7 @@ where
     fn init(&mut self) {
         // Check for colinear.
         if self.delaunator.hull.len() > 2usize && colinear(&self.points, &self.delaunator) {
-            let len = self.points.len() as u32 / 2;
-            let mut colinear_vec: Vec<usize> = (0..len).map(|i| i as usize).collect();
+            let mut colinear_vec: Vec<usize> = (0..self.points.len()).collect();
             colinear_vec.sort_by(|i, j| {
                 let x_diff = self.points[*i].x - self.points[*j].x;
                 if x_diff != T::zero() {
@@ -151,8 +149,8 @@ where
                     }
                 }
             });
-            let e = self.colinear[0];
-            let f = self.colinear[self.colinear.len() - 1];
+            let e = colinear_vec[0];
+            let f = colinear_vec[colinear_vec.len() - 1];
             let bounds = [
                 self.points[e].x,
                 self.points[e].y,
@@ -193,7 +191,7 @@ where
             //     }
             // };
         } else {
-            self.colinear.clear();
+            // colinear_vec.clear();
         }
         self.half_edges = self.delaunator.halfedges.clone();
 
@@ -238,7 +236,7 @@ where
         }
     }
 
-    pub fn find(self, p: &Coordinate<T>, i: Option<usize>) -> usize {
+    pub fn find(&self, p: &Coordinate<T>, i: Option<usize>) -> usize {
         // Skip return early if p is invalid.
         let mut i: usize = i.unwrap_or(0usize);
         let i0 = i;
