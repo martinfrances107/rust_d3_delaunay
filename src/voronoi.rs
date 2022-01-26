@@ -123,7 +123,7 @@ where
         let n = triangles.len();
         if !n.is_zero() {
             let t1e_minus_8 = T::from_f64(1e-8).unwrap();
-            let t2f64 = T::from_f64(2f64).unwrap();
+            let two = T::from_f64(2f64).unwrap();
             loop {
                 let (x1, y1) = match triangles[i] {
                     EMPTY => (None, None),
@@ -160,8 +160,7 @@ where
                     _ => T::nan(),
                 };
 
-                let ab = (dx * ey - dy * ex) * T::from_f64(2f64).unwrap();
-                let two = T::from(2).unwrap();
+                let ab = (dx * ey - dy * ex) * two;
                 // Out of bound checking is x and y type values are bound of bounds
                 // following the js closely dx and ex become nan
                 // JS is wierd !NAN === true
@@ -206,7 +205,7 @@ where
                         // NB if ab is not NAN then x3,y3 must be numbers.
                         let x3 = x3.unwrap();
                         let y3 = y3.unwrap();
-                        ((x1 + x3) / t2f64, (y1 + y3) / t2f64)
+                        ((x1 + x3) / two, (y1 + y3) / two)
                     } else {
                         let d = T::one() / ab;
 
@@ -506,8 +505,6 @@ where
                             continue;
                         }
                         Some(s) => {
-                            // sx0 = s[0].x;
-                            // sy0 = s[0].y;
                             s1 = s[1];
                         }
                     }
