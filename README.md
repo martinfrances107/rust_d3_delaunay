@@ -3,7 +3,7 @@
 
 This is a port of the [d3-delaunay](https://github.com/d3/d3-delaunay) library into a RUST library crate/package. It is in a very early development phase.
 
-Current the code coverage as reported by Cargo tarpaulin is 79%.
+Current the code coverage as reported by Cargo tarpaulin is 80%.
 ## Phase 1
 
 Early draft port - sub module by submodule. Sub module porting means the test have also been ported.

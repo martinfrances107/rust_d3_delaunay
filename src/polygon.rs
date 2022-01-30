@@ -4,12 +4,9 @@ use geo::Coordinate;
 
 /// A Vector of point which implements RenderingContext2d.
 #[derive(Clone, Debug)]
-pub struct Polygon<T>
+pub struct Polygon<T>(pub Vec<Coordinate<T>>)
 where
-    T: CoordFloat,
-{
-    pub p: Vec<Coordinate<T>>,
-}
+    T: CoordFloat;
 
 impl<T> Default for Polygon<T>
 where
@@ -17,7 +14,7 @@ where
 {
     #[inline]
     fn default() -> Self {
-        Polygon { p: Vec::new() }
+        Self(Vec::new())
     }
 }
 
@@ -31,16 +28,6 @@ where
     }
 }
 
-impl<T> Polygon<T>
-where
-    T: CoordFloat,
-{
-    #[inline]
-    pub fn value(&self) -> Vec<Coordinate<T>> {
-        self.p.clone()
-    }
-}
-
 impl<T> RenderingContext2d<T> for Polygon<T>
 where
     T: CoordFloat,
@@ -51,17 +38,17 @@ where
 
     #[inline]
     fn move_to(&mut self, p: &Coordinate<T>) {
-        self.p.push(*p);
+        self.0.push(*p);
     }
 
     #[inline]
     fn close_path(&mut self) {
-        self.p.push(self.p[0]);
+        self.0.push(self.0[0]);
     }
 
     #[inline]
     fn line_to(&mut self, p: &Coordinate<T>) {
-        self.p.push(*p);
+        self.0.push(*p);
     }
 
     #[inline]

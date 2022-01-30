@@ -330,7 +330,7 @@ mod delaunay_test {
         println!("delaunay.find(x, y) works with one or two points");
 
         let points = vec![Coordinate { x: 0., y: 1. }, Coordinate { x: 0., y: 2. }];
-        let mut delaunay: DelaunayStub = Delaunay::new(&points);
+        let delaunay: DelaunayStub = Delaunay::new(&points);
         assert_eq!(
             points[delaunay.find(&Coordinate { x: 0., y: -1. }, None)].y,
             1.
@@ -346,17 +346,6 @@ mod delaunay_test {
         // assert_eq(delaynay.find(&Coordinate { x: 0., y: -1 }, None), 0);
         // assert_eq(delaynay.find(&Coordinate { x: 0., y: 1.2 }, None), 0);
     }
-
-    // tape("delaunay.find(x, y) works with collinear points", test => {
-    //   const points = [[0, 1], [0, 2], [0, 4], [0, 0], [0, 3], [0, 4], [0, 4]];
-    //   const delaunay = Delaunay.from(points);
-    //   test.equal(points[delaunay.find(0, -1)][1], 0);
-    //   test.equal(points[delaunay.find(0, 1.2)][1], 1);
-    //   test.equal(points[delaunay.find(1, 1.9)][1], 2);
-    //   test.equal(points[delaunay.find(-1, 3.3)][1], 3);
-    //   test.equal(points[delaunay.find(10, 10)][1], 4);
-    //   test.equal(points[delaunay.find(10, 10, 0)][1], 4);
-    // });
 
     #[test]
     fn find_works_with_collinear_points() {
@@ -411,16 +400,37 @@ mod delaunay_test {
     //   test.deepEqual([...delaunay.neighbors(2)], [ 1, 3 ]);
     // });
 
-    // tape("delaunay.find(x, y) works with collinear points (large)", test => {
-    //   const points = Array.from({length: 2000}, (_,i) => [i**2,i**2]);
-    //   const delaunay = Delaunay.from(points);
-    //   test.equal(points[delaunay.find(0, -1)][1], 0);
-    //   test.equal(points[delaunay.find(0, 1.2)][1], 1);
-    //   test.equal(points[delaunay.find(3.9, 3.9)][1], 4);
-    //   test.equal(points[delaunay.find(10, 9.5)][1], 9);
-    //   test.equal(points[delaunay.find(10, 9.5, 0)][1], 9);
-    //   test.equal(points[delaunay.find(1e6, 1e6)][1], 1e6);
-    // });
+    #[test]
+    fn find_works_with_collinear_points_large() {
+        println!("delaunay.find(x, y) works with collinear points (large)");
+        let points: Vec<Coordinate<f64>> = (0..2000_i32)
+            .map(|i| Coordinate {
+                x: i.pow(2u32) as f64,
+                y: i.pow(2u32) as f64,
+            })
+            .collect();
+        let delaunay: DelaunayStub = Delaunay::new(&points);
+        assert_eq!(
+            points[delaunay.find(&Coordinate { x: 0., y: -1. }, None)].y,
+            0.
+        );
+        assert_eq!(
+            points[delaunay.find(&Coordinate { x: 0., y: 1.2 }, None)].y,
+            1.
+        );
+        assert_eq!(
+            points[delaunay.find(&Coordinate { x: 3.9, y: 3.9 }, None)].y,
+            4.
+        );
+        assert_eq!(
+            points[delaunay.find(&Coordinate { x: 10.0, y: 9.5 }, Some(0))].y,
+            9.
+        );
+        assert_eq!(
+            points[delaunay.find(&Coordinate { x: 1e6, y: 1e6 }, None)].y,
+            1e6
+        );
+    }
 
     // tape("delaunay.update() allows fast updates", test => {
     //   let delaunay = Delaunay.from([[0, 0], [300, 0], [0, 300], [300, 300], [100, 100]]);

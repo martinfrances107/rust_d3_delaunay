@@ -16,7 +16,7 @@ use rust_d3_geo::clip::buffer::Buffer;
 use rust_d3_geo::clip::post_clip_node::PostClipNode;
 use rust_d3_geo::clip::Line;
 use rust_d3_geo::clip::PointVisible;
-use rust_d3_geo::projection::resample::ResampleNode;
+use rust_d3_geo::projection::resampler::ResampleNode;
 use rust_d3_geo::projection::stream_node::StreamNode;
 use rust_d3_geo::projection::Raw as ProjectionRaw;
 use rust_d3_geo::stream::Stream;
@@ -42,8 +42,13 @@ where
     StreamNode<DRAIN, LINE, ResampleNode<DRAIN, PR, PostClipNode<DRAIN, DRAIN, T>, T>, T>:
         Stream<EP = DRAIN, T = T>,
 {
+    /// The circumcenters of the Delaunay triangles as a Vec<c0, c1, …>.
+    /// Each contiguous pair of coordinates c0.x, c0.y is the circumcenter for the corresponding triangle.
+    /// These circumcenters form the coordinates of the Voronoi cell polygons.
     pub circumcenters: Vec<Coordinate<T>>,
     pub delaunay: Delaunay<DRAIN, LINE, PR, PV, T>,
+    /// A Vec<v0, v0, w0, w0, …> where each non-zero quadruple describes an open (infinite) cell on the outer hull,
+    ///  giving the directions of two open half-lines.
     pub vectors: VecDeque<Coordinate<T>>,
     /// Bounds component.
     pub xmin: T,
@@ -375,7 +380,7 @@ where
     {
         let mut polygon = Polygon::default();
         self.render_cell(i, &mut polygon);
-        polygon.p
+        polygon.0
     }
 
     fn render_segment(
@@ -400,6 +405,7 @@ where
         }
     }
 
+    /// Returns true if the cell with the specified index i contains the specified point p.
     #[inline]
     pub fn contains(&self, i: usize, p: &Coordinate<T>) -> bool {
         self.delaunay.step(i, p) == i

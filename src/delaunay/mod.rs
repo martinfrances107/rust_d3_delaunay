@@ -26,7 +26,7 @@ use rust_d3_geo::clip::post_clip_node::PostClipNode;
 use rust_d3_geo::clip::Line;
 use rust_d3_geo::clip::PointVisible;
 use rust_d3_geo::projection::projection::Projection;
-use rust_d3_geo::projection::resample::ResampleNode;
+use rust_d3_geo::projection::resampler::ResampleNode;
 use rust_d3_geo::projection::stream_node::StreamNode;
 use rust_d3_geo::projection::Raw as ProjectionRaw;
 use rust_d3_geo::stream::Stream;
@@ -54,6 +54,8 @@ where
     pub inedges: Vec<usize>,
     hull_index: Vec<usize>,
     pub half_edges: Vec<usize>,
+    /// The triangle vertex indexes as an Vec<usize> [i0, j0, k0, i1, j1, k1, …].
+    ///  Each contiguous triplet of indexes i, j, k forms a counterclockwise triangle.
     pub triangles: Vec<usize>,
     pub points: Vec<Coordinate<T>>,
     pub projection: Option<Projection<DRAIN, LINE, PR, PV, T>>,
@@ -236,6 +238,8 @@ where
         }
     }
 
+    /// Returns the index of the input point that is closest to the specified point p.
+    /// The search is started at the specified point i. If i is not specified, it defaults to zero.
     pub fn find(&self, p: &Coordinate<T>, i: Option<usize>) -> usize {
         // Skip return early if p is invalid.
         let mut i: usize = i.unwrap_or(0usize);
