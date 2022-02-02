@@ -247,17 +247,14 @@ where
         if !hull.is_empty() {
             // Compute exterior cell rays.
             let h = self.delaunay.delaunator.hull[self.delaunay.delaunator.hull.len() - 1];
-            let mut p0: usize;
             let mut p1 = h * 2;
-            let mut x0;
             let mut x1 = points[h].x;
-            let mut y0;
             let mut y1 = points[h].y;
 
             for h in hull {
-                p0 = p1;
-                x0 = x1;
-                y0 = y1;
+                let p0 = p1;
+                let x0 = x1;
+                let y0 = y1;
                 p1 = h * 2;
                 x1 = points[*h].x;
                 y1 = points[*h].y;
@@ -309,10 +306,9 @@ where
             self.render_segment(&pi, &pj, context);
         }
 
-        let mut h0;
         let mut h1 = *self.delaunay.delaunator.hull.last().unwrap();
         for i in 0..self.delaunay.delaunator.hull.len() {
-            h0 = h1;
+            let h0 = h1;
             h1 = self.delaunay.delaunator.hull[i];
             let t = self.delaunay.inedges[h1] / 3;
             let pi = self.circumcenters[t];
@@ -479,7 +475,6 @@ where
     fn clip_finite(&self, i: usize, points: &VecDeque<Coordinate<T>>) -> VecDeque<Coordinate<T>> {
         #[allow(non_snake_case)]
         let mut P = VecDeque::new();
-        let mut p0: Coordinate<T>;
         let mut p1 = points[points.len() - 1];
         let mut c0;
         let mut c1 = self.regioncode(&p1);
@@ -487,7 +482,7 @@ where
         let mut e1 = 0;
         let two = T::from_f64(2f64).unwrap();
         for point in points {
-            p0 = p1;
+            let p0 = p1;
             p1 = *point;
             c0 = c1;
             c1 = self.regioncode(&p1);
