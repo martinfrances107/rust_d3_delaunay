@@ -20,7 +20,8 @@ Modules, passing test ready for phase 2 evaluation :-
 
 This function used generators - which rust does not currently support.
   * maybe I could use next() see  https://doc.rust-lang.org/rust-by-example/trait/iter.html
-  * maybe https://crates.io/crates/generator
+  * maybe https://crates.io/crates/generator This routes would be a major breaking change
+  as it would require T to become Sync and Send.
 
 Clippy report lots of documentation is missing.
 

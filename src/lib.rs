@@ -19,6 +19,7 @@ pub mod voronoi;
 
 use geo::CoordFloat;
 use geo::Coordinate;
+
 /// Interface in web browser.
 pub trait RenderingContext2d<T>: ToString
 where

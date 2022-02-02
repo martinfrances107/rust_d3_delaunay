@@ -10,6 +10,10 @@ use crate::RenderingContext2d;
 
 use std::cmp::Ordering;
 use std::fmt::Display;
+// use std::marker::Sync;
+
+// use generator::done;
+// use generator::Gn;
 
 use approx::AbsDiffEq;
 use colinear::colinear;
@@ -25,7 +29,7 @@ use rust_d3_geo::clip::buffer::Buffer;
 use rust_d3_geo::clip::post_clip_node::PostClipNode;
 use rust_d3_geo::clip::Line;
 use rust_d3_geo::clip::PointVisible;
-use rust_d3_geo::projection::projection::Projection;
+use rust_d3_geo::projection::projector::Projector;
 use rust_d3_geo::projection::resampler::ResampleNode;
 use rust_d3_geo::projection::stream_node::StreamNode;
 use rust_d3_geo::projection::Raw as ProjectionRaw;
@@ -68,7 +72,7 @@ where
     pub triangles: Vec<usize>,
     /// The coordinates of a point as an vector.
     pub points: Vec<Coordinate<T>>,
-    pub projection: Option<Projection<DRAIN, LINE, PR, PV, T>>,
+    pub projection: Option<Projector<DRAIN, LINE, PR, PV, T>>,
     #[derivative(Debug = "ignore")]
     pub fx: Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>,
     #[derivative(Debug = "ignore")]
@@ -247,6 +251,49 @@ where
             }
         }
     }
+
+    // fn neighbours(&self, i: usize) {
+    //     let g = Gn::new_scoped(move |s| {
+    //         // degenerate case with several collinear points
+    //         if self.collinear.is_empty() {
+    //             let l = self.collinear[i];
+    //             if l > 0 {
+    //                 s.yield_(Some(self.collinear[l - 1]));
+    //             }
+    //             if l < self.collinear.len() - 1 {
+    //                 s.yield_(Some(self.collinear[l + 1]));
+    //             }
+    //             done!();
+    //         }
+
+    //         let e0 = self.inedges[i];
+    //         if e0 == EMPTY {
+    //             done!()
+    //         }; // coincident point
+    //         let e = e0;
+    //         let p0 = EMPTY;
+    //         loop {
+    //             p0 = self.triangles[e];
+    //             s.yield_(Some(p0));
+    //             // e = e % 3 == 2 ? e - 2 : e + 1;
+    //             let e = if e % 3 == 2 { e - 2 } else { e + 1 };
+    //             if self.triangles[e] != i {
+    //                 done!()
+    //             }; // bad triangulation
+    //             e = self.half_edges[e];
+    //             if e == EMPTY {
+    //                 let p = self.hull[(self._hull_index[i] + 1) % self.hull.len()];
+    //                 if p != p0 {
+    //                     s.yield_(Some(p));
+    //                 }
+    //                 done!();
+    //             }
+    //             if e == e0 {
+    //                 break None;
+    //             }
+    //         }
+    //     });
+    // }
 
     /// Returns the index of the input point that is closest to the specified point p.
     /// The search is started at the specified point i. If i is not specified, it defaults to zero.
