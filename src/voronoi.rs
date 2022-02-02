@@ -21,10 +21,10 @@ use rust_d3_geo::projection::stream_node::StreamNode;
 use rust_d3_geo::projection::Raw as ProjectionRaw;
 use rust_d3_geo::stream::Stream;
 
-use crate::delaunay::Delaunay;
-use crate::path::Path;
-use crate::polygon::Polygon;
-use crate::RenderingContext2d;
+use super::delaunay::Delaunay;
+use super::path::Path;
+use super::polygon::Polygon;
+use super::RenderingContext2d;
 
 // xmin, ymin, xmax, ymax.
 pub(super) type Bounds<T> = (T, T, T, T);

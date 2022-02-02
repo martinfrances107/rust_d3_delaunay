@@ -35,6 +35,7 @@ use rust_d3_geo::projection::stream_node::StreamNode;
 use rust_d3_geo::projection::Raw as ProjectionRaw;
 use rust_d3_geo::stream::Stream;
 
+type FnTransform<T> = Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>;
 /// Wrapper stores data associated with delaunator Triangulation.
 ///
 /// hull and hald_edge data.
@@ -74,9 +75,9 @@ where
     pub points: Vec<Coordinate<T>>,
     pub projection: Option<Projector<DRAIN, LINE, PR, PV, T>>,
     #[derivative(Debug = "ignore")]
-    pub fx: Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>,
+    pub fx: FnTransform<T>,
     #[derivative(Debug = "ignore")]
-    pub fy: Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>,
+    pub fy: FnTransform<T>,
 }
 
 impl<'a, DRAIN, LINE, PR, PV, T> Delaunay<DRAIN, LINE, PR, PV, T>
