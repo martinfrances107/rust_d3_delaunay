@@ -6,6 +6,7 @@ mod delaunay_test {
     use delaunator::EMPTY;
     use geo::Coordinate;
     use pretty_assertions::assert_eq;
+
     use rust_d3_delaunay::delaunay::Delaunay;
     use rust_d3_delaunay::path::Path;
     use rust_d3_delaunay::voronoi::Voronoi;
