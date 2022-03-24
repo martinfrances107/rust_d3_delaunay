@@ -47,7 +47,7 @@ where
     PCNC: Clone,
     PCNU: Clone,
     PR: Transform<T = T>,
-    PV: PointVisible<T = T>,
+    PV: Clone,
     RC: Clone,
     RU: Clone,
     T: 'static + AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
