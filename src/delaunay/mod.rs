@@ -7,6 +7,7 @@ use crate::path::Path;
 use crate::voronoi::Bounds;
 use crate::voronoi::Voronoi;
 use crate::RenderingContext2d;
+use rust_d3_geo::Transform;
 
 use std::cmp::Ordering;
 use std::fmt::Display;
@@ -25,14 +26,9 @@ use jitter::jitter;
 use num_traits::float::FloatConst;
 use num_traits::FromPrimitive;
 
-use rust_d3_geo::clip::buffer::Buffer;
-use rust_d3_geo::clip::post_clip_node::PostClipNode;
-use rust_d3_geo::clip::Line;
 use rust_d3_geo::clip::PointVisible;
 use rust_d3_geo::projection::projector::Projector;
-use rust_d3_geo::projection::resampler::ResampleNode;
-use rust_d3_geo::projection::stream_node::StreamNode;
-use rust_d3_geo::projection::Raw as ProjectionRaw;
+
 use rust_d3_geo::stream::Stream;
 
 type FnTransform<T> = Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>;
@@ -41,16 +37,23 @@ type FnTransform<T> = Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>;
 /// hull and hald_edge data.
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct Delaunay<DRAIN, LINE, PR, PV, T>
+pub struct Delaunay<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
 where
     DRAIN: Stream<EP = DRAIN, T = T>,
-    LINE: Line,
-    PR: ProjectionRaw<T>,
+    I: Clone,
+    LB: Clone,
+    LC: Clone,
+    LU: Clone,
+    PCNC: Clone,
+    PCNU: Clone,
+    PR: Transform<T = T>,
     PV: PointVisible<T = T>,
+    RC: Clone,
+    RU: Clone,
     T: 'static + AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
-    StreamNode<Buffer<T>, LINE, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
-    StreamNode<DRAIN, LINE, ResampleNode<DRAIN, PR, PostClipNode<DRAIN, DRAIN, T>, T>, T>:
-        Stream<EP = DRAIN, T = T>,
+    // StreamNode<Buffer<T>, LINE, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
+    // StreamNode<DRAIN, LINE, ResampleNode<DRAIN, PR, PostClipNode<DRAIN, DRAIN, T>, T>, T>:
+    // Stream<EP = DRAIN, T = T>,
 {
     // colinear: Vec<usize>,
     #[derivative(Debug = "ignore")]
@@ -73,23 +76,32 @@ where
     pub triangles: Vec<usize>,
     /// The coordinates of a point as an vector.
     pub points: Vec<Coordinate<T>>,
-    pub projection: Option<Projector<DRAIN, LINE, PR, PV, T>>,
+    //Projector<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
+    pub projection: Option<Projector<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>>,
     #[derivative(Debug = "ignore")]
     pub fx: FnTransform<T>,
     #[derivative(Debug = "ignore")]
     pub fy: FnTransform<T>,
 }
 
-impl<'a, DRAIN, LINE, PR, PV, T> Delaunay<DRAIN, LINE, PR, PV, T>
+impl<'a, DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
+    Delaunay<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
 where
     DRAIN: Stream<EP = DRAIN, T = T>,
-    LINE: Line,
-    PR: ProjectionRaw<T>,
+    I: Clone,
+    LB: Clone,
+    LC: Clone,
+    LU: Clone,
+    PCNC: Clone,
+    PCNU: Clone,
+    PR: Transform<T = T>,
     PV: PointVisible<T = T>,
+    RC: Clone,
+    RU: Clone,
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst + FromPrimitive,
-    StreamNode<Buffer<T>, LINE, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
-    StreamNode<DRAIN, LINE, ResampleNode<DRAIN, PR, PostClipNode<DRAIN, DRAIN, T>, T>, T>:
-        Stream<EP = DRAIN, T = T>,
+    // StreamNode<Buffer<T>, LINE, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
+    // StreamNode<DRAIN, LINE, ResampleNode<DRAIN, PR, PostClipNode<DRAIN, DRAIN, T>, T>, T>:
+    //     Stream<EP = DRAIN, T = T>,
 {
     /// Computes a delanay triangularization and stores the results.
     pub fn new(points: &[Coordinate<T>]) -> Self {
@@ -139,7 +151,10 @@ where
 
     #[inline]
     /// Use the stored delaunay mesh data to compute the assoicated voronoi mesh.
-    pub fn voronoi(self, bounds: Option<Bounds<T>>) -> Voronoi<DRAIN, LINE, PR, PV, T> {
+    pub fn voronoi(
+        self,
+        bounds: Option<Bounds<T>>,
+    ) -> Voronoi<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T> {
         Voronoi::new(self, bounds)
     }
 
