@@ -1,6 +1,5 @@
 #![allow(clippy::many_single_char_names)]
 
-use rust_d3_geo::Transform;
 use std::collections::VecDeque;
 use std::fmt::Display;
 
@@ -35,7 +34,7 @@ where
     LU: Clone,
     PCNC: Clone,
     PCNU: Clone,
-    PR: Transform<T = T>,
+    PR: Clone,
     PV: Clone,
     RC: Clone,
     RU: Clone,
@@ -69,7 +68,7 @@ where
     LU: Clone,
     PCNC: Clone,
     PCNU: Clone,
-    PR: Transform<T = T>,
+    PR: Clone,
     PV: PointVisible<T = T>,
     RC: Clone,
     RU: Clone,

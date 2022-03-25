@@ -3,18 +3,8 @@
 mod colinear;
 mod jitter;
 
-use crate::path::Path;
-use crate::voronoi::Bounds;
-use crate::voronoi::Voronoi;
-use crate::RenderingContext2d;
-use rust_d3_geo::Transform;
-
 use std::cmp::Ordering;
 use std::fmt::Display;
-// use std::marker::Sync;
-
-// use generator::done;
-// use generator::Gn;
 
 use approx::AbsDiffEq;
 use colinear::colinear;
@@ -28,8 +18,12 @@ use num_traits::FromPrimitive;
 
 use rust_d3_geo::clip::PointVisible;
 use rust_d3_geo::projection::projector::Projector;
-
 use rust_d3_geo::stream::Stream;
+
+use crate::path::Path;
+use crate::voronoi::Bounds;
+use crate::voronoi::Voronoi;
+use crate::RenderingContext2d;
 
 type FnTransform<T> = Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>;
 /// Wrapper stores data associated with delaunator Triangulation.
@@ -46,16 +40,12 @@ where
     LU: Clone,
     PCNC: Clone,
     PCNU: Clone,
-    PR: Transform<T = T>,
+    PR: Clone,
     PV: Clone,
     RC: Clone,
     RU: Clone,
     T: 'static + AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
-    // StreamNode<Buffer<T>, LINE, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
-    // StreamNode<DRAIN, LINE, ResampleNode<DRAIN, PR, PostClipNode<DRAIN, DRAIN, T>, T>, T>:
-    // Stream<EP = DRAIN, T = T>,
 {
-    // colinear: Vec<usize>,
     #[derivative(Debug = "ignore")]
     /// A Triangulation stores the computed results from a delaunay mesh.
     pub delaunator: Triangulation,
@@ -94,14 +84,11 @@ where
     LU: Clone,
     PCNC: Clone,
     PCNU: Clone,
-    PR: Transform<T = T>,
+    PR: Clone,
     PV: PointVisible<T = T>,
     RC: Clone,
     RU: Clone,
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst + FromPrimitive,
-    // StreamNode<Buffer<T>, LINE, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
-    // StreamNode<DRAIN, LINE, ResampleNode<DRAIN, PR, PostClipNode<DRAIN, DRAIN, T>, T>, T>:
-    //     Stream<EP = DRAIN, T = T>,
 {
     /// Computes a delanay triangularization and stores the results.
     pub fn new(points: &[Coordinate<T>]) -> Self {
