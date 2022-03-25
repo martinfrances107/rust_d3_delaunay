@@ -13,13 +13,7 @@ use num_traits::FloatConst;
 use num_traits::FromPrimitive;
 use num_traits::Zero;
 
-use rust_d3_geo::clip::buffer::Buffer;
-// use rust_d3_geo::clip::post_clip_node::PostClipNode;
-// use rust_d3_geo::clip::Line;
 use rust_d3_geo::clip::PointVisible;
-// use rust_d3_geo::projection::resampler::ResampleNode;
-// use rust_d3_geo::projection::stream_node::StreamNode;
-// use rust_d3_geo::projection::Raw as ProjectionRaw;
 use rust_d3_geo::stream::Stream;
 
 use super::delaunay::Delaunay;
@@ -46,9 +40,6 @@ where
     RC: Clone,
     RU: Clone,
     T: 'static + AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
-    // StreamNode<Buffer<T>, LINE, Buffer<T>, T>: Stream<EP = Buffer<T>, T = T>,
-    // StreamNode<DRAIN, LINE, ResampleNode<DRAIN, PR, PostClipNode<DRAIN, DRAIN, T>, T>, T>:
-    //     Stream<EP = DRAIN, T = T>,
 {
     /// The circumcenters of the Delaunay triangles as a Vec<c0, c1, …>.
     /// Each contiguous pair of coordinates c0.x, c0.y is the circumcenter for the corresponding triangle.
@@ -84,11 +75,11 @@ where
     RU: Clone,
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst + FromPrimitive,
 {
+    /// Given a delaunay object and a bounds construct a Voronoi object.
     pub fn new(
         delaunay: Delaunay<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>,
         bounds: Option<Bounds<T>>,
     ) -> Self {
-        let mut v: Voronoi<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>;
         let (xmin, ymin, xmax, ymax) = match bounds {
             Some(bounds) => bounds,
             None => (
@@ -116,7 +107,7 @@ where
                 y: T::zero(),
             });
         }
-        v = Self {
+        let mut v = Self {
             delaunay,
             circumcenters,
             vectors,
