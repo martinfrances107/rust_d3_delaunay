@@ -33,17 +33,6 @@ type FnTransform<T> = Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>;
 #[derivative(Debug)]
 pub struct Delaunay<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
 where
-    DRAIN: Stream<EP = DRAIN, T = T>,
-    I: Clone,
-    LB: Clone,
-    LC: Clone,
-    LU: Clone,
-    PCNC: Clone,
-    PCNU: Clone,
-    PR: Clone,
-    PV: Clone,
-    RC: Clone,
-    RU: Clone,
     T: 'static + AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
 {
     #[derivative(Debug = "ignore")]
@@ -77,17 +66,6 @@ where
 impl<'a, DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
     Delaunay<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
 where
-    DRAIN: Stream<EP = DRAIN, T = T>,
-    I: Clone,
-    LB: Clone,
-    LC: Clone,
-    LU: Clone,
-    PCNC: Clone,
-    PCNU: Clone,
-    PR: Clone,
-    PV: PointVisible<T = T>,
-    RC: Clone,
-    RU: Clone,
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst + FromPrimitive,
 {
     /// Computes a delanay triangularization and stores the results.

@@ -12,9 +12,6 @@ use num_traits::FloatConst;
 use num_traits::FromPrimitive;
 use num_traits::Zero;
 
-use rust_d3_geo::clip::PointVisible;
-use rust_d3_geo::stream::Stream;
-
 use super::delaunay::Delaunay;
 use super::path::Path;
 use super::polygon::Polygon;
@@ -27,17 +24,6 @@ pub(super) type Bounds<T> = (T, T, T, T);
 #[derive(Debug)]
 pub struct Voronoi<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
 where
-    DRAIN: Stream<EP = DRAIN, T = T>,
-    I: Clone,
-    LB: Clone,
-    LC: Clone,
-    LU: Clone,
-    PCNC: Clone,
-    PCNU: Clone,
-    PR: Clone,
-    PV: Clone,
-    RC: Clone,
-    RU: Clone,
     T: 'static + AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
 {
     /// The circumcenters of the Delaunay triangles as a Vec<c0, c1, …>.
@@ -61,17 +47,6 @@ where
 impl<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
     Voronoi<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
 where
-    DRAIN: Stream<EP = DRAIN, T = T>,
-    I: Clone,
-    LB: Clone,
-    LC: Clone,
-    LU: Clone,
-    PCNC: Clone,
-    PCNU: Clone,
-    PR: Clone,
-    PV: PointVisible<T = T>,
-    RC: Clone,
-    RU: Clone,
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst + FromPrimitive,
 {
     /// Given a delaunay object and a bounds construct a Voronoi object.
