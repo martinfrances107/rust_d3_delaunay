@@ -25,7 +25,7 @@ mod delaunay_test {
 
     type DelaunayStub = Delaunay<
         StreamDrainStub<f64>,
-        Interpolate<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
+        Interpolate<f64>,
         Line<Buffer<f64>, Buffer<f64>, Connected<Buffer<f64>>, f64>,
         Line<
             StreamDrainStub<f64>,
@@ -52,7 +52,7 @@ mod delaunay_test {
 
     type VoronoiStub = Voronoi<
         StreamDrainStub<f64>,
-        Interpolate<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
+        Interpolate<f64>,
         Line<Buffer<f64>, Buffer<f64>, Connected<Buffer<f64>>, f64>,
         Line<
             StreamDrainStub<f64>,
