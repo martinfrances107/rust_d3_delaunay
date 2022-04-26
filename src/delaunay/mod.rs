@@ -16,9 +16,7 @@ use jitter::jitter;
 use num_traits::float::FloatConst;
 use num_traits::FromPrimitive;
 
-use rust_d3_geo::clip::PointVisible;
 use rust_d3_geo::projection::projector::Projector;
-use rust_d3_geo::stream::Stream;
 
 use crate::path::Path;
 use crate::voronoi::Bounds;
