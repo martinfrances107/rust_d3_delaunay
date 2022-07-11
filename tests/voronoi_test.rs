@@ -25,9 +25,8 @@ mod voronoi_test {
     type DelaunayStub = Delaunay<
         StreamDrainStub<f64>,
         Interpolate<f64>,
-        Line<Buffer<f64>, Buffer<f64>, Connected<Buffer<f64>>, f64>,
+        Line<Buffer<f64>, Connected<Buffer<f64>>, f64>,
         Line<
-            StreamDrainStub<f64>,
             ResampleNoClipC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
             Connected<
                 ResampleNoClipC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
@@ -35,13 +34,12 @@ mod voronoi_test {
             f64,
         >,
         Line<
-            StreamDrainStub<f64>,
             ResampleNoClipC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
             Unconnected,
             f64,
         >,
-        NoClipC<StreamDrainStub<f64>, f64>,
-        NoClipU<StreamDrainStub<f64>, f64>,
+        NoClipC<f64>,
+        NoClipU<f64>,
         Gnomic<StreamDrainStub<f64>, f64>,
         PV<f64>,
         ResampleNoClipC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
@@ -52,9 +50,8 @@ mod voronoi_test {
     type VoronoiStub = Voronoi<
         StreamDrainStub<f64>,
         Interpolate<f64>,
-        Line<Buffer<f64>, Buffer<f64>, Connected<Buffer<f64>>, f64>,
+        Line<Buffer<f64>, Connected<Buffer<f64>>, f64>,
         Line<
-            StreamDrainStub<f64>,
             ResampleNoClipC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
             Connected<
                 ResampleNoClipC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
@@ -62,13 +59,12 @@ mod voronoi_test {
             f64,
         >,
         Line<
-            StreamDrainStub<f64>,
             ResampleNoClipC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
             Unconnected,
             f64,
         >,
-        NoClipC<StreamDrainStub<f64>, f64>,
-        NoClipU<StreamDrainStub<f64>, f64>,
+        NoClipC<f64>,
+        NoClipU<f64>,
         Gnomic<StreamDrainStub<f64>, f64>,
         PV<f64>,
         ResampleNoClipC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
