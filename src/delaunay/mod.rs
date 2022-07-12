@@ -29,7 +29,7 @@ type FnTransform<T> = Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>;
 /// hull and hald_edge data.
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct Delaunay<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
+pub struct Delaunay<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>
 where
     T: 'static + AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
 {
@@ -54,15 +54,15 @@ where
     /// The coordinates of a point as an vector.
     pub points: Vec<Coordinate<T>>,
     //Projector<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
-    pub projection: Option<Projector<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>>,
+    pub projection: Option<Projector<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>>,
     #[derivative(Debug = "ignore")]
     pub fx: FnTransform<T>,
     #[derivative(Debug = "ignore")]
     pub fy: FnTransform<T>,
 }
 
-impl<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
-    Delaunay<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
+impl<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>
+    Delaunay<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>
 where
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst + FromPrimitive,
 {
@@ -117,7 +117,7 @@ where
     pub fn voronoi(
         self,
         bounds: Option<Bounds<T>>,
-    ) -> Voronoi<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T> {
+    ) -> Voronoi<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T> {
         Voronoi::new(self, bounds)
     }
 

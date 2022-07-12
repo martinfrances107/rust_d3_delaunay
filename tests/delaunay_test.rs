@@ -14,7 +14,6 @@ mod delaunay_test {
     use rust_d3_geo::clip::antimeridian::line::Line;
     use rust_d3_geo::clip::antimeridian::pv::PV;
     use rust_d3_geo::clip::buffer::Buffer;
-    use rust_d3_geo::projection::builder::template::NoClipC;
     use rust_d3_geo::projection::builder::template::NoClipU;
     use rust_d3_geo::projection::builder::template::ResampleNoClipC;
     use rust_d3_geo::projection::builder::template::ResampleNoClipU;
@@ -39,7 +38,6 @@ mod delaunay_test {
             Unconnected,
             f64,
         >,
-        NoClipC<f64>,
         NoClipU<f64>,
         Gnomic<StreamDrainStub<f64>, f64>,
         PV<f64>,
@@ -64,7 +62,6 @@ mod delaunay_test {
             Unconnected,
             f64,
         >,
-        NoClipC<f64>,
         NoClipU<f64>,
         Gnomic<StreamDrainStub<f64>, f64>,
         PV<f64>,

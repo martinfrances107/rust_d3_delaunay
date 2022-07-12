@@ -22,7 +22,7 @@ pub(super) type Bounds<T> = (T, T, T, T);
 
 /// Data stores for a voronoi mesh.
 #[derive(Debug)]
-pub struct Voronoi<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
+pub struct Voronoi<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>
 where
     T: 'static + AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
 {
@@ -30,7 +30,7 @@ where
     /// Each contiguous pair of coordinates c0.x, c0.y is the circumcenter for the corresponding triangle.
     /// These circumcenters form the coordinates of the Voronoi cell polygons.
     pub circumcenters: Vec<Coordinate<T>>,
-    pub delaunay: Delaunay<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>,
+    pub delaunay: Delaunay<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>,
     /// A Vec<v0, v0, w0, w0, …> where each non-zero quadruple describes an open (infinite) cell on the outer hull,
     ///  giving the directions of two open half-lines.
     pub vectors: VecDeque<Coordinate<T>>,
@@ -44,14 +44,14 @@ where
     pub ymax: T,
 }
 
-impl<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
-    Voronoi<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
+impl<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>
+    Voronoi<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>
 where
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst + FromPrimitive,
 {
     /// Given a delaunay object and a bounds construct a Voronoi object.
     pub fn new(
-        delaunay: Delaunay<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>,
+        delaunay: Delaunay<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>,
         bounds: Option<Bounds<T>>,
     ) -> Self {
         let (xmin, ymin, xmax, ymax) = match bounds {
