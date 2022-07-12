@@ -61,7 +61,7 @@ where
     pub fy: FnTransform<T>,
 }
 
-impl<'a, DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
+impl<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
     Delaunay<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
 where
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst + FromPrimitive,

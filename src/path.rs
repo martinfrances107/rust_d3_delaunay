@@ -1,4 +1,5 @@
 use std::fmt::Display;
+use std::fmt::Write;
 use std::string::ToString;
 
 use geo::CoordFloat;
@@ -31,7 +32,7 @@ where
                 y: T::zero(),
             },
             p1: None,
-            s: String::from(""),
+            s: String::new(),
             epsilon: T::from(EPSILON).unwrap(),
         }
     }
@@ -57,19 +58,19 @@ where
     fn move_to(&mut self, p: &Coordinate<T>) {
         self.p0 = *p;
         self.p1 = Some(*p);
-        self.s.push_str(&format!("M{},{}", p.x, p.y));
+        write!(self.s, "M{},{}", p.x, p.y).expect("cannot apppend to buffer");
     }
 
     fn close_path(&mut self) {
         if self.p1.is_some() {
             self.p1 = Some(self.p0);
-            self.s += "Z";
+            write!(self.s, "Z").expect("cannot apppend to buffer");
         }
     }
 
     fn line_to(&mut self, p: &Coordinate<T>) {
         self.p1 = Some(*p);
-        self.s.push_str(&format!("L{},{}", p.x, p.y));
+        write!(self.s, "L{},{}", p.x, p.y).expect("cannot apppend to buffer");
     }
 
     fn arc(&mut self, p: &Coordinate<T>, r: T, _start: T, _stop: T) {
@@ -81,13 +82,14 @@ where
         match &self.p1 {
             Some(p1) => {
                 if (p1.x - x0).abs() > self.epsilon || (p1.y - y0).abs() > self.epsilon {
-                    self.s.push_str(&format!("L{},{}", x0, y0));
+                    write!(self.s, "L{},{}", x0, y0).expect("cannot apppend to buffer");
                 }
                 if r == T::zero() {
                     return;
                 }
                 self.p1 = Some(*p1);
-                self.s.push_str(&format!(
+                write!(
+                    self.s,
                     "A{},{},0,1,1,{},{}A{},{},0,1,1,{},{}",
                     r,
                     r,
@@ -97,10 +99,11 @@ where
                     r,
                     self.p0.x,
                     self.p0.y
-                ));
+                )
+                .expect("cannot apppend to buffer");
             }
             _ => {
-                self.s.push_str(&format!("M{},{}", x0, y0));
+                write!(self.s, "M{},{}", x0, y0).expect("cannot apppend to buffer");
             }
         }
     }
@@ -108,7 +111,7 @@ where
     fn rect(&mut self, p: &Coordinate<T>, w: T, h: T) {
         self.p0 = *p;
         self.p1 = Some(*p);
-        self.s
-            .push_str(&format!("M{},{},{}h{}v{}h{}Z", p.x, p.y, w, h, h, -w));
+        write!(self.s, "M{},{},{}h{}v{}h{}Z", p.x, p.y, w, h, h, -w)
+            .expect("cannot apppend to buffer");
     }
 }
