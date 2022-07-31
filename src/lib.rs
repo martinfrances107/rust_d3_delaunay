@@ -12,6 +12,7 @@
 extern crate derivative;
 
 pub mod delaunay;
+// A struct that handles RendingContext2d API calls for points and line segments.
 pub mod path;
 pub mod polygon;
 /// Storage a helpers for a  voronoi mesh.

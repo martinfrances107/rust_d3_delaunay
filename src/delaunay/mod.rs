@@ -8,6 +8,7 @@ use std::fmt::Display;
 
 use approx::AbsDiffEq;
 use colinear::colinear;
+use colinear::Tri;
 use delaunator::{triangulate, Point as DPoint, Triangulation, EMPTY};
 use derivative::*;
 use geo::Point;
@@ -17,7 +18,6 @@ use num_traits::float::FloatConst;
 use num_traits::FromPrimitive;
 
 use rust_d3_geo::projection::projector::Projector;
-
 use crate::path::Path;
 use crate::voronoi::Bounds;
 use crate::voronoi::Voronoi;
@@ -123,7 +123,7 @@ where
 
     fn init(&mut self) {
         // Check for colinear.
-        if self.delaunator.hull.len() > 2usize && colinear(&self.points, &self.delaunator) {
+        if self.delaunator.hull.len() > 2usize && colinear(&self.points, &self.delaunator) == Tri::Collinear {
             let mut colinear_vec: Vec<usize> = (0..self.points.len()).collect();
             colinear_vec.sort_by(|i, j| {
                 let x_diff = self.points[*i].x - self.points[*j].x;

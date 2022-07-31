@@ -3,8 +3,15 @@ use geo::{CoordFloat, Coordinate};
 use delaunator::Triangulation;
 use num_traits::FromPrimitive;
 
+/// Is the triangulation collinear?
+#[derive(Debug, PartialEq)]
+pub enum Tri{
+    Collinear,
+    NotCollinear
+}
+
 // A triangulation is collinear if all its triangles have a non-null area.
-pub fn colinear<T>(coords: &[Coordinate<T>], d: &Triangulation) -> bool
+pub fn colinear<T>(coords: &[Coordinate<T>], d: &Triangulation) -> Tri
 where
     T: CoordFloat + FromPrimitive,
 {
@@ -16,8 +23,8 @@ where
         let cross = (coords[c].x - coords[a].x) * (coords[b].y - coords[a].y)
             - (coords[b].x - coords[a].x) * (coords[c].y - coords[a].y);
         if cross > t1e_minus_10 {
-            return false;
+            return Tri::NotCollinear;
         }
     }
-    true
+    Tri::Collinear
 }
