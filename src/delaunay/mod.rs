@@ -53,7 +53,6 @@ where
     pub triangles: Vec<usize>,
     /// The coordinates of a point as an vector.
     pub points: Vec<Coordinate<T>>,
-    //Projector<DRAIN, I, LB, LC, LU, PCNC, PCNU, PR, PV, RC, RU, T>
     pub projection: Option<Projector<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>>,
     #[derivative(Debug = "ignore")]
     pub fx: FnTransform<T>,
@@ -352,7 +351,7 @@ where
         path.to_string()
     }
 
-    // fn rednerPoints
+    /// Given a context render the points of the triangulation.
     pub fn render_points(&self, context: &mut impl RenderingContext2d<T>, r: Option<T>) {
         // if (r === undefined && (!context || typeof context.moveTo !== "function")) r = context, context = null;
         // r = r == undefined ? 2 : +r;
@@ -363,15 +362,11 @@ where
             Some(r) => r,
             None => T::from(2.0).unwrap(),
         };
-        // const buffer = context == null ? context = new Path : undefined;
-        // const {points} = this;
-        // for (let i = 0, n = self.points.length; i < n; i += 2) {
+
         for p in &self.points {
-            //   let x = points[i], y = points[i + 1];
             context.move_to(&Coordinate { x: p.x + r, y: p.y });
             context.arc(p, r, T::zero(), tau);
         }
-        // return buffer && buffer.value();
     }
 
     /// Output the hull to a string.

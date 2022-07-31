@@ -11,9 +11,11 @@
 
 extern crate derivative;
 
+/// Holds helper functions and a wrapper struct that hold data assoicated with a delaunay trigulation.
 pub mod delaunay;
-// A struct that handles RendingContext2d API calls for points and line segments.
+/// A struct that handles RendingContext2d API calls for points and line segments.
 pub mod path;
+/// A wrapper struct for a polygon, so that RenderingAPI call can be made.
 pub mod polygon;
 /// Storage a helpers for a  voronoi mesh.
 pub mod voronoi;
