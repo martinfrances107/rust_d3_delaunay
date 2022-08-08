@@ -1,9 +1,11 @@
 # rust d3 delaunay
+
 2021 Edition.
 
 This is a port of the [d3-delaunay](https://github.com/d3/d3-delaunay) library into a RUST library crate/package. It is in a very early development phase.
 
 Current the code coverage as reported by Cargo tarpaulin is 80%.
+
 ## Phase 1
 
 Early draft port - sub module by submodule. Sub module porting means the test have also been ported.
@@ -19,9 +21,9 @@ Modules, passing test ready for phase 2 evaluation :-
 ## Other To-do's
 
 This function used generators - which rust does not currently support.
-  * maybe I could use next() see  https://doc.rust-lang.org/rust-by-example/trait/iter.html
-  * maybe https://crates.io/crates/generator This routes would be a major breaking change
+
+* maybe I could use next() see  [iter](https://doc.rust-lang.org/rust-by-example/trait/iter.html)
+* maybe [generator](https://crates.io/crates/generator) This routes would be a major breaking change
   as it would require T to become Sync and Send.
 
 Clippy report lots of documentation is missing.
-

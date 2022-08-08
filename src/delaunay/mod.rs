@@ -53,6 +53,7 @@ where
     pub triangles: Vec<usize>,
     /// The coordinates of a point as an vector.
     pub points: Vec<Coordinate<T>>,
+
     pub projection: Option<Projector<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>>,
     #[derivative(Debug = "ignore")]
     pub fx: FnTransform<T>,
@@ -273,7 +274,7 @@ where
     //     });
     // }
 
-    /// Returns the index of the input point that is closest to the specified point p.
+    /// Returns the index of the point that is closest to the specified point p.
     /// The search is started at the specified point i. If i is not specified, it defaults to zero.
     pub fn find(&self, p: &Coordinate<T>, i: Option<usize>) -> usize {
         // Skip return early if p is invalid.
@@ -288,6 +289,8 @@ where
         c
     }
 
+    /// Step through the triangulation, starting at i, return the index
+    /// of the point closets to point p.
     pub fn step(&self, i: usize, p: &Coordinate<T>) -> usize {
         if self.inedges[i] == EMPTY || self.points.is_empty() {
             return (i + 1) % (self.points.len() >> 1);
