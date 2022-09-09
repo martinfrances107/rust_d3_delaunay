@@ -17,11 +17,11 @@ use jitter::jitter;
 use num_traits::float::FloatConst;
 use num_traits::FromPrimitive;
 
-use rust_d3_geo::projection::projector::Projector;
 use crate::path::Path;
 use crate::voronoi::Bounds;
 use crate::voronoi::Voronoi;
 use crate::RenderingContext2d;
+use rust_d3_geo::projection::projector::Projector;
 
 type FnTransform<T> = Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>;
 /// Wrapper stores data associated with delaunator Triangulation.
@@ -31,7 +31,7 @@ type FnTransform<T> = Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>;
 #[derivative(Debug)]
 pub struct Delaunay<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>
 where
-    T: 'static + AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
+    T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
 {
     #[derivative(Debug = "ignore")]
     /// A Triangulation stores the computed results from a delaunay mesh.
@@ -123,7 +123,9 @@ where
 
     fn init(&mut self) {
         // Check for colinear.
-        if self.delaunator.hull.len() > 2usize && colinear(&self.points, &self.delaunator) == Tri::Collinear {
+        if self.delaunator.hull.len() > 2usize
+            && colinear(&self.points, &self.delaunator) == Tri::Collinear
+        {
             let mut colinear_vec: Vec<usize> = (0..self.points.len()).collect();
             colinear_vec.sort_by(|i, j| {
                 let x_diff = self.points[*i].x - self.points[*j].x;

@@ -4,10 +4,10 @@ use delaunator::Triangulation;
 use num_traits::FromPrimitive;
 
 /// Is the triangulation collinear?
-#[derive(Debug, PartialEq)]
-pub enum Tri{
+#[derive(Debug, Eq, PartialEq)]
+pub enum Tri {
     Collinear,
-    NotCollinear
+    NotCollinear,
 }
 
 // A triangulation is collinear if all its triangles have a non-null area.
