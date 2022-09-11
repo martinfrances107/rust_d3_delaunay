@@ -7,12 +7,11 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-approx="0.5.0"
+approx = "0.5.0"
 delaunator = { git = "https://github.com/mourner/delaunator-rs.git" }
-geo="0.22.0"
+geo = "0.23.0"
 num-traits = "0.2"
-rust_d3_geo = {git = "https://github.com/martinfrances107/rust_d3_geo.git", branch="main"}
+rust_d3_geo = { git = "https://github.com/martinfrances107/rust_d3_geo.git", branch = "main" }
 derivative = "2.2.0"
 [dev-dependencies]
 pretty_assertions = "1.0.0"
-
