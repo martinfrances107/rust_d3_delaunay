@@ -24,7 +24,7 @@ pub(super) type Bounds<T> = (T, T, T, T);
 #[derive(Debug)]
 pub struct Voronoi<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>
 where
-    T: 'static + AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
+    T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
 {
     /// The circumcenters of the Delaunay triangles as a Vec<c0, c1, …>.
     /// Each contiguous pair of coordinates c0.x, c0.y is the circumcenter for the corresponding triangle.
