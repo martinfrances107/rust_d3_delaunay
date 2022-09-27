@@ -6,7 +6,7 @@ use geo::CoordFloat;
 use geo::Coordinate;
 use rust_d3_geo::math::EPSILON;
 
-use super::RenderingContext2d;
+use super::CanvasRenderingContext2d;
 
 #[derive(Clone, Debug)]
 /// Produces a string into response to RendingContext2d API calls.
@@ -51,7 +51,7 @@ where
     }
 }
 
-impl<T> RenderingContext2d<T> for Path<T>
+impl<T> CanvasRenderingContext2d<T> for Path<T>
 where
     T: CoordFloat + Display,
 {

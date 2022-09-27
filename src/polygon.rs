@@ -1,4 +1,4 @@
-use crate::RenderingContext2d;
+use crate::CanvasRenderingContext2d;
 use geo::CoordFloat;
 use geo::Coordinate;
 
@@ -28,7 +28,7 @@ where
     }
 }
 
-impl<T> RenderingContext2d<T> for Polygon<T>
+impl<T> CanvasRenderingContext2d<T> for Polygon<T>
 where
     T: CoordFloat,
 {

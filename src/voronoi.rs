@@ -15,15 +15,17 @@ use num_traits::Zero;
 use super::delaunay::Delaunay;
 use super::path::Path;
 use super::polygon::Polygon;
-use super::RenderingContext2d;
+use super::CanvasRenderingContext2d;
 
 // xmin, ymin, xmax, ymax.
 pub(super) type Bounds<T> = (T, T, T, T);
 
 /// Data stores for a voronoi mesh.
 #[derive(Debug)]
-pub struct Voronoi<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>
+pub struct Voronoi<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>
 where
+    CLIPC: Clone,
+    CLIPU: Clone,
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
 {
     /// The circumcenters of the Delaunay triangles as a Vec<c0, c1, …>.
@@ -31,7 +33,7 @@ where
     /// These circumcenters form the coordinates of the Voronoi cell polygons.
     pub circumcenters: Vec<Coordinate<T>>,
     /// The delaunay triangulaiton.
-    pub delaunay: Delaunay<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>,
+    pub delaunay: Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>,
     /// A Vec<v0, v0, w0, w0, …> where each non-zero quadruple describes an open (infinite) cell on the outer hull,
     ///  giving the directions of two open half-lines.
     pub vectors: VecDeque<Coordinate<T>>,
@@ -45,14 +47,15 @@ where
     pub ymax: T,
 }
 
-impl<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>
-    Voronoi<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>
+impl<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T> Voronoi<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>
 where
+    CLIPC: Clone,
+    CLIPU: Clone,
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst + FromPrimitive,
 {
     /// Given a delaunay object and a bounds construct a Voronoi object.
     pub fn new(
-        delaunay: Delaunay<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>,
+        delaunay: Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>,
         bounds: Option<Bounds<T>>,
     ) -> Self {
         let (xmin, ymin, xmax, ymax) = match bounds {
@@ -268,7 +271,7 @@ where
     }
 
     /// Render all segments.
-    pub fn render(&self, context: &mut impl RenderingContext2d<T>)
+    pub fn render(&self, context: &mut impl CanvasRenderingContext2d<T>)
     where
         T: CoordFloat + Display,
     {
@@ -318,7 +321,7 @@ where
     }
 
     /// Renders cells of the voronoi mesh to a context.
-    pub fn render_cell(&self, i: usize, context: &mut impl RenderingContext2d<T>)
+    pub fn render_cell(&self, i: usize, context: &mut impl CanvasRenderingContext2d<T>)
     where
         T: CoordFloat + Display,
     {
@@ -365,7 +368,7 @@ where
         &self,
         p0: &Coordinate<T>,
         p1: &Coordinate<T>,
-        context: &mut impl RenderingContext2d<T>,
+        context: &mut impl CanvasRenderingContext2d<T>,
     ) {
         let s;
         let c0 = self.regioncode(p0);

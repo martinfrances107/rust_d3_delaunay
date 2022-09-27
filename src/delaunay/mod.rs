@@ -20,7 +20,7 @@ use num_traits::FromPrimitive;
 use crate::path::Path;
 use crate::voronoi::Bounds;
 use crate::voronoi::Voronoi;
-use crate::RenderingContext2d;
+use crate::CanvasRenderingContext2d;
 use rust_d3_geo::projection::projector::Projector;
 
 type FnTransform<T> = Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>;
@@ -29,8 +29,10 @@ type FnTransform<T> = Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>;
 /// hull and hald_edge data.
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct Delaunay<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>
+pub struct Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>
 where
+    CLIPC: Clone,
+    CLIPU: Clone,
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
 {
     #[derivative(Debug = "ignore")]
@@ -54,16 +56,17 @@ where
     /// The coordinates of a point as an vector.
     pub points: Vec<Coordinate<T>>,
 
-    pub projection: Option<Projector<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>>,
+    pub projection: Option<Projector<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>>,
     #[derivative(Debug = "ignore")]
     pub fx: FnTransform<T>,
     #[derivative(Debug = "ignore")]
     pub fy: FnTransform<T>,
 }
 
-impl<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>
-    Delaunay<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T>
+impl<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T> Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>
 where
+    CLIPC: Clone,
+    CLIPU: Clone,
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst + FromPrimitive,
 {
     /// Computes a delanay triangularization and stores the results.
@@ -117,7 +120,7 @@ where
     pub fn voronoi(
         self,
         bounds: Option<Bounds<T>>,
-    ) -> Voronoi<DRAIN, I, LB, LC, LU, PCNU, PR, PV, RC, RU, T> {
+    ) -> Voronoi<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T> {
         Voronoi::new(self, bounds)
     }
 
@@ -357,7 +360,7 @@ where
     }
 
     /// Given a context render the points of the triangulation.
-    pub fn render_points(&self, context: &mut impl RenderingContext2d<T>, r: Option<T>) {
+    pub fn render_points(&self, context: &mut impl CanvasRenderingContext2d<T>, r: Option<T>) {
         // if (r === undefined && (!context || typeof context.moveTo !== "function")) r = context, context = null;
         // r = r == undefined ? 2 : +r;
 
@@ -390,7 +393,7 @@ where
     }
 
     /// Dumps the hull to the render context.
-    pub fn render_hull(&self, context: &mut impl RenderingContext2d<T>) {
+    pub fn render_hull(&self, context: &mut impl CanvasRenderingContext2d<T>) {
         let h = self.delaunator.hull[0];
         let n = self.delaunator.hull.len();
         context.move_to(&self.points[h]);
