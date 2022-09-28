@@ -6,66 +6,49 @@ mod voronoi_test {
 
     use geo::Coordinate;
     use pretty_assertions::assert_eq;
+
     use rust_d3_delaunay::delaunay::Delaunay;
     use rust_d3_delaunay::path::Path;
     use rust_d3_delaunay::voronoi::Voronoi;
-    use rust_d3_geo::clip::antimeridian::interpolate::Interpolate;
-    use rust_d3_geo::clip::antimeridian::line::Line;
-    use rust_d3_geo::clip::antimeridian::pv::PV;
-    use rust_d3_geo::clip::buffer::Buffer;
-    use rust_d3_geo::projection::builder::template::NoClipU;
-    use rust_d3_geo::projection::builder::template::ResampleNoClipC;
-    use rust_d3_geo::projection::builder::template::ResampleNoClipU;
+    use rust_d3_geo::clip::antimeridian::ClipAntimeridianC;
+    use rust_d3_geo::clip::antimeridian::ClipAntimeridianU;
+    use rust_d3_geo::projection::builder::template::NoPCNU;
+    use rust_d3_geo::projection::builder::template::ResampleNoPCNC;
+    use rust_d3_geo::projection::builder::template::ResampleNoPCNU;
     use rust_d3_geo::projection::gnomic::Gnomic;
-    use rust_d3_geo::stream::Connected;
     use rust_d3_geo::stream::StreamDrainStub;
-    use rust_d3_geo::stream::Unconnected;
 
     type DelaunayStub = Delaunay<
+        ClipAntimeridianC<
+            ResampleNoPCNC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
+            f64,
+        >,
+        ClipAntimeridianU<
+            ResampleNoPCNC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
+            f64,
+        >,
         StreamDrainStub<f64>,
-        Interpolate<f64>,
-        Line<Buffer<f64>, Connected<Buffer<f64>>, f64>,
-        Line<
-            ResampleNoClipC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
-            Connected<
-                ResampleNoClipC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
-            >,
-            f64,
-        >,
-        Line<
-            ResampleNoClipC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
-            Unconnected,
-            f64,
-        >,
-        NoClipU<f64>,
+        NoPCNU<f64>,
         Gnomic<StreamDrainStub<f64>, f64>,
-        PV<f64>,
-        ResampleNoClipC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
-        ResampleNoClipU<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
+        ResampleNoPCNC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
+        ResampleNoPCNU<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
         f64,
     >;
 
     type VoronoiStub = Voronoi<
+        ClipAntimeridianC<
+            ResampleNoPCNC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
+            f64,
+        >,
+        ClipAntimeridianU<
+            ResampleNoPCNC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
+            f64,
+        >,
         StreamDrainStub<f64>,
-        Interpolate<f64>,
-        Line<Buffer<f64>, Connected<Buffer<f64>>, f64>,
-        Line<
-            ResampleNoClipC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
-            Connected<
-                ResampleNoClipC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
-            >,
-            f64,
-        >,
-        Line<
-            ResampleNoClipC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
-            Unconnected,
-            f64,
-        >,
-        NoClipU<f64>,
+        NoPCNU<f64>,
         Gnomic<StreamDrainStub<f64>, f64>,
-        PV<f64>,
-        ResampleNoClipC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
-        ResampleNoClipU<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
+        ResampleNoPCNC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
+        ResampleNoPCNU<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
         f64,
     >;
 
