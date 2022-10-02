@@ -103,7 +103,7 @@ where
         // Compute circumcenters.
         let circumcenter_len = self.delaunay.triangles.len() / 3;
         // Cannot use a slice cos need to be destermined at compile time.
-        self.circumcenters = (&self.circumcenters[0..circumcenter_len]).to_vec();
+        self.circumcenters = (self.circumcenters[0..circumcenter_len]).to_vec();
         let triangles = &self.delaunay.triangles;
         let points = &self.delaunay.points;
         let hull = &self.delaunay.delaunator.hull;
