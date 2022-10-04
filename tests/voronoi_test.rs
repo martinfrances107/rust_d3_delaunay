@@ -53,7 +53,7 @@ mod voronoi_test {
     >;
 
     #[test]
-    fn test_simple() {
+    fn simple() {
         let points = vec![
             Coordinate {
                 x: -20.0_f64,
@@ -73,7 +73,7 @@ mod voronoi_test {
     }
 
     #[test]
-    fn test_noop_for_coincident_points() {
+    fn noop_for_coincident_points() {
         println!("voronoi.renderCell(i, context) is a noop for coincident points");
         let points = vec![
             Coordinate { x: 0f64, y: 0f64 },
@@ -88,7 +88,7 @@ mod voronoi_test {
     }
 
     #[test]
-    fn test_render_cell_midpoint() {
+    fn render_cell_midpoint() {
         println!("voronoi.renderCell(i, context) handles midpoint coincident with circumcenter");
         let points = vec![
             Coordinate { x: 0f64, y: 0f64 },
@@ -121,7 +121,7 @@ mod voronoi_test {
     }
 
     #[test]
-    fn test_contains_false_for_coincident() {
+    fn contains_false_for_coincident() {
         println!("voronoi.contains(i, x, y) is false for coincident points");
         let points = vec![
             Coordinate { x: 0_f64, y: 0_f64 },

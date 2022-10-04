@@ -53,7 +53,7 @@ mod delaunay_test {
     >;
 
     #[test]
-    fn test_from_array() {
+    fn delaunay_from_array() {
         println!("Delaunay.from(array)");
         let points = vec![
             Coordinate { x: 0f64, y: 0f64 },
@@ -85,7 +85,7 @@ mod delaunay_test {
     }
 
     #[test]
-    fn test_handles_coincident_points() {
+    fn handles_coincident_points() {
         println!("Delaunay.from(array) handles coincident points.");
 
         let points = vec![
@@ -107,7 +107,7 @@ mod delaunay_test {
         //   test.deepEqual(Array.from(delaunay.neighbors(3)), []);
     }
 
-    // fn test_delaunay_from_iterable() {
+    // fn delaunay_from_iterable() {
     //     println!("Delaunay.from(iterable)");
     //     // iterable not supported in initial rustlang version.
     // });
@@ -132,7 +132,7 @@ mod delaunay_test {
     // });
 
     #[test]
-    fn test_voronoi_default_bounds() {
+    fn voronoi_default_bounds() {
         println!("delaunay.voronoi() uses the default bounds");
         let points = vec![
             Coordinate { x: 0f64, y: 0f64 },
@@ -149,7 +149,7 @@ mod delaunay_test {
     }
 
     #[test]
-    fn test_voronoi_specific_bounds() {
+    fn voronoi_specific_bounds() {
         println!("delaunay.voronoi([xmin, ymin, xmax, ymax]) uses the specified bounds");
         let points = vec![
             Coordinate { x: 0f64, y: 0f64 },
@@ -166,7 +166,7 @@ mod delaunay_test {
     }
 
     #[test]
-    fn test_voronoi_returns_the_expected_diagram() {
+    fn voronoi_returns_the_expected_diagram() {
         println!("delaunay.voronoi() returns the expected diagram");
         let points = vec![
             Coordinate { x: 0f64, y: 0f64 },
@@ -214,7 +214,7 @@ mod delaunay_test {
     }
 
     #[test]
-    fn test_voronoi_skips_cells_for_coincident_points() {
+    fn voronoi_skips_cells_for_coincident_points() {
         println!("delaunay.voronoi() skips cells for coincident points");
         let points = vec![
             Coordinate { x: 0f64, y: 0f64 },
@@ -242,14 +242,14 @@ mod delaunay_test {
     }
 
     #[test]
-    fn test_delaunay_return_for_zero_points() {
+    fn delaunay_return_for_zero_points() {
         println!("delaunay.voronoi() for zero point returns expected values");
         let v: VoronoiStub = Delaunay::new(&vec![]).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         assert_eq!(v.render_to_string(), "");
     }
 
     #[test]
-    fn test_delaunay_render_points_accepts_r() {
+    fn delaunay_render_points_accepts_r() {
         println!("delaunay.voronoi() for zero point returns expected values");
         let points = vec![Coordinate {
             x: 0.0_f64,
@@ -272,7 +272,7 @@ mod delaunay_test {
     }
 
     #[test]
-    fn test_delaunay_return_for_one_point() {
+    fn delaunay_return_for_one_point() {
         println!("delaunay.voronoi() for one point returns the bounding rectangle");
         let points = vec![Coordinate { x: 0., y: 0. }];
         let d: DelaunayStub = Delaunay::new(&points);
@@ -282,7 +282,7 @@ mod delaunay_test {
     }
 
     #[test]
-    fn test_delaunay_return_for_two_point() {
+    fn delaunay_return_for_two_point() {
         println!("delaunay.voronoi() for one point returns the bounding rectangle");
         let points = vec![
             Coordinate { x: 0f64, y: 0f64 },
@@ -324,7 +324,7 @@ mod delaunay_test {
     // });
 
     #[test]
-    fn test_find_x_y_returns_index_for_speficied_point() {
+    fn find_x_y_returns_index_for_speficied_point() {
         println!(
             "delaunay.find(x, y) returns the index of the cell that contains the specified point"
         );
@@ -823,7 +823,7 @@ mod delaunay_test {
         )
     }
     #[test]
-    fn test_hull_context_is_closed() {
+    fn hull_context_is_closed() {
         println!("delaunay.renderHull(context) is closed");
         let points = vec![
             Coordinate { x: 0f64, y: 0f64 },
