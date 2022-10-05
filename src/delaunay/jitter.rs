@@ -1,4 +1,5 @@
-use geo::{CoordFloat, Coordinate};
+use geo::CoordFloat;
+use geo::Coordinate;
 
 #[inline]
 pub fn jitter<T>(p: &Coordinate<T>, r: T) -> Coordinate<T>
