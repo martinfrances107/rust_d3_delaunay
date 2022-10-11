@@ -1,2 +1,7 @@
-/target
+target
 Cargo.lock
+.*
+!.github
+!.gitattributes
+!.gitignore
+!.vscode
