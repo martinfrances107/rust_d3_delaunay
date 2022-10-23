@@ -831,7 +831,6 @@ mod delaunay_test {
             Coordinate { x: 0f64, y: 1f64 },
             Coordinate { x: 1f64, y: 1f64 },
         ];
-        // let d: DelaunayStub = Delaunay::new(points);
         let delaunay: DelaunayStub = Delaunay::new(&points);
         assert_eq!(delaunay.render_hull_to_string(), "M0,1L1,1L1,0L0,0Z");
     }
