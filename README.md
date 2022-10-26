@@ -6,6 +6,12 @@ This is a port of the [d3-delaunay](https://github.com/d3/d3-delaunay) library i
 
 Current the code coverage as reported by Cargo tarpaulin is 80%.
 
+A collection of d3 submodules is currently being port RUST
+
+* [rust_d3_geo](https://github.com/martinfrances107/rust_d3_geo)
+* rust_d3_delaunay
+* [rust_d3_geo_voronoi](https://github.com/martinfrances107/rust_d3_geo_voronoi)
+
 ## Phase 1
 
 Early draft port - sub module by submodule. Sub module porting means the test have also been ported.
