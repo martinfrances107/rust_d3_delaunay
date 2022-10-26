@@ -247,7 +247,7 @@ where
                 let ydiff = y0 - y1;
                 // clip infinte pushed to both the front and back of this queue.
                 // remove() then insert() here is inefficient .. but will only be done
-                // once during init().  clip_finite() is a common operation.
+                // once during init(). clip_finite() is a common operation.
                 self.vectors.remove(p0 + 1);
                 self.vectors
                     .insert(p0 + 1, Coordinate { x: ydiff, y: xdiff });

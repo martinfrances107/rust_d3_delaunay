@@ -60,6 +60,7 @@ where
     /// The coordinates of a point as an vector.
     pub points: Vec<Coordinate<T>>,
 
+    #[allow(clippy::type_complexity)]
     pub projection: Option<Projector<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>>,
     #[derivative(Debug = "ignore")]
     pub fx: FnTransform<T>,
