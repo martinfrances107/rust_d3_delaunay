@@ -168,7 +168,7 @@ mod voronoi_test {
     #[test]
     fn zero_length_edges_are_removed() {
         println!("zero-length edges are removed");
-        let voronoi1: VoronoiStub = Delaunay::new(&vec![
+        let voronoi1: VoronoiStub = Delaunay::new(&[
             Coordinate {
                 x: 50.0f64,
                 y: 10.0f64,
@@ -189,7 +189,7 @@ mod voronoi_test {
         .voronoi(Some((40f64, 40f64, 440f64, 180f64)));
         assert_eq!(voronoi1.cell_polygon(0).len(), 4);
 
-        let voronoi2: VoronoiStub = Delaunay::new(&vec![
+        let voronoi2: VoronoiStub = Delaunay::new(&[
             Coordinate {
                 x: 10.0f64,
                 y: 10.0f64,

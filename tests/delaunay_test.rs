@@ -244,7 +244,7 @@ mod delaunay_test {
     #[test]
     fn delaunay_return_for_zero_points() {
         println!("delaunay.voronoi() for zero point returns expected values");
-        let v: VoronoiStub = Delaunay::new(&vec![]).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
+        let v: VoronoiStub = Delaunay::new(&[]).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         assert_eq!(v.render_to_string(), "");
     }
 
@@ -329,7 +329,7 @@ mod delaunay_test {
             "delaunay.find(x, y) returns the index of the cell that contains the specified point"
         );
 
-        let delaunay: DelaunayStub = Delaunay::new(&vec![
+        let delaunay: DelaunayStub = Delaunay::new(&[
             Coordinate { x: 0., y: 0. },
             Coordinate { x: 300., y: 0. },
             Coordinate { x: 0., y: 300. },
@@ -337,7 +337,7 @@ mod delaunay_test {
             Coordinate { x: 100., y: 100. },
         ]);
         assert_eq!(delaunay.find(&Coordinate { x: 49., y: 49. }, None), 0);
-        let delaunay: DelaunayStub = Delaunay::new(&vec![
+        let delaunay: DelaunayStub = Delaunay::new(&[
             Coordinate { x: 0., y: 0. },
             Coordinate { x: 300., y: 0. },
             Coordinate { x: 0., y: 300. },
@@ -799,7 +799,7 @@ mod delaunay_test {
             },
         ];
 
-        let delaunay: DelaunayStub = Delaunay::new(&points.clone());
+        let delaunay: DelaunayStub = Delaunay::new(&points);
         assert_eq!(
             delaunay.find(
                 &Coordinate {
@@ -810,7 +810,7 @@ mod delaunay_test {
             ),
             31
         );
-        let delaunay2: DelaunayStub = Delaunay::new(&points.clone());
+        let delaunay2: DelaunayStub = Delaunay::new(&points);
         assert_eq!(
             delaunay2.find(
                 &Coordinate {
