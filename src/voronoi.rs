@@ -54,6 +54,9 @@ where
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst + FromPrimitive,
 {
     /// Given a delaunay object and a bounds construct a Voronoi object.
+    ///
+    /// # Panics
+    ///  Will never happen as constants will always be converted into T.
     pub fn new(
         delaunay: Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>,
         bounds: Option<Bounds<T>>,
@@ -86,8 +89,8 @@ where
             });
         }
         let mut v = Self {
-            delaunay,
             circumcenters,
+            delaunay,
             vectors,
             xmin,
             ymin,
@@ -260,7 +263,7 @@ where
     /// Wrapper function - a departure from the javascript version.
     /// render() has been spit into two functions.
     /// rust expects variable type to be determined statically
-    /// 'context' cannot be either a Path type of a RenderingContext2d.
+    /// 'context' cannot be either a Path type of a `RenderingContext2d`.
     pub fn render_to_string(&self) -> String
     where
         T: CoordFloat + Display,
@@ -308,9 +311,9 @@ where
     // TODO implement render_bounds()
 
     /// Wrapper function - a departure from the javascript version.
-    /// render_cell() has been spit into two functions.
+    /// `render_cell()` has been spit into two functions.
     /// rust expects variable type to be determined statically
-    /// 'context' cannot be either a Path type of a RenderingContext2d.
+    /// 'context' cannot be either a Path type of a `RenderingContext2d`.
     pub fn render_cell_to_string(&self, i: usize) -> String
     where
         T: CoordFloat + Display + FloatConst,
@@ -474,10 +477,10 @@ where
             if c0 == 0 && c1 == 0 {
                 // e0 = e1;
                 e1 = 0;
-                if !P.is_empty() {
-                    P.push_back(p1);
+                if P.is_empty() {
+                    P = VecDeque::from(vec![p1]);
                 } else {
-                    P = VecDeque::from(vec![p1])
+                    P.push_back(p1);
                 }
             } else {
                 #[allow(non_snake_case)]

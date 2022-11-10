@@ -16,39 +16,27 @@ mod delaunay_test {
     use rust_d3_geo::projection::builder::template::ResampleNoPCNC;
     use rust_d3_geo::projection::builder::template::ResampleNoPCNU;
     use rust_d3_geo::projection::gnomic::Gnomic;
-    use rust_d3_geo::stream::StreamDrainStub;
+    use rust_d3_geo::stream::DrainStub;
 
     type DelaunayStub = Delaunay<
-        ClipAntimeridianC<
-            ResampleNoPCNC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
-            f64,
-        >,
-        ClipAntimeridianU<
-            ResampleNoPCNC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
-            f64,
-        >,
-        StreamDrainStub<f64>,
+        ClipAntimeridianC<ResampleNoPCNC<DrainStub<f64>, Gnomic<DrainStub<f64>, f64>, f64>, f64>,
+        ClipAntimeridianU<ResampleNoPCNC<DrainStub<f64>, Gnomic<DrainStub<f64>, f64>, f64>, f64>,
+        DrainStub<f64>,
         NoPCNU,
-        Gnomic<StreamDrainStub<f64>, f64>,
-        ResampleNoPCNC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
-        ResampleNoPCNU<Gnomic<StreamDrainStub<f64>, f64>, f64>,
+        Gnomic<DrainStub<f64>, f64>,
+        ResampleNoPCNC<DrainStub<f64>, Gnomic<DrainStub<f64>, f64>, f64>,
+        ResampleNoPCNU<Gnomic<DrainStub<f64>, f64>, f64>,
         f64,
     >;
 
     type VoronoiStub = Voronoi<
-        ClipAntimeridianC<
-            ResampleNoPCNC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
-            f64,
-        >,
-        ClipAntimeridianU<
-            ResampleNoPCNC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
-            f64,
-        >,
-        StreamDrainStub<f64>,
+        ClipAntimeridianC<ResampleNoPCNC<DrainStub<f64>, Gnomic<DrainStub<f64>, f64>, f64>, f64>,
+        ClipAntimeridianU<ResampleNoPCNC<DrainStub<f64>, Gnomic<DrainStub<f64>, f64>, f64>, f64>,
+        DrainStub<f64>,
         NoPCNU,
-        Gnomic<StreamDrainStub<f64>, f64>,
-        ResampleNoPCNC<StreamDrainStub<f64>, Gnomic<StreamDrainStub<f64>, f64>, f64>,
-        ResampleNoPCNU<Gnomic<StreamDrainStub<f64>, f64>, f64>,
+        Gnomic<DrainStub<f64>, f64>,
+        ResampleNoPCNC<DrainStub<f64>, Gnomic<DrainStub<f64>, f64>, f64>,
+        ResampleNoPCNU<Gnomic<DrainStub<f64>, f64>, f64>,
         f64,
     >;
 

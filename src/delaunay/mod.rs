@@ -13,7 +13,7 @@ use delaunator::triangulate;
 use delaunator::Point as DPoint;
 use delaunator::Triangulation;
 use delaunator::EMPTY;
-use derivative::*;
+use derivative::Derivative;
 use geo::CoordFloat;
 use geo::Coordinate;
 use geo::Point;
@@ -30,7 +30,7 @@ use rust_d3_geo::projection::projector::Projector;
 type FnTransform<T> = Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>;
 /// Wrapper stores data associated with delaunator Triangulation.
 ///
-/// hull and hald_edge data.
+/// `hull` and `half_edge` data.
 #[derive(Derivative)]
 #[derivative(Debug)]
 pub struct Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>
@@ -294,7 +294,7 @@ where
 
         while c != EMPTY && c != i && c != i0 {
             i = c;
-            c = self.step(i, p)
+            c = self.step(i, p);
         }
         c
     }
@@ -354,7 +354,7 @@ where
     /// Wrapper function - a departure from the javascript version.
     /// render() has been spit into two functions.
     /// rust expects variable type to be determined statically.
-    /// 'context' cannot be either a Path type of a RenderingContext2d.
+    /// 'context' cannot be either a Path type of a `RenderingContext2d`.
     pub fn render_points_to_string(&self, r: Option<T>) -> String
     where
         T: CoordFloat + Display,
@@ -365,16 +365,16 @@ where
     }
 
     /// Given a context render the points of the triangulation.
+    ///
+    /// # Panics
+    ///  Will never happen as '2' will always be converted into T.
     pub fn render_points(&self, context: &mut impl CanvasRenderingContext2d<T>, r: Option<T>) {
         // if (r === undefined && (!context || typeof context.moveTo !== "function")) r = context, context = null;
         // r = r == undefined ? 2 : +r;
 
         let tau = T::from(2_f64).unwrap() * T::PI();
 
-        let r = match r {
-            Some(r) => r,
-            None => T::from(2.0).unwrap(),
-        };
+        let r = r.map_or_else(|| T::from(2.0).unwrap(), |r| r);
 
         for p in &self.points {
             context.move_to(&Coordinate { x: p.x + r, y: p.y });
@@ -387,7 +387,7 @@ where
     /// Wrapper function - a departure from the javascript version.
     /// render() has been spit into two functions.
     /// rust expects variable type to be determined statically.
-    /// 'context' cannot be either a Path type of a RenderingContext2d.
+    /// 'context' cannot be either a Path type of a `RenderingContext2d`.
     pub fn render_hull_to_string(&self) -> String
     where
         T: CoordFloat + Display,

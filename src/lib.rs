@@ -1,4 +1,7 @@
-#![allow(clippy::pedantic)]
+#![deny(clippy::all)]
+#![warn(clippy::pedantic)]
+#![warn(clippy::nursery)]
+#![warn(clippy::cargo)]
 #![warn(missing_docs)]
 #![warn(missing_debug_implementations)]
 //! A port of [d3/d3-delaunay](<https://github.com/d3/d3-delaunay>).
@@ -7,15 +10,15 @@
 //!
 //! <hr>
 //!
-//! Repository [rust_d3_geo](<https://github.com/martinfrances107/rust_d3_delaunay>)
+//! Repository [`rust_d3_geo`](<https://github.com/martinfrances107/rust_d3_delaunay>)
 
 extern crate derivative;
 
 /// Holds helper functions and a wrapper struct that hold data assoicated with a delaunay trigulation.
 pub mod delaunay;
-/// A struct that handles RendingContext2d API calls for points and line segments.
+/// A struct that handles `RendingContext2d` API calls for points and line segments.
 pub mod path;
-/// A wrapper struct for a polygon, so that RenderingAPI call can be made.
+/// A wrapper struct for a polygon, so that `RenderingAPI` call can be made.
 pub mod polygon;
 /// Storage a helpers for a  voronoi mesh.
 pub mod voronoi;

@@ -2,7 +2,7 @@ use crate::CanvasRenderingContext2d;
 use geo::CoordFloat;
 use geo::Coordinate;
 
-/// A Vector of point which implements RenderingContext2d.
+/// A Vector of point which implements `RenderingContext2d`.
 #[derive(Clone, Debug)]
 pub struct Polygon<T>(pub Vec<Coordinate<T>>)
 where

@@ -9,7 +9,7 @@ use rust_d3_geo::math::EPSILON;
 use super::CanvasRenderingContext2d;
 
 #[derive(Clone, Debug)]
-/// Produces a string into response to RendingContext2d API calls.
+/// Produces a string into response to `RendingContext2d` API calls.
 pub struct Path<T>
 where
     T: CoordFloat,
@@ -26,7 +26,7 @@ where
 {
     #[inline]
     fn default() -> Self {
-        Path {
+        Self {
             p0: Coordinate {
                 x: T::zero(),
                 y: T::zero(),
@@ -44,7 +44,7 @@ where
 {
     fn to_string(&self) -> String {
         if self.s.is_empty() {
-            "".to_string()
+            String::new()
         } else {
             self.s.clone()
         }
@@ -76,9 +76,9 @@ where
     fn arc(&mut self, p: &Coordinate<T>, r: T, _start: T, _stop: T) {
         let x0 = p.x + r;
         let y0 = p.y;
-        if r < T::zero() {
-            panic!("negative radius");
-        }
+
+        debug_assert!(r >= T::zero(), "negative radius");
+
         match &self.p1 {
             Some(p1) => {
                 if (p1.x - x0).abs() > self.epsilon || (p1.y - y0).abs() > self.epsilon {
