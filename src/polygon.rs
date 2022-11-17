@@ -1,10 +1,10 @@
 use crate::CanvasRenderingContext2d;
 use geo::CoordFloat;
-use geo::Coordinate;
+use geo_types::Coord;
 
 /// A Vector of point which implements `RenderingContext2d`.
 #[derive(Clone, Debug)]
-pub struct Polygon<T>(pub Vec<Coordinate<T>>)
+pub struct Polygon<T>(pub Vec<Coord<T>>)
 where
     T: CoordFloat;
 
@@ -32,12 +32,12 @@ impl<T> CanvasRenderingContext2d<T> for Polygon<T>
 where
     T: CoordFloat,
 {
-    fn arc(&mut self, _p: &Coordinate<T>, _r: T, _start: T, _stop: T) {
+    fn arc(&mut self, _p: &Coord<T>, _r: T, _start: T, _stop: T) {
         todo!("must implement.");
     }
 
     #[inline]
-    fn move_to(&mut self, p: &Coordinate<T>) {
+    fn move_to(&mut self, p: &Coord<T>) {
         self.0.push(*p);
     }
 
@@ -47,10 +47,10 @@ where
     }
 
     #[inline]
-    fn line_to(&mut self, p: &Coordinate<T>) {
+    fn line_to(&mut self, p: &Coord<T>) {
         self.0.push(*p);
     }
 
     #[inline]
-    fn rect(&mut self, _p: &Coordinate<T>, _w: T, _h: T) {}
+    fn rect(&mut self, _p: &Coord<T>, _w: T, _h: T) {}
 }

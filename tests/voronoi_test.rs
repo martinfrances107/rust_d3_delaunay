@@ -4,7 +4,7 @@
 mod voronoi_test {
     extern crate pretty_assertions;
 
-    use geo::Coordinate;
+    use geo_types::Coord;
     use pretty_assertions::assert_eq;
 
     use rust_d3_delaunay::delaunay::Delaunay;
@@ -43,11 +43,11 @@ mod voronoi_test {
     #[test]
     fn simple() {
         let points = vec![
-            Coordinate {
+            Coord {
                 x: -20.0_f64,
                 y: 20.0_f64,
             },
-            Coordinate { x: 20., y: 20. },
+            Coord { x: 20., y: 20. },
         ];
         let voronoi: VoronoiStub = Delaunay::new(&points).voronoi(None);
 
@@ -64,10 +64,10 @@ mod voronoi_test {
     fn noop_for_coincident_points() {
         println!("voronoi.renderCell(i, context) is a noop for coincident points");
         let points = vec![
-            Coordinate { x: 0f64, y: 0f64 },
-            Coordinate { x: 1f64, y: 0f64 },
-            Coordinate { x: 0f64, y: 1f64 },
-            Coordinate { x: 1f64, y: 0f64 },
+            Coord { x: 0f64, y: 0f64 },
+            Coord { x: 1f64, y: 0f64 },
+            Coord { x: 0f64, y: 1f64 },
+            Coord { x: 1f64, y: 0f64 },
         ];
         let voronoi: VoronoiStub = Delaunay::new(&points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         let mut path = Path::default();
@@ -79,9 +79,9 @@ mod voronoi_test {
     fn render_cell_midpoint() {
         println!("voronoi.renderCell(i, context) handles midpoint coincident with circumcenter");
         let points = vec![
-            Coordinate { x: 0f64, y: 0f64 },
-            Coordinate { x: 1f64, y: 0f64 },
-            Coordinate { x: 0f64, y: 1f64 },
+            Coord { x: 0f64, y: 0f64 },
+            Coord { x: 1f64, y: 0f64 },
+            Coord { x: 0f64, y: 1f64 },
         ];
         let voronoi: VoronoiStub = Delaunay::new(&points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         let mut context1 = Path::default();
@@ -112,22 +112,16 @@ mod voronoi_test {
     fn contains_false_for_coincident() {
         println!("voronoi.contains(i, x, y) is false for coincident points");
         let points = vec![
-            Coordinate { x: 0_f64, y: 0_f64 },
-            Coordinate { x: 1_f64, y: 0_f64 },
-            Coordinate { x: 0_f64, y: 1_f64 },
-            Coordinate { x: 1_f64, y: 0_f64 },
+            Coord { x: 0_f64, y: 0_f64 },
+            Coord { x: 1_f64, y: 0_f64 },
+            Coord { x: 0_f64, y: 1_f64 },
+            Coord { x: 1_f64, y: 0_f64 },
         ];
 
         let voronoi: VoronoiStub =
             Delaunay::new(&points).voronoi(Some((-1_f64, -1_f64, 2_f64, 2_f64)));
-        assert_eq!(
-            voronoi.contains(3, &Coordinate { x: 1_f64, y: 0_f64 }),
-            false
-        );
-        assert_eq!(
-            voronoi.contains(1, &Coordinate { x: 1_f64, y: 0_f64 }),
-            true
-        );
+        assert_eq!(voronoi.contains(3, &Coord { x: 1_f64, y: 0_f64 }), false);
+        assert_eq!(voronoi.contains(1, &Coord { x: 1_f64, y: 0_f64 }), true);
     }
 
     // tape("voronoi.update() updates the voronoi", test => {
@@ -157,19 +151,19 @@ mod voronoi_test {
     fn zero_length_edges_are_removed() {
         println!("zero-length edges are removed");
         let voronoi1: VoronoiStub = Delaunay::new(&[
-            Coordinate {
+            Coord {
                 x: 50.0f64,
                 y: 10.0f64,
             },
-            Coordinate {
+            Coord {
                 x: 10.0f64,
                 y: 50.0f64,
             },
-            Coordinate {
+            Coord {
                 x: 10.0f64,
                 y: 10.0f64,
             },
-            Coordinate {
+            Coord {
                 x: 200.0f64,
                 y: 100.0f64,
             },
@@ -178,11 +172,11 @@ mod voronoi_test {
         assert_eq!(voronoi1.cell_polygon(0).len(), 4);
 
         let voronoi2: VoronoiStub = Delaunay::new(&[
-            Coordinate {
+            Coord {
                 x: 10.0f64,
                 y: 10.0f64,
             },
-            Coordinate {
+            Coord {
                 x: 20.0f64,
                 y: 10.0f64,
             },
@@ -192,23 +186,23 @@ mod voronoi_test {
         assert_eq!(
             voronoi2.cell_polygon(0),
             vec![
-                Coordinate {
+                Coord {
                     x: 0.0f64,
                     y: 20.0f64,
                 },
-                Coordinate {
+                Coord {
                     x: 0.0f64,
                     y: 0.0f64,
                 },
-                Coordinate {
+                Coord {
                     x: 15.0f64,
                     y: 0.0f64,
                 },
-                Coordinate {
+                Coord {
                     x: 15.0f64,
                     y: 20.0f64,
                 },
-                Coordinate {
+                Coord {
                     x: 0.0f64,
                     y: 20.0f64,
                 }
@@ -241,20 +235,20 @@ mod voronoi_test {
     //     println!("unnecessary points on the corners are avoided (#88)");
     //     let pattern = vec![(
     //         vec![
-    //             Coordinate {
+    //             Coord {
     //                 x: 289f64,
     //                 y: 25f64,
     //             },
-    //             Coordinate { x: 3f64, y: 22f64 },
-    //             Coordinate {
+    //             Coord { x: 3f64, y: 22f64 },
+    //             Coord {
     //                 x: 93f64,
     //                 y: 165f64,
     //             },
-    //             Coordinate {
+    //             Coord {
     //                 x: 282f64,
     //                 y: 184f64,
     //             },
-    //             Coordinate { x: 65f64, y: 89f64 },
+    //             Coord { x: 65f64, y: 89f64 },
     //         ],
     //         vec![6, 4, 6, 5, 6],
     //     )];
@@ -279,63 +273,63 @@ mod voronoi_test {
     #[test]
     fn a_degenerate_triangle_is_avoided() {
         let pts = vec![
-            Coordinate {
+            Coord {
                 x: 424.75,
                 y: 253.75,
             },
-            Coordinate {
+            Coord {
                 x: 424.75,
                 y: 253.74999999999997,
             },
-            Coordinate {
+            Coord {
                 x: 407.17640687119285,
                 y: 296.17640687119285,
             },
-            Coordinate {
+            Coord {
                 x: 364.75,
                 y: 313.75,
             },
-            Coordinate {
+            Coord {
                 x: 322.32359312880715,
                 y: 296.17640687119285,
             },
-            Coordinate {
+            Coord {
                 x: 304.75,
                 y: 253.75,
             },
-            Coordinate {
+            Coord {
                 x: 322.32359312880715,
                 y: 211.32359312880715,
             },
-            Coordinate {
+            Coord {
                 x: 364.75,
                 y: 193.75,
             },
-            Coordinate {
+            Coord {
                 x: 407.17640687119285,
                 y: 211.32359312880715,
             },
-            Coordinate {
+            Coord {
                 x: 624.75,
                 y: 253.75,
             },
-            Coordinate {
+            Coord {
                 x: 607.1764068711929,
                 y: 296.17640687119285,
             },
-            Coordinate {
+            Coord {
                 x: 564.75,
                 y: 313.75,
             },
-            Coordinate {
+            Coord {
                 x: 522.3235931288071,
                 y: 296.17640687119285,
             },
-            Coordinate {
+            Coord {
                 x: 504.75,
                 y: 253.75,
             },
-            Coordinate {
+            Coord {
                 x: 564.75,
                 y: 193.75,
             },

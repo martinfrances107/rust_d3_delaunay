@@ -15,8 +15,8 @@ use delaunator::Triangulation;
 use delaunator::EMPTY;
 use derivative::Derivative;
 use geo::CoordFloat;
-use geo::Coordinate;
 use geo::Point;
+use geo_types::Coord;
 use jitter::jitter;
 use num_traits::float::FloatConst;
 use num_traits::FromPrimitive;
@@ -58,7 +58,7 @@ where
     ///  Each contiguous triplet of indexes i, j, k forms a counterclockwise triangle.
     pub triangles: Vec<usize>,
     /// The coordinates of a point as an vector.
-    pub points: Vec<Coordinate<T>>,
+    pub points: Vec<Coord<T>>,
 
     #[allow(clippy::type_complexity)]
     pub projection: Option<Projector<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>>,
@@ -75,7 +75,7 @@ where
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst + FromPrimitive,
 {
     /// Computes a delanay triangularization and stores the results.
-    pub fn new(points: &[Coordinate<T>]) -> Self {
+    pub fn new(points: &[Coord<T>]) -> Self {
         // conversion into delaunay point!!!
         let d_point_in: Vec<DPoint> = points
             .iter()
@@ -137,13 +137,7 @@ where
             let mut colinear_vec: Vec<usize> = (0..self.points.len()).collect();
             colinear_vec.sort_by(|i, j| {
                 let x_diff = self.points[*i].x - self.points[*j].x;
-                if x_diff != T::zero() {
-                    if x_diff.is_sign_positive() {
-                        Ordering::Greater
-                    } else {
-                        Ordering::Less
-                    }
-                } else {
+                if x_diff == T::zero() {
                     let y_diff = self.points[*i].y - self.points[*j].y;
                     if y_diff.is_zero() {
                         Ordering::Equal
@@ -152,6 +146,10 @@ where
                     } else {
                         Ordering::Less
                     }
+                } else if x_diff.is_sign_positive() {
+                    Ordering::Greater
+                } else {
+                    Ordering::Less
                 }
             });
             let e = colinear_vec[0];
@@ -286,7 +284,7 @@ where
 
     /// Returns the index of the point that is closest to the specified point p.
     /// The search is started at the specified point i. If i is not specified, it defaults to zero.
-    pub fn find(&self, p: &Coordinate<T>, i: Option<usize>) -> usize {
+    pub fn find(&self, p: &Coord<T>, i: Option<usize>) -> usize {
         // Skip return early if p is invalid.
         let mut i: usize = i.unwrap_or(0usize);
         let i0 = i;
@@ -301,7 +299,7 @@ where
 
     /// Step through the triangulation, starting at i, return the index
     /// of the point closets to point p.
-    pub fn step(&self, i: usize, p: &Coordinate<T>) -> usize {
+    pub fn step(&self, i: usize, p: &Coord<T>) -> usize {
         if self.inedges[i] == EMPTY || self.points.is_empty() {
             return (i + 1) % (self.points.len() >> 1);
         };
@@ -377,7 +375,7 @@ where
         let r = r.map_or_else(|| T::from(2.0).unwrap(), |r| r);
 
         for p in &self.points {
-            context.move_to(&Coordinate { x: p.x + r, y: p.y });
+            context.move_to(&Coord { x: p.x + r, y: p.y });
             context.arc(p, r, T::zero(), tau);
         }
     }

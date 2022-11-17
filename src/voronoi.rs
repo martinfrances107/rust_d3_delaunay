@@ -6,7 +6,7 @@ use std::fmt::Display;
 use approx::AbsDiffEq;
 use delaunator::EMPTY;
 use geo::CoordFloat;
-use geo::Coordinate;
+use geo_types::Coord;
 use num_traits::Float;
 use num_traits::FloatConst;
 use num_traits::FromPrimitive;
@@ -31,12 +31,12 @@ where
     /// The circumcenters of the Delaunay triangles as a Vec<c0, c1, …>.
     /// Each contiguous pair of coordinates c0.x, c0.y is the circumcenter for the corresponding triangle.
     /// These circumcenters form the coordinates of the Voronoi cell polygons.
-    pub circumcenters: Vec<Coordinate<T>>,
+    pub circumcenters: Vec<Coord<T>>,
     /// The delaunay triangulaiton.
     pub delaunay: Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>,
     /// A Vec<v0, v0, w0, w0, …> where each non-zero quadruple describes an open (infinite) cell on the outer hull,
     ///  giving the directions of two open half-lines.
-    pub vectors: VecDeque<Coordinate<T>>,
+    pub vectors: VecDeque<Coord<T>>,
     /// Bounds component.
     pub xmin: T,
     /// Bounds component.
@@ -57,33 +57,34 @@ where
     ///
     /// # Panics
     ///  Will never happen as constants will always be converted into T.
+    #[allow(clippy::similar_names)]
     pub fn new(
         delaunay: Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>,
         bounds: Option<Bounds<T>>,
     ) -> Self {
-        let (xmin, ymin, xmax, ymax) = match bounds {
-            Some(bounds) => bounds,
-            None => (
-                T::zero(),
-                T::zero(),
-                T::from_f64(960f64).unwrap(),
-                T::from_f64(500f64).unwrap(),
-            ),
-        };
+        let (xmin, ymin, xmax, ymax) = bounds.map_or_else(
+            || {
+                (
+                    T::zero(),
+                    T::zero(),
+                    T::from_f64(960f64).unwrap(),
+                    T::from_f64(500f64).unwrap(),
+                )
+            },
+            |bounds| bounds,
+        );
 
-        if xmax < xmin || ymax < ymin {
-            panic!("Invalid bounds");
-        }
+        assert!(!(xmax < xmin || ymax < ymin), "Invalid bounds");
         let len = delaunay.points.len() * 2;
 
         let mut circumcenters = Vec::with_capacity(len);
         let mut vectors = VecDeque::with_capacity(len);
         for _ in 0..len {
-            circumcenters.push(Coordinate {
+            circumcenters.push(Coord {
                 x: T::zero(),
                 y: T::zero(),
             });
-            vectors.push_back(Coordinate {
+            vectors.push_back(Coord {
                 x: T::zero(),
                 y: T::zero(),
             });
@@ -102,6 +103,7 @@ where
         v
     }
 
+    #[allow(clippy::similar_names)]
     fn init(&mut self) {
         // Compute circumcenters.
         let circumcenter_len = self.delaunay.triangles.len() / 3;
@@ -210,7 +212,7 @@ where
                         )
                     }
                 };
-                self.circumcenters[j] = Coordinate { x, y };
+                self.circumcenters[j] = Coord { x, y };
                 i += 3;
 
                 j += 1;
@@ -252,10 +254,9 @@ where
                 // remove() then insert() here is inefficient .. but will only be done
                 // once during init(). clip_finite() is a common operation.
                 self.vectors.remove(p0 + 1);
-                self.vectors
-                    .insert(p0 + 1, Coordinate { x: ydiff, y: xdiff });
+                self.vectors.insert(p0 + 1, Coord { x: ydiff, y: xdiff });
                 self.vectors.remove(p1);
-                self.vectors.insert(p1, Coordinate { x: ydiff, y: xdiff });
+                self.vectors.insert(p1, Coord { x: ydiff, y: xdiff });
             }
         }
     }
@@ -358,7 +359,7 @@ where
     // in tests this is implemented as a for loop using cell_polygon().
 
     /// Returns a vec points that for a voronoi cell.
-    pub fn cell_polygon(&self, i: usize) -> Vec<Coordinate<T>>
+    pub fn cell_polygon(&self, i: usize) -> Vec<Coord<T>>
     where
         T: CoordFloat + Display,
     {
@@ -369,8 +370,8 @@ where
 
     fn render_segment(
         &self,
-        p0: &Coordinate<T>,
-        p1: &Coordinate<T>,
+        p0: &Coord<T>,
+        p1: &Coord<T>,
         context: &mut impl CanvasRenderingContext2d<T>,
     ) {
         let s;
@@ -391,19 +392,19 @@ where
 
     /// Returns true if the cell with the specified index i contains the specified point p.
     #[inline]
-    pub fn contains(&self, i: usize, p: &Coordinate<T>) -> bool {
+    pub fn contains(&self, i: usize, p: &Coord<T>) -> bool {
         self.delaunay.step(i, p) == i
     }
 
     // TODO place neighbours* here() rustlang does not yet support generator functions.
 
-    fn cell(&self, i: usize) -> Option<VecDeque<Coordinate<T>>> {
+    fn cell(&self, i: usize) -> Option<VecDeque<Coord<T>>> {
         let e0 = self.delaunay.inedges[i];
         if e0 == EMPTY {
             // Coincident point.
             return None;
         }
-        let mut points: VecDeque<Coordinate<T>> = VecDeque::new();
+        let mut points: VecDeque<Coord<T>> = VecDeque::new();
         let mut e = e0;
         loop {
             let t = e / 3;
@@ -423,44 +424,41 @@ where
         Some(points)
     }
 
-    fn clip(&self, i: usize) -> Option<VecDeque<Coordinate<T>>> {
+    fn clip(&self, i: usize) -> Option<VecDeque<Coord<T>>> {
         // degenerate case (1 valid point: return the box)
         if i == 0 && self.delaunay.delaunator.hull.len() == 1 {
             return Some(VecDeque::from(vec![
-                Coordinate {
+                Coord {
                     x: self.xmax,
                     y: self.ymin,
                 },
-                Coordinate {
+                Coord {
                     x: self.xmax,
                     y: self.ymax,
                 },
-                Coordinate {
+                Coord {
                     x: self.xmin,
                     y: self.ymax,
                 },
-                Coordinate {
+                Coord {
                     x: self.xmin,
                     y: self.ymin,
                 },
             ]));
         }
-        match self.cell(i) {
-            None => None,
-            Some(points) => {
-                #[allow(non_snake_case)]
-                let V = &self.vectors;
-                let v = i * 2;
-                if V[v].x != T::zero() || V[v].y != T::zero() {
-                    Some(self.clip_infinite(i, &points, V[v].x, V[v].y, V[v + 1].x, V[v + 1].y))
-                } else {
-                    Some(self.clip_finite(i, &points))
-                }
+        self.cell(i).map(|points| {
+            #[allow(non_snake_case)]
+            let V = &self.vectors;
+            let v = i * 2;
+            if V[v].x != T::zero() || V[v].y != T::zero() {
+                self.clip_infinite(i, &points, V[v].x, V[v].y, V[v + 1].x, V[v + 1].y)
+            } else {
+                self.clip_finite(i, &points)
             }
-        }
+        })
     }
 
-    fn clip_finite(&self, i: usize, points: &VecDeque<Coordinate<T>>) -> VecDeque<Coordinate<T>> {
+    fn clip_finite(&self, i: usize, points: &VecDeque<Coord<T>>) -> VecDeque<Coord<T>> {
         #[allow(non_snake_case)]
         let mut P = VecDeque::new();
         let mut p1 = points[points.len() - 1];
@@ -485,8 +483,8 @@ where
             } else {
                 #[allow(non_snake_case)]
                 let S;
-                let s0: Coordinate<T>;
-                let s1: Coordinate<T>;
+                let s0: Coord<T>;
+                let s1: Coord<T>;
                 if c0 == 0 {
                     S = self.clip_segment(&p0, &p1, c0, c1);
                     match S {
@@ -512,10 +510,10 @@ where
                                 let len = P.len();
                                 self.edge(i, e0, e1, &mut P, len);
                             }
-                            if !P.is_empty() {
-                                P.push_back(s0);
-                            } else {
+                            if P.is_empty() {
                                 P = VecDeque::from(vec![s0]);
+                            } else {
+                                P.push_back(s0);
                             }
                         }
                     }
@@ -526,10 +524,10 @@ where
                     let len = P.len();
                     self.edge(i, e0, e1, &mut P, len);
                 }
-                if !P.is_empty() {
-                    P.push_back(s1);
-                } else {
+                if P.is_empty() {
                     P = VecDeque::from(vec![s1]);
+                } else {
+                    P.push_back(s1);
                 };
             }
         }
@@ -542,25 +540,25 @@ where
             }
         } else if self.contains(
             i,
-            &Coordinate {
+            &Coord {
                 x: (self.xmin + self.xmax) / two,
                 y: (self.ymin + self.ymax) / two,
             },
         ) {
             return VecDeque::from(vec![
-                Coordinate {
+                Coord {
                     x: self.xmax,
                     y: self.ymin,
                 },
-                Coordinate {
+                Coord {
                     x: self.xmax,
                     y: self.ymax,
                 },
-                Coordinate {
+                Coord {
                     x: self.xmin,
                     y: self.ymax,
                 },
-                Coordinate {
+                Coord {
                     x: self.xmin,
                     y: self.ymin,
                 },
@@ -569,13 +567,14 @@ where
         P
     }
 
+    #[allow(clippy::similar_names)]
     fn clip_segment(
         &self,
-        p0_in: &Coordinate<T>,
-        p1_in: &Coordinate<T>,
+        p0_in: &Coord<T>,
+        p1_in: &Coord<T>,
         c0_in: u8,
         c1_in: u8,
-    ) -> Option<Vec<Coordinate<T>>> {
+    ) -> Option<Vec<Coord<T>>> {
         let mut p0 = *p0_in;
         let mut p1 = *p1_in;
         let mut c0 = c0_in;
@@ -589,7 +588,7 @@ where
             }
             let x;
             let y;
-            let c = if c0 != 0 { c0 } else { c1 };
+            let c = if c0 == 0 { c1 } else { c0 };
 
             if c & 0b1000 != 0 {
                 x = p0.x + (p1.x - p0.x) * (self.ymax - p0.y) / (p1.y - p0.y);
@@ -604,27 +603,28 @@ where
                 y = p0.y + (p1.y - p0.y) * (self.xmin - p0.x) / (p1.x - p0.x);
                 x = self.xmin;
             }
-            if c0 != 0 {
-                p0 = Coordinate { x, y };
-                c0 = self.regioncode(&p0);
-            } else {
-                p1 = Coordinate { x, y };
+            if c0 == 0 {
+                p1 = Coord { x, y };
                 c1 = self.regioncode(&p1);
+            } else {
+                p0 = Coord { x, y };
+                c0 = self.regioncode(&p0);
             }
         }
     }
 
+    #[allow(clippy::similar_names)]
     fn clip_infinite(
         &self,
         i: usize,
-        points: &VecDeque<Coordinate<T>>,
+        points: &VecDeque<Coord<T>>,
         vx0: T,
         vy0: T,
         vxn: T,
         vyn: T,
-    ) -> VecDeque<Coordinate<T>> {
+    ) -> VecDeque<Coord<T>> {
         #[allow(non_snake_case)]
-        let mut P: VecDeque<Coordinate<T>> = points.clone();
+        let mut P: VecDeque<Coord<T>> = points.clone();
         if let Some(p1) = self.project(&P[0], vx0, vy0) {
             P.push_front(p1);
         }
@@ -654,25 +654,25 @@ where
             }
         } else if self.contains(
             i,
-            &Coordinate {
+            &Coord {
                 x: (self.xmin + self.xmax) / t2,
                 y: (self.ymin + self.ymax) / t2,
             },
         ) {
             P = VecDeque::with_capacity(4);
-            P.push_back(Coordinate {
+            P.push_back(Coord {
                 x: self.xmin,
                 y: self.ymin,
             });
-            P.push_back(Coordinate {
+            P.push_back(Coord {
                 x: self.xmax,
                 y: self.ymin,
             });
-            P.push_back(Coordinate {
+            P.push_back(Coord {
                 x: self.xmax,
                 y: self.ymax,
             });
-            P.push_back(Coordinate {
+            P.push_back(Coord {
                 x: self.xmin,
                 y: self.ymax,
             });
@@ -686,7 +686,7 @@ where
         i_in: usize,
         e0_in: u8,
         e1: u8,
-        P: &mut VecDeque<Coordinate<T>>,
+        P: &mut VecDeque<Coord<T>>,
         j_in: usize,
     ) -> usize {
         let mut j = j_in;
@@ -747,10 +747,9 @@ where
 
             // The JS version has subtle handling of out of bounds checks.
             let out_of_bounds = j >= P.len();
-            if (out_of_bounds || P[j].x != x || P[j].y != y)
-                && self.contains(i_in, &Coordinate { x, y })
+            if (out_of_bounds || P[j].x != x || P[j].y != y) && self.contains(i_in, &Coord { x, y })
             {
-                P.insert(j, Coordinate { x, y });
+                P.insert(j, Coord { x, y });
                 j += 1;
             }
         }
@@ -774,7 +773,7 @@ where
         j
     }
 
-    fn project(&self, p0: &Coordinate<T>, vx: T, vy: T) -> Option<Coordinate<T>> {
+    fn project(&self, p0: &Coord<T>, vx: T, vy: T) -> Option<Coord<T>> {
         let mut t = Float::infinity();
         // There is a mistake in the javascript implementation
         // if vy and vx == 0 then x, y are undefined.
@@ -827,10 +826,10 @@ where
                 y = p0.x + t * vy;
             }
         }
-        Some(Coordinate { x, y })
+        Some(Coord { x, y })
     }
 
-    fn edgecode(&self, p: &Coordinate<T>) -> u8 {
+    fn edgecode(&self, p: &Coord<T>) -> u8 {
         // Lower and upper nibbles.
         let lower = if p.x == self.xmin {
             0b0001
@@ -851,7 +850,7 @@ where
         lower | upper
     }
 
-    fn regioncode(&self, p: &Coordinate<T>) -> u8 {
+    fn regioncode(&self, p: &Coord<T>) -> u8 {
         // Lower and upper nibbles.
         let lower = if p.x < self.xmin {
             0b001

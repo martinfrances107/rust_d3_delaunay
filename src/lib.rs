@@ -24,7 +24,7 @@ pub mod polygon;
 pub mod voronoi;
 
 use geo::CoordFloat;
-use geo::Coordinate;
+use geo_types::Coord;
 
 /// Interface in web browser.
 pub trait CanvasRenderingContext2d<T>: ToString
@@ -32,13 +32,13 @@ where
     T: CoordFloat,
 {
     /// draws an arc.
-    fn arc(&mut self, p: &Coordinate<T>, r: T, start: T, stop: T);
+    fn arc(&mut self, p: &Coord<T>, r: T, start: T, stop: T);
     /// signals path is closed.
     fn close_path(&mut self);
     /// draws line from current point to p specified.
-    fn line_to(&mut self, p: &Coordinate<T>);
+    fn line_to(&mut self, p: &Coord<T>);
     /// Sets the current point.
-    fn move_to(&mut self, p: &Coordinate<T>);
+    fn move_to(&mut self, p: &Coord<T>);
     /// draw rectangle.
-    fn rect(&mut self, p: &Coordinate<T>, w: T, h: T);
+    fn rect(&mut self, p: &Coord<T>, w: T, h: T);
 }

@@ -10,6 +10,7 @@ edition = "2021"
 approx = "~0.5"
 delaunator = { git = "https://github.com/mourner/delaunator-rs.git" }
 geo = "~0.23"
+geo-types = "~0.7"
 num-traits = "~0.2"
 rust_d3_geo = { git = "https://github.com/martinfrances107/rust_d3_geo.git", branch = "main" }
 derivative = "~2"

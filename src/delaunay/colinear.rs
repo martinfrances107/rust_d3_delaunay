@@ -1,5 +1,5 @@
 use geo::CoordFloat;
-use geo::Coordinate;
+use geo_types::Coord;
 
 use delaunator::Triangulation;
 use num_traits::FromPrimitive;
@@ -12,7 +12,7 @@ pub enum Tri {
 }
 
 // A triangulation is collinear if all its triangles have a non-null area.
-pub fn colinear<T>(coords: &[Coordinate<T>], d: &Triangulation) -> Tri
+pub fn colinear<T>(coords: &[Coord<T>], d: &Triangulation) -> Tri
 where
     T: CoordFloat + FromPrimitive,
 {

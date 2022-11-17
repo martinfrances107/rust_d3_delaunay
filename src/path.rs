@@ -3,7 +3,7 @@ use std::fmt::Write;
 use std::string::ToString;
 
 use geo::CoordFloat;
-use geo::Coordinate;
+use geo_types::Coord;
 use rust_d3_geo::math::EPSILON;
 
 use super::CanvasRenderingContext2d;
@@ -14,8 +14,8 @@ pub struct Path<T>
 where
     T: CoordFloat,
 {
-    p0: Coordinate<T>,
-    p1: Option<Coordinate<T>>,
+    p0: Coord<T>,
+    p1: Option<Coord<T>>,
     s: String,
     epsilon: T,
 }
@@ -27,7 +27,7 @@ where
     #[inline]
     fn default() -> Self {
         Self {
-            p0: Coordinate {
+            p0: Coord {
                 x: T::zero(),
                 y: T::zero(),
             },
@@ -55,7 +55,7 @@ impl<T> CanvasRenderingContext2d<T> for Path<T>
 where
     T: CoordFloat + Display,
 {
-    fn move_to(&mut self, p: &Coordinate<T>) {
+    fn move_to(&mut self, p: &Coord<T>) {
         self.p0 = *p;
         self.p1 = Some(*p);
         write!(self.s, "M{},{}", p.x, p.y).expect("cannot apppend to buffer");
@@ -68,12 +68,12 @@ where
         }
     }
 
-    fn line_to(&mut self, p: &Coordinate<T>) {
+    fn line_to(&mut self, p: &Coord<T>) {
         self.p1 = Some(*p);
         write!(self.s, "L{},{}", p.x, p.y).expect("cannot apppend to buffer");
     }
 
-    fn arc(&mut self, p: &Coordinate<T>, r: T, _start: T, _stop: T) {
+    fn arc(&mut self, p: &Coord<T>, r: T, _start: T, _stop: T) {
         let x0 = p.x + r;
         let y0 = p.y;
 
@@ -108,7 +108,7 @@ where
         }
     }
 
-    fn rect(&mut self, p: &Coordinate<T>, w: T, h: T) {
+    fn rect(&mut self, p: &Coord<T>, w: T, h: T) {
         self.p0 = *p;
         self.p1 = Some(*p);
         write!(self.s, "M{},{},{}h{}v{}h{}Z", p.x, p.y, w, h, h, -w)
