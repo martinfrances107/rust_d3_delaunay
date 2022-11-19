@@ -104,6 +104,7 @@ where
     }
 
     #[allow(clippy::similar_names)]
+    #[allow(clippy::too_many_lines)]
     fn init(&mut self) {
         // Compute circumcenters.
         let circumcenter_len = self.delaunay.triangles.len() / 3;
