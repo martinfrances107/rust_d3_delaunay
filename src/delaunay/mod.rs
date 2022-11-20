@@ -74,6 +74,9 @@ where
     CLIPU: Clone,
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst + FromPrimitive,
 {
+    /// # Panics
+    /// unwrap() is used here but a panic will never happen as T will always be converted into f64.
+    ///
     /// Computes a delanay triangularization and stores the results.
     pub fn new(points: &[Coord<T>]) -> Self {
         // conversion into delaunay point!!!
