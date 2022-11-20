@@ -463,18 +463,15 @@ where
     fn clip_finite(&self, i: usize, points: &VecDeque<Coord<T>>) -> VecDeque<Coord<T>> {
         let mut P = VecDeque::new();
         let mut p1 = points[points.len() - 1];
-        let mut c0;
         let mut c1 = self.regioncode(&p1);
-        let mut e0;
         let mut e1 = 0;
         let two = T::from_f64(2f64).unwrap();
         for point in points {
             let p0 = p1;
             p1 = *point;
-            c0 = c1;
+            let c0 = c1;
             c1 = self.regioncode(&p1);
             if c0 == 0 && c1 == 0 {
-                // e0 = e1;
                 e1 = 0;
                 if P.is_empty() {
                     P = VecDeque::from(vec![p1]);
@@ -482,12 +479,10 @@ where
                     P.push_back(p1);
                 }
             } else {
-                let S;
                 let s0: Coord<T>;
                 let s1: Coord<T>;
                 if c0 == 0 {
-                    S = self.clip_segment(&p0, &p1, c0, c1);
-                    match S {
+                    match self.clip_segment(&p0, &p1, c0, c1) {
                         None => {
                             continue;
                         }
@@ -496,15 +491,14 @@ where
                         }
                     }
                 } else {
-                    S = self.clip_segment(&p1, &p0, c1, c0);
-                    match S {
+                    match self.clip_segment(&p1, &p0, c1, c0) {
                         None => {
                             continue;
                         }
                         Some(s) => {
                             s1 = s[0];
                             s0 = s[1];
-                            e0 = e1;
+                            let e0 = e1;
                             e1 = self.edgecode(&s0);
                             if e0 != 0u8 && e1 != 0u8 {
                                 let len = P.len();
@@ -518,7 +512,7 @@ where
                         }
                     }
                 }
-                e0 = e1;
+                let e0 = e1;
                 e1 = self.edgecode(&s1);
                 if e0 != 0u8 && e1 != 0u8 {
                     let len = P.len();
@@ -532,7 +526,7 @@ where
             }
         }
         if !P.is_empty() {
-            e0 = e1;
+            let e0 = e1;
             e1 = self.edgecode(&P[0]);
             if e0 != 0u8 && e1 != 0u8 {
                 let len = P.len();
