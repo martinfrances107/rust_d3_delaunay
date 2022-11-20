@@ -120,19 +120,19 @@ where
             let t1e_minus_8 = T::from_f64(1e-8).unwrap();
             let two = T::from_f64(2f64).unwrap();
             loop {
-                let (x1, y1) = match triangles[i] {
-                    EMPTY => (None, None),
-                    t1 => (Some(points[t1].x), Some(points[t1].y)),
+                let (x1, y1) = match triangles.get(i) {
+                    Some(&EMPTY) | None => (None, None),
+                    Some(t1) => (Some(points[*t1].x), Some(points[*t1].y)),
                 };
 
-                let (x2, y2) = match triangles[i + 1] {
-                    EMPTY => (None, None),
-                    t2 => (Some(points[t2].x), Some(points[t2].y)),
+                let (x2, y2) = match triangles.get(i + 1) {
+                    Some(&EMPTY) | None => (None, None),
+                    Some(t2) => (Some(points[*t2].x), Some(points[*t2].y)),
                 };
 
-                let (x3, y3) = match triangles[i + 2] {
-                    EMPTY => (None, None),
-                    t3 => (Some(points[t3].x), Some(points[t3].y)),
+                let (x3, y3) = match triangles.get(i + 2) {
+                    Some(&EMPTY) | None => (None, None),
+                    Some(t3) => (Some(points[*t3].x), Some(points[*t3].y)),
                 };
 
                 let dx = match (x1, x2) {
@@ -295,16 +295,17 @@ where
             self.render_segment(&pi, &pj, context);
         }
 
-        let mut h1 = *self.delaunay.delaunator.hull.last().unwrap();
-        for i in 0..self.delaunay.delaunator.hull.len() {
-            let h0 = h1;
-            h1 = self.delaunay.delaunator.hull[i];
-            let t = self.delaunay.inedges[h1] / 3;
-            let pi = self.circumcenters[t];
-            let v = h0 * 2;
-            let p = self.project(&pi, self.vectors[v + 1].x, self.vectors[v + 1].y);
-            if let Some(p) = p {
-                self.render_segment(&pi, &p, context);
+        if let Some(mut h1) = self.delaunay.delaunator.hull.last() {
+            for i in 0..self.delaunay.delaunator.hull.len() {
+                let h0 = h1;
+                h1 = &self.delaunay.delaunator.hull[i];
+                let t = self.delaunay.inedges[*h1] / 3;
+                let pi = self.circumcenters[t];
+                let v = h0 * 2;
+                let p = self.project(&pi, self.vectors[v + 1].x, self.vectors[v + 1].y);
+                if let Some(p) = p {
+                    self.render_segment(&pi, &p, context);
+                }
             }
         }
     }
