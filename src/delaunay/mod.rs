@@ -43,7 +43,7 @@ where
     /// A Triangulation stores the computed results from a delaunay mesh.
     pub delaunator: Triangulation,
     /// The incoming halfedge indexes as a  [e0, e1, e2, …].
-    /// For each point i, inedges[i] is the halfedge index e of an incoming halfedge.
+    /// For each point i, inedges\[i\] is the halfedge index e of an incoming halfedge.
     /// For coincident points, the halfedge index is EMPTY;
     /// for points on the convex hull, the incoming halfedge is on the convex hull;
     /// for other points, the choice of incoming halfedge is arbitrary.
@@ -51,7 +51,7 @@ where
     pub inedges: Vec<usize>,
     hull_index: Vec<usize>,
     /// The halfedge indexes as an [j0, j1, …]. For each index 0 ≤ i < halfedges.length,
-    ///  there is a halfedge from triangle vertex j = halfedges[i] to triangle vertex i.
+    ///  there is a halfedge from triangle vertex j = halfedges\[i\] to triangle vertex i.
     ///  Equivalently, this means that triangle ⌊i / 3⌋ is adjacent to triangle ⌊j / 3⌋.
     pub half_edges: Vec<usize>,
     /// The triangle vertex indexes as an Vec<usize> [i0, j0, k0, i1, j1, k1, …].
