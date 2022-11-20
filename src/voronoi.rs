@@ -7,7 +7,6 @@ use approx::AbsDiffEq;
 use delaunator::EMPTY;
 use geo::CoordFloat;
 use geo_types::Coord;
-use num_traits::Float;
 use num_traits::FloatConst;
 use num_traits::FromPrimitive;
 use num_traits::Zero;
@@ -459,8 +458,8 @@ where
         })
     }
 
+    #[allow(non_snake_case)]
     fn clip_finite(&self, i: usize, points: &VecDeque<Coord<T>>) -> VecDeque<Coord<T>> {
-        #[allow(non_snake_case)]
         let mut P = VecDeque::new();
         let mut p1 = points[points.len() - 1];
         let mut c0;
@@ -482,7 +481,6 @@ where
                     P.push_back(p1);
                 }
             } else {
-                #[allow(non_snake_case)]
                 let S;
                 let s0: Coord<T>;
                 let s1: Coord<T>;
@@ -775,7 +773,7 @@ where
     }
 
     fn project(&self, p0: &Coord<T>, vx: T, vy: T) -> Option<Coord<T>> {
-        let mut t = Float::infinity();
+        let mut t = T::infinity();
         // There is a mistake in the javascript implementation
         // if vy and vx == 0 then x, y are undefined.
         let mut x = T::zero();
