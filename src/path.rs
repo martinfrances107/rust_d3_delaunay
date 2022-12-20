@@ -82,7 +82,7 @@ where
         match &self.p1 {
             Some(p1) => {
                 if (p1.x - x0).abs() > self.epsilon || (p1.y - y0).abs() > self.epsilon {
-                    write!(self.s, "L{},{}", x0, y0).expect("cannot apppend to buffer");
+                    write!(self.s, "L{x0},{y0}").expect("cannot apppend to buffer");
                 }
                 if r == T::zero() {
                     return;
@@ -103,7 +103,7 @@ where
                 .expect("cannot apppend to buffer");
             }
             _ => {
-                write!(self.s, "M{},{}", x0, y0).expect("cannot apppend to buffer");
+                write!(self.s, "M{x0},{y0}").expect("cannot apppend to buffer");
             }
         }
     }
@@ -111,7 +111,6 @@ where
     fn rect(&mut self, p: &Coord<T>, w: T, h: T) {
         self.p0 = *p;
         self.p1 = Some(*p);
-        write!(self.s, "M{},{},{}h{}v{}h{}Z", p.x, p.y, w, h, h, -w)
-            .expect("cannot apppend to buffer");
+        write!(self.s, "M{},{},{w}h{h}v{h}h{}Z", p.x, p.y, -w).expect("cannot apppend to buffer");
     }
 }
