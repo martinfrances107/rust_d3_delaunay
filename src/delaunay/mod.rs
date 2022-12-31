@@ -9,6 +9,7 @@ use std::fmt::Display;
 use approx::AbsDiffEq;
 use colinear::colinear;
 use colinear::Tri;
+use d3_geo_rs::projection::projector::Projector;
 use delaunator::triangulate;
 use delaunator::Point as DPoint;
 use delaunator::Triangulation;
@@ -25,7 +26,6 @@ use crate::path::Path;
 use crate::voronoi::Bounds;
 use crate::voronoi::Voronoi;
 use crate::CanvasRenderingContext2d;
-use rust_d3_geo::projection::projector::Projector;
 
 type FnTransform<T> = Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>;
 /// Wrapper stores data associated with delaunator Triangulation.

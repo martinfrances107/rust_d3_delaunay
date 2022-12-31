@@ -2,9 +2,9 @@ use std::fmt::Display;
 use std::fmt::Write;
 use std::string::ToString;
 
+use d3_geo_rs::math::EPSILON;
 use geo::CoordFloat;
 use geo_types::Coord;
-use rust_d3_geo::math::EPSILON;
 
 use super::CanvasRenderingContext2d;
 

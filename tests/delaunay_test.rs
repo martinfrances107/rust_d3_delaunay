@@ -7,16 +7,16 @@ mod delaunay_test {
     use geo_types::Coord;
     use pretty_assertions::assert_eq;
 
-    use rust_d3_delaunay::delaunay::Delaunay;
-    use rust_d3_delaunay::path::Path;
-    use rust_d3_delaunay::voronoi::Voronoi;
-    use rust_d3_geo::clip::antimeridian::ClipAntimeridianC;
-    use rust_d3_geo::clip::antimeridian::ClipAntimeridianU;
-    use rust_d3_geo::projection::builder::template::NoPCNU;
-    use rust_d3_geo::projection::builder::template::ResampleNoPCNC;
-    use rust_d3_geo::projection::builder::template::ResampleNoPCNU;
-    use rust_d3_geo::projection::gnomic::Gnomic;
-    use rust_d3_geo::stream::DrainStub;
+    use d3_delaunay_rs::delaunay::Delaunay;
+    use d3_delaunay_rs::path::Path;
+    use d3_delaunay_rs::voronoi::Voronoi;
+    use d3_geo_rs::clip::antimeridian::ClipAntimeridianC;
+    use d3_geo_rs::clip::antimeridian::ClipAntimeridianU;
+    use d3_geo_rs::projection::builder::template::NoPCNU;
+    use d3_geo_rs::projection::builder::template::ResampleNoPCNC;
+    use d3_geo_rs::projection::builder::template::ResampleNoPCNU;
+    use d3_geo_rs::projection::gnomic::Gnomic;
+    use d3_geo_rs::stream::DrainStub;
 
     type DelaunayStub = Delaunay<
         ClipAntimeridianC<ResampleNoPCNC<DrainStub<f64>, Gnomic<DrainStub<f64>, f64>, f64>, f64>,
