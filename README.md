@@ -1,7 +1,14 @@
 # rust d3 delaunay
 
 2021 Edition.
+<div align="center">
 
+<a href="https://crates.io/crates/d3_delaunay_rs"><img alt="crates.io" src="https://img.shields.io/crates/v/d3_delaunay_rs.svg"/></a>
+
+<a href="https://docs.rs/d3_delaunay_rs/0.1.0/d3_delaunay_rs/">Docs</a>
+</div>
+
+## About
 This is a port of the [d3-delaunay](https://github.com/d3/d3-delaunay) library into a RUST library crate/package. It is in a very early development phase.
 
 Current the code coverage as reported by Cargo tarpaulin is 80%.
