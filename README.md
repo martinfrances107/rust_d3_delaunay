@@ -4,9 +4,8 @@
 <div align="center">
 
 <a href="https://crates.io/crates/d3_delaunay_rs"><img alt="crates.io" src="https://img.shields.io/crates/v/d3_delaunay_rs.svg"/></a>
+<a href="https://docs.rs/d3_delaunay_rs" rel="nofollow noopener noreferrer"><img src="https://docs.rs/d3_geo_rs/badge.svg" alt="Documentation"></a>
 <a href="https://crates.io/crates/d3_geo_rs"><img src="https://img.shields.io/crates/d/d3_delaunay_rs.svg" alt="Download" />
-
-<a href="https://docs.rs/d3_delaunay_rs/0.1.0/d3_delaunay_rs/">Docs</a>
 </div>
 
 
