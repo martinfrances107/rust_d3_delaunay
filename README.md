@@ -8,13 +8,13 @@
 <a href="https://crates.io/crates/d3_geo_rs"><img src="https://img.shields.io/crates/d/d3_delaunay_rs.svg" alt="Download" />
 </div>
 
-
 ## About
+
 This is a port of the [d3-delaunay](https://github.com/d3/d3-delaunay) library into a RUST library crate/package. It is in a very early development phase.
 
 Current the code coverage as reported by Cargo tarpaulin is 80%.
 
-A collection of d3 submodules is currently being port RUST
+A collection of d3 submodules is currently being ported RUST
 
 * [rust_d3_geo](https://github.com/martinfrances107/rust_d3_geo)
 * rust_d3_delaunay
