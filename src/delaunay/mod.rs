@@ -54,7 +54,7 @@ where
     ///  there is a halfedge from triangle vertex j = halfedges\[i\] to triangle vertex i.
     ///  Equivalently, this means that triangle ⌊i / 3⌋ is adjacent to triangle ⌊j / 3⌋.
     pub half_edges: Vec<usize>,
-    /// The triangle vertex indexes as an Vec<usize> [i0, j0, k0, i1, j1, k1, …].
+    /// The triangle vertex indexes as an `Vec<usize>` [i0, j0, k0, i1, j1, k1, …].
     ///  Each contiguous triplet of indexes i, j, k forms a counterclockwise triangle.
     pub triangles: Vec<usize>,
     /// The coordinates of a point as an vector.
