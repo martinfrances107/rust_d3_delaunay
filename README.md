@@ -12,7 +12,7 @@
 
 This is a port of the [d3-delaunay](https://github.com/d3/d3-delaunay) library into a RUST library crate/package. It is in a very early development phase.
 
-Current the code coverage as reported by Cargo tarpaulin is 80%.
+Currently the code coverage as reported by Cargo tarpaulin is 80%.
 
 A collection of d3 submodules is currently being ported RUST
 
