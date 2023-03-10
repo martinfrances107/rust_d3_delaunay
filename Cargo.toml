@@ -14,7 +14,7 @@ version = "0.1.4"
 [dependencies]
 approx = "~0.5"
 delaunator = "~1"
-geo = "~0.23"
+geo = "~0.24"
 geo-types = "~0.7"
 num-traits = "~0.2"
 d3_geo_rs = "~0.3"
