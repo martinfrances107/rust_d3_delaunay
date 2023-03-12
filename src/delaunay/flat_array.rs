@@ -1,10 +1,12 @@
 use geo::CoordFloat;
 use geo::Point;
 
+///  Unused: Will be removed in the next Minor version.
+#[deprected(since = "0.1.6", note = "Will be removed in 0.2")]
 pub fn flat_array<T>(
     points: &[Point<T>],
-    fx: Fn(Point<T>, usize, Vec<Point<T>>) -> T,
-    fy: Fn(Point<T>, usize, Vec<Point<T>>) -> T,
+    fx: Fn(Point<T>, usize, &[Point<T>]) -> T,
+    fy: Fn(Point<T>, usize, &[Point<T>]) -> T,
 ) -> Vec<T>
 where
     T: CoordFloat,
