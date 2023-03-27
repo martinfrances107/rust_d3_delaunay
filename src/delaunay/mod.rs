@@ -9,7 +9,8 @@ use std::fmt::Display;
 use approx::AbsDiffEq;
 use colinear::colinear;
 use colinear::Tri;
-use d3_geo_rs::projection::projector::Projector;
+
+use d3_geo_rs::projection::projector_commom::Projector;
 use delaunator::triangulate;
 use delaunator::Point as DPoint;
 use delaunator::Triangulation;
