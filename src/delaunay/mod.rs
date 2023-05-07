@@ -34,7 +34,7 @@ type FnTransform<T> = Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>;
 /// `hull` and `half_edge` data.
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>
+pub struct Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>
 where
     CLIPC: Clone,
     CLIPU: Clone,
@@ -62,14 +62,14 @@ where
     pub points: Vec<Coord<T>>,
 
     #[allow(clippy::type_complexity)]
-    pub projection: Option<Projector<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>>,
+    pub projection: Option<Projector<CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>>,
     #[derivative(Debug = "ignore")]
     pub fx: FnTransform<T>,
     #[derivative(Debug = "ignore")]
     pub fy: FnTransform<T>,
 }
 
-impl<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T> Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T>
+impl<CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T> Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>
 where
     CLIPC: Clone,
     CLIPU: Clone,
@@ -129,7 +129,7 @@ where
     pub fn voronoi(
         self,
         bounds: Option<Bounds<T>>,
-    ) -> Voronoi<CLIPC, CLIPU, DRAIN, PCNU, PR, RC, RU, T> {
+    ) -> Voronoi<CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T> {
         Voronoi::new(self, bounds)
     }
 

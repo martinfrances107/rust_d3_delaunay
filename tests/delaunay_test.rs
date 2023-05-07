@@ -24,7 +24,6 @@ mod delaunay_test {
         DrainStub<f64>,
         NoPCNU,
         Gnomic<DrainStub<f64>, f64>,
-        ResampleNoPCNC<DrainStub<f64>, Gnomic<DrainStub<f64>, f64>, f64>,
         ResampleNoPCNU<Gnomic<DrainStub<f64>, f64>, f64>,
         f64,
     >;
@@ -35,7 +34,6 @@ mod delaunay_test {
         DrainStub<f64>,
         NoPCNU,
         Gnomic<DrainStub<f64>, f64>,
-        ResampleNoPCNC<DrainStub<f64>, Gnomic<DrainStub<f64>, f64>, f64>,
         ResampleNoPCNU<Gnomic<DrainStub<f64>, f64>, f64>,
         f64,
     >;
