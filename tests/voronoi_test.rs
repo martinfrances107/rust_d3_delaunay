@@ -19,22 +19,22 @@ mod voronoi_test {
     use d3_geo_rs::stream::DrainStub;
 
     type DelaunayStub = Delaunay<
-        ClipAntimeridianC<ResampleNoPCNC<DrainStub<f64>, Gnomic<DrainStub<f64>, f64>, f64>, f64>,
-        ClipAntimeridianU<ResampleNoPCNC<DrainStub<f64>, Gnomic<DrainStub<f64>, f64>, f64>, f64>,
+        ClipAntimeridianC<ResampleNoPCNC<DrainStub<f64>, Gnomic<f64>, f64>, f64>,
+        ClipAntimeridianU<ResampleNoPCNC<DrainStub<f64>, Gnomic<f64>, f64>, f64>,
         DrainStub<f64>,
         NoPCNU,
-        Gnomic<DrainStub<f64>, f64>,
-        ResampleNoPCNU<Gnomic<DrainStub<f64>, f64>, f64>,
+        Gnomic<f64>,
+        ResampleNoPCNU<Gnomic<f64>, f64>,
         f64,
     >;
 
     type VoronoiStub = Voronoi<
-        ClipAntimeridianC<ResampleNoPCNC<DrainStub<f64>, Gnomic<DrainStub<f64>, f64>, f64>, f64>,
-        ClipAntimeridianU<ResampleNoPCNC<DrainStub<f64>, Gnomic<DrainStub<f64>, f64>, f64>, f64>,
+        ClipAntimeridianC<ResampleNoPCNC<DrainStub<f64>, Gnomic<f64>, f64>, f64>,
+        ClipAntimeridianU<ResampleNoPCNC<DrainStub<f64>, Gnomic<f64>, f64>, f64>,
         DrainStub<f64>,
         NoPCNU,
-        Gnomic<DrainStub<f64>, f64>,
-        ResampleNoPCNU<Gnomic<DrainStub<f64>, f64>, f64>,
+        Gnomic<f64>,
+        ResampleNoPCNU<Gnomic<f64>, f64>,
         f64,
     >;
 
