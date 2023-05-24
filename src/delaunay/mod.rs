@@ -34,10 +34,8 @@ type FnTransform<T> = Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>;
 /// `hull` and `half_edge` data.
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>
+pub struct Delaunay<PROJECTOR, T>
 where
-    CLIPC: Clone,
-    CLIPU: Clone,
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
 {
     #[derivative(Debug = "ignore")]
@@ -62,17 +60,15 @@ where
     pub points: Vec<Coord<T>>,
 
     #[allow(clippy::type_complexity)]
-    pub projection: Option<Projector<CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>>,
+    pub projection: Option<PROJECTOR>,
     #[derivative(Debug = "ignore")]
     pub fx: FnTransform<T>,
     #[derivative(Debug = "ignore")]
     pub fy: FnTransform<T>,
 }
 
-impl<CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T> Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>
+impl<PROJECTOR, T> Delaunay<PROJECTOR, T>
 where
-    CLIPC: Clone,
-    CLIPU: Clone,
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst + FromPrimitive,
 {
     /// # Panics
@@ -126,10 +122,7 @@ where
 
     #[inline]
     /// Use the stored delaunay mesh data to compute the assoicated voronoi mesh.
-    pub fn voronoi(
-        self,
-        bounds: Option<Bounds<T>>,
-    ) -> Voronoi<CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T> {
+    pub fn voronoi(self, bounds: Option<Bounds<T>>) -> Voronoi<PROJECTOR, T> {
         Voronoi::new(self, bounds)
     }
 

@@ -21,10 +21,8 @@ pub(super) type Bounds<T> = (T, T, T, T);
 
 /// Data stores for a voronoi mesh.
 #[derive(Debug)]
-pub struct Voronoi<CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>
+pub struct Voronoi<PROJECTOR, T>
 where
-    CLIPC: Clone,
-    CLIPU: Clone,
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
 {
     /// The circumcenters of the Delaunay triangles as a Vec<c0, c1, …>.
@@ -32,7 +30,7 @@ where
     /// These circumcenters form the coordinates of the Voronoi cell polygons.
     pub circumcenters: Vec<Coord<T>>,
     /// The delaunay triangulaiton.
-    pub delaunay: Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>,
+    pub delaunay: Delaunay<PROJECTOR, T>,
     /// A Vec<v0, v0, w0, w0, …> where each non-zero quadruple describes an open (infinite) cell on the outer hull,
     ///  giving the directions of two open half-lines.
     pub vectors: VecDeque<Coord<T>>,
@@ -46,10 +44,8 @@ where
     pub ymax: T,
 }
 
-impl<CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T> Voronoi<CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>
+impl<PROJECTOR, T> Voronoi<PROJECTOR, T>
 where
-    CLIPC: Clone,
-    CLIPU: Clone,
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst + FromPrimitive,
 {
     /// Given a delaunay object and a bounds construct a Voronoi object.
@@ -57,10 +53,7 @@ where
     /// # Panics
     ///  Will never happen as constants will always be converted into T.
     #[allow(clippy::similar_names)]
-    pub fn new(
-        delaunay: Delaunay<CLIPC, CLIPU, DRAIN, PCNU, PR, RU, T>,
-        bounds: Option<Bounds<T>>,
-    ) -> Self {
+    pub fn new(delaunay: Delaunay<PROJECTOR, T>, bounds: Option<Bounds<T>>) -> Self {
         let (xmin, ymin, xmax, ymax) = bounds.map_or_else(
             || {
                 (
