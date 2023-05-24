@@ -7,7 +7,7 @@ license = "MIT"
 keywords = ["graphics", "d3-delauany"]
 name = "d3_delaunay_rs"
 repository = "https://github.com/martinfrances107/rust_d3_delaunay"
-version = "0.3.2"
+version = "0.4.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -17,7 +17,7 @@ delaunator = "~1"
 geo = "~0.25"
 geo-types = "~0.7"
 num-traits = "~0.2"
-d3_geo_rs = "~0.8"
+d3_geo_rs = "~0.9"
 derivative = "~2"
 
 [dev-dependencies]

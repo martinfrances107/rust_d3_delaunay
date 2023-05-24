@@ -10,24 +10,11 @@ mod delaunay_test {
     use d3_delaunay_rs::delaunay::Delaunay;
     use d3_delaunay_rs::path::Path;
     use d3_delaunay_rs::voronoi::Voronoi;
-    use d3_geo_rs::clip::antimeridian::ClipAntimeridianC;
-    use d3_geo_rs::clip::antimeridian::ClipAntimeridianU;
-    use d3_geo_rs::projection::builder::template::NoPCNU;
-    use d3_geo_rs::projection::builder::template::ResampleNoPCNC;
-    use d3_geo_rs::projection::builder::template::ResampleNoPCNU;
     use d3_geo_rs::projection::gnomic::Gnomic;
-    use d3_geo_rs::projection::projector_commom::Projector;
+    use d3_geo_rs::projection::projector_commom::types::ProjectorAntimeridianResampleClip;
     use d3_geo_rs::stream::DrainStub;
 
-    type ProjectorStub = Projector<
-        ClipAntimeridianC<ResampleNoPCNC<DrainStub<f64>, Gnomic<f64>, f64>, f64>,
-        ClipAntimeridianU<ResampleNoPCNC<DrainStub<f64>, Gnomic<f64>, f64>, f64>,
-        DrainStub<f64>,
-        NoPCNU,
-        Gnomic<f64>,
-        ResampleNoPCNU<Gnomic<f64>, f64>,
-        f64,
-    >;
+    type ProjectorStub = ProjectorAntimeridianResampleClip<DrainStub<f64>, Gnomic<f64>, f64>;
     type DelaunayStub = Delaunay<ProjectorStub, f64>;
 
     type VoronoiStub = Voronoi<ProjectorStub, f64>;

@@ -10,7 +10,6 @@ use approx::AbsDiffEq;
 use colinear::colinear;
 use colinear::Tri;
 
-use d3_geo_rs::projection::projector_commom::Projector;
 use delaunator::triangulate;
 use delaunator::Point as DPoint;
 use delaunator::Triangulation;
@@ -29,6 +28,7 @@ use crate::voronoi::Voronoi;
 use crate::CanvasRenderingContext2d;
 
 type FnTransform<T> = Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>;
+
 /// Wrapper stores data associated with delaunator Triangulation.
 ///
 /// `hull` and `half_edge` data.
