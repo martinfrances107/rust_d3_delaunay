@@ -18,7 +18,6 @@ geo = "~0.25"
 geo-types = "~0.7"
 num-traits = "~0.2"
 d3_geo_rs = "~0.10"
-derivative = "~2"
 
 [dev-dependencies]
 pretty_assertions = "~1"

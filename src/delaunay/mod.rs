@@ -4,6 +4,7 @@ mod colinear;
 mod jitter;
 
 use core::cmp::Ordering;
+use core::fmt::Debug;
 use core::fmt::Display;
 
 use approx::AbsDiffEq;
@@ -14,7 +15,6 @@ use delaunator::triangulate;
 use delaunator::Point as DPoint;
 use delaunator::Triangulation;
 use delaunator::EMPTY;
-use derivative::Derivative;
 use geo::CoordFloat;
 use geo::Point;
 use geo_types::Coord;
@@ -32,13 +32,10 @@ type FnTransform<T> = Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>;
 /// Wrapper stores data associated with delaunator Triangulation.
 ///
 /// `hull` and `half_edge` data.
-#[derive(Derivative)]
-#[derivative(Debug)]
 pub struct Delaunay<PROJECTOR, T>
 where
     T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
 {
-    #[derivative(Debug = "ignore")]
     /// A Triangulation stores the computed results from a delaunay mesh.
     pub delaunator: Triangulation,
     /// The incoming halfedge indexes as a  [e0, e1, e2, …].
@@ -61,10 +58,24 @@ where
 
     #[allow(clippy::type_complexity)]
     pub projection: Option<PROJECTOR>,
-    #[derivative(Debug = "ignore")]
     pub fx: FnTransform<T>,
-    #[derivative(Debug = "ignore")]
     pub fy: FnTransform<T>,
+}
+
+impl<PROJECTOR, T> Debug for Delaunay<PROJECTOR, T>
+where
+    T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
+{
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_tuple("Centroid<T>")
+            .field(&self.delaunator)
+            .field(&self.inedges)
+            .field(&self.hull_index)
+            .field(&self.half_edges)
+            .field(&self.triangles)
+            .field(&self.points)
+            .finish()
+    }
 }
 
 impl<PROJECTOR, T> Delaunay<PROJECTOR, T>

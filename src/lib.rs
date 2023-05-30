@@ -11,8 +11,6 @@
 //!
 //! Repository [`rust_d3_geo`](<https://github.com/martinfrances107/rust_d3_delaunay>)
 
-extern crate derivative;
-
 /// Holds helper functions and a wrapper struct that hold data assoicated with a delaunay trigulation.
 pub mod delaunay;
 /// A struct that handles `RendingContext2d` API calls for points and line segments.
