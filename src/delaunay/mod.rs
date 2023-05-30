@@ -3,8 +3,8 @@
 mod colinear;
 mod jitter;
 
-use std::cmp::Ordering;
-use std::fmt::Display;
+use core::cmp::Ordering;
+use core::fmt::Display;
 
 use approx::AbsDiffEq;
 use colinear::colinear;

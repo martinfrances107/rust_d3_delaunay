@@ -1,5 +1,5 @@
-use std::fmt::Display;
-use std::fmt::Write;
+use core::fmt::Display;
+use core::fmt::Write;
 use std::string::ToString;
 
 use d3_geo_rs::math::EPSILON;

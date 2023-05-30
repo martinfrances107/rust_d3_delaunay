@@ -1,7 +1,7 @@
 #![allow(clippy::many_single_char_names)]
 
+use core::fmt::Display;
 use std::collections::VecDeque;
-use std::fmt::Display;
 
 use approx::AbsDiffEq;
 use delaunator::EMPTY;
