@@ -645,23 +645,24 @@ where
                 y: (self.ymin + self.ymax) / t2,
             },
         ) {
-            P = VecDeque::with_capacity(4);
-            P.push_back(Coord {
-                x: self.xmin,
-                y: self.ymin,
-            });
-            P.push_back(Coord {
-                x: self.xmax,
-                y: self.ymin,
-            });
-            P.push_back(Coord {
-                x: self.xmax,
-                y: self.ymax,
-            });
-            P.push_back(Coord {
-                x: self.xmin,
-                y: self.ymax,
-            });
+            P = VecDeque::from([
+                Coord {
+                    x: self.xmin,
+                    y: self.ymin,
+                },
+                Coord {
+                    x: self.xmax,
+                    y: self.ymin,
+                },
+                Coord {
+                    x: self.xmax,
+                    y: self.ymax,
+                },
+                Coord {
+                    x: self.xmin,
+                    y: self.ymax,
+                },
+            ]);
         }
         P
     }
