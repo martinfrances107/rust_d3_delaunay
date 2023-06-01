@@ -7,7 +7,6 @@ use core::cmp::Ordering;
 use core::fmt::Debug;
 use core::fmt::Display;
 
-use approx::AbsDiffEq;
 use colinear::colinear;
 use colinear::Tri;
 
@@ -34,7 +33,7 @@ type FnTransform<T> = Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>;
 /// `hull` and `half_edge` data.
 pub struct Delaunay<PROJECTOR, T>
 where
-    T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
+    T: CoordFloat,
 {
     /// A Triangulation stores the computed results from a delaunay mesh.
     pub delaunator: Triangulation,
@@ -56,7 +55,6 @@ where
     /// The coordinates of a point as an vector.
     pub points: Vec<Coord<T>>,
 
-    #[allow(clippy::type_complexity)]
     pub projection: Option<PROJECTOR>,
     pub fx: FnTransform<T>,
     pub fy: FnTransform<T>,
@@ -64,7 +62,7 @@ where
 
 impl<PROJECTOR, T> Debug for Delaunay<PROJECTOR, T>
 where
-    T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
+    T: CoordFloat,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         f.debug_tuple("Centroid<T>")
@@ -80,7 +78,7 @@ where
 
 impl<PROJECTOR, T> Delaunay<PROJECTOR, T>
 where
-    T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst + FromPrimitive,
+    T: CoordFloat + FloatConst + FromPrimitive,
 {
     /// # Panics
     /// unwrap() is used here but a panic will never happen as T will always be converted into f64.

@@ -3,7 +3,6 @@
 use core::fmt::Display;
 use std::collections::VecDeque;
 
-use approx::AbsDiffEq;
 use delaunator::EMPTY;
 use geo::CoordFloat;
 use geo_types::Coord;
@@ -23,7 +22,7 @@ pub(super) type Bounds<T> = (T, T, T, T);
 #[derive(Debug)]
 pub struct Voronoi<PROJECTOR, T>
 where
-    T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst,
+    T: CoordFloat,
 {
     /// The circumcenters of the Delaunay triangles as a Vec<c0, c1, …>.
     /// Each contiguous pair of coordinates c0.x, c0.y is the circumcenter for the corresponding triangle.
@@ -46,7 +45,7 @@ where
 
 impl<PROJECTOR, T> Voronoi<PROJECTOR, T>
 where
-    T: AbsDiffEq<Epsilon = T> + CoordFloat + FloatConst + FromPrimitive,
+    T: CoordFloat + FloatConst + FromPrimitive,
 {
     /// Given a delaunay object and a bounds construct a Voronoi object.
     ///
