@@ -247,10 +247,8 @@ where
                 // clip infinte pushed to both the front and back of this queue.
                 // remove() then insert() here is inefficient .. but will only be done
                 // once during init(). clip_finite() is a common operation.
-                self.vectors.remove(p0 + 1);
-                self.vectors.insert(p0 + 1, Coord { x: ydiff, y: xdiff });
-                self.vectors.remove(p1);
-                self.vectors.insert(p1, Coord { x: ydiff, y: xdiff });
+                std::mem::swap(&mut self.vectors[p0 + 1], &mut Coord { x: ydiff, y: xdiff });
+                std::mem::swap(&mut self.vectors[p1], &mut Coord { x: ydiff, y: xdiff });
             }
         }
     }
