@@ -24,7 +24,7 @@ use geo::CoordFloat;
 use geo_types::Coord;
 
 /// Interface in web browser.
-pub trait CanvasRenderingContext2d<T>: ToString
+pub trait CanvasRenderingContext2d<T>
 where
     T: CoordFloat,
 {

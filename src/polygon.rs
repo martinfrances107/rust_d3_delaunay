@@ -18,16 +18,6 @@ where
     }
 }
 
-impl<T> ToString for Polygon<T>
-where
-    T: CoordFloat,
-{
-    #[inline]
-    fn to_string(&self) -> String {
-        todo!("Do I need this.");
-    }
-}
-
 impl<T> CanvasRenderingContext2d<T> for Polygon<T>
 where
     T: CoordFloat,

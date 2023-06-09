@@ -1,6 +1,7 @@
 use core::fmt::Display;
+use core::fmt::Error;
+use core::fmt::Formatter;
 use core::fmt::Write;
-use std::string::ToString;
 
 use d3_geo_rs::math::EPSILON;
 use geo::CoordFloat;
@@ -38,16 +39,17 @@ where
     }
 }
 
-impl<T> ToString for Path<T>
+// Really only want ToString, but as discusssed here
+//
+// https://doc.rust-lang.org/std/fmt/trait.Display.html
+//
+// implementing Display will automatically provide ToString
+impl<T> Display for Path<T>
 where
     T: CoordFloat,
 {
-    fn to_string(&self) -> String {
-        if self.s.is_empty() {
-            String::new()
-        } else {
-            self.s.clone()
-        }
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
+        write!(f, "{}", self.s)
     }
 }
 
