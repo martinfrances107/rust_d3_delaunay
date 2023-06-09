@@ -32,7 +32,7 @@ where
     pub delaunay: Delaunay<PROJECTOR, T>,
     /// A Vec<v0, v0, w0, w0, …> where each non-zero quadruple describes an open (infinite) cell on the outer hull,
     ///  giving the directions of two open half-lines.
-    pub vectors: VecDeque<Coord<T>>,
+    pub vectors: Vec<Coord<T>>,
     /// Bounds component.
     pub xmin: T,
     /// Bounds component.
@@ -69,16 +69,14 @@ where
         let len = delaunay.points.len() * 2;
 
         let mut circumcenters = Vec::with_capacity(len);
-        let mut vectors = VecDeque::with_capacity(len);
+        let mut vectors = Vec::with_capacity(len);
+        let p_zero = Coord {
+            x: T::zero(),
+            y: T::zero(),
+        };
         for _ in 0..len {
-            circumcenters.push(Coord {
-                x: T::zero(),
-                y: T::zero(),
-            });
-            vectors.push_back(Coord {
-                x: T::zero(),
-                y: T::zero(),
-            });
+            circumcenters.push(p_zero);
+            vectors.push(p_zero);
         }
         let mut v = Self {
             circumcenters,
@@ -100,7 +98,8 @@ where
         // Compute circumcenters.
         let circumcenter_len = self.delaunay.triangles.len() / 3;
         // Cannot use a slice cos need to be destermined at compile time.
-        self.circumcenters = (self.circumcenters[0..circumcenter_len]).to_vec();
+        // self.circumcenters = (self.circumcenters[0..circumcenter_len]).to_vec();
+        self.circumcenters.truncate(circumcenter_len);
         let triangles = &self.delaunay.triangles;
         let points = &self.delaunay.points;
         let hull = &self.delaunay.delaunator.hull;
