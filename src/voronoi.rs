@@ -219,9 +219,12 @@ where
         // This is because VecDecque unlike Vec is not a
         // contiguous memory element.
         // .. is this going to be slow!!!
+        let p_zero = Coord {
+            x: T::zero(),
+            y: T::zero(),
+        };
         for v in &mut self.vectors {
-            v.x = T::zero();
-            v.y = T::zero();
+            *v = p_zero;
         }
         // deviation from JS ... resolves index out of bounds issues
         // indexing using a negative value in JS returns undefined.
