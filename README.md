@@ -23,11 +23,11 @@ A collection of d3 submodules is currently being ported RUST
 ## Phase 1
 
 Early draft port - sub module by submodule. Sub module porting means the test have also been ported.
-No API stability guarentees.
+No API stability guarantees.
 
 ## Phase 2
 
-API finialization. There maybe optimisation in the area of generics. So the API only gets locked down in phase 2.
+API finalization. There maybe optimization in the area of generics. So the API only gets locked down in phase 2.
  The code will be profiled and bottlenecks identified.
 
 Modules, passing test ready for phase 2 evaluation :-
