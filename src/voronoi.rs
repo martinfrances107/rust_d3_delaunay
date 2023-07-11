@@ -28,7 +28,7 @@ where
     /// Each contiguous pair of coordinates c0.x, c0.y is the circumcenter for the corresponding triangle.
     /// These circumcenters form the coordinates of the Voronoi cell polygons.
     pub circumcenters: Vec<Coord<T>>,
-    /// The delaunay triangulaiton.
+    /// The delaunay triangulation.
     pub delaunay: Delaunay<PROJECTOR, T>,
     /// A Vec<v0, v0, w0, w0, …> where each non-zero quadruple describes an open (infinite) cell on the outer hull,
     ///  giving the directions of two open half-lines.
@@ -97,7 +97,7 @@ where
     fn init(&mut self) {
         // Compute circumcenters.
         let circumcenter_len = self.delaunay.triangles.len() / 3;
-        // Cannot use a slice cos need to be destermined at compile time.
+        // Cannot use a slice cos need to be determined at compile time.
         // self.circumcenters = (self.circumcenters[0..circumcenter_len]).to_vec();
         self.circumcenters.truncate(circumcenter_len);
         let triangles = &self.delaunay.triangles;
@@ -149,7 +149,7 @@ where
                 let ab = (dx * ey - dy * ex) * two;
                 // Out of bound checking is x and y type values are bound of bounds
                 // following the js closely dx and ex become nan
-                // JS is wierd !NAN === true
+                // JS is weird !NAN === true
 
                 let (x, y) = if ab.is_zero() || ab.is_nan() {
                     // degenerate case (collinear diagram)
@@ -215,7 +215,7 @@ where
 
         // JS used fill() here
         // VecDeque has no fill() unlike Vec
-        // This is because VecDecque unlike Vec is not a
+        // This is because VecDeque unlike Vec is not a
         // contiguous memory element.
         // .. is this going to be slow!!!
         let p_zero = Coord {
@@ -244,7 +244,7 @@ where
                 y1 = points[*h].y;
                 let xdiff = x1 - x0;
                 let ydiff = y0 - y1;
-                // clip infinte pushed to both the front and back of this queue.
+                // clip infinite pushed to both the front and back of this queue.
                 // remove() then insert() here is inefficient .. but will only be done
                 // once during init(). clip_finite() is a common operation.
                 std::mem::swap(&mut self.vectors[p0 + 1], &mut Coord { x: ydiff, y: xdiff });
@@ -348,7 +348,7 @@ where
             }
         }
     }
-    //  cellPolgons*() is a generator which rustlang does not support.
+    //  cellPolygons*() is a generator which rustlang does not support.
     // in tests this is implemented as a for loop using cell_polygon().
 
     /// Returns a vec points that for a voronoi cell.
@@ -389,7 +389,7 @@ where
         self.delaunay.step(i, p) == i
     }
 
-    // TODO place neighbours* here() rustlang does not yet support generator functions.
+    // TODO place neighbors* here() rustlang does not yet support generator functions.
 
     fn cell(&self, i: usize) -> Option<VecDeque<Coord<T>>> {
         let e0 = self.delaunay.inedges[i];
