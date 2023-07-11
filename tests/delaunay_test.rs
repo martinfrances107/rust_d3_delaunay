@@ -289,7 +289,7 @@ mod delaunay_test {
     // });
 
     #[test]
-    fn find_x_y_returns_index_for_speficied_point() {
+    fn find_x_y_returns_index_for_specified_point() {
         println!(
             "delaunay.find(x, y) returns the index of the cell that contains the specified point"
         );
@@ -334,8 +334,8 @@ mod delaunay_test {
         // TODO must complete this test when update() is implemented.
         // delaunay.points.fill(Coord { x: 0., y: 0. });
         // delaunay.update();
-        // assert_eq(delaynay.find(&Coord { x: 0., y: -1 }, None), 0);
-        // assert_eq(delaynay.find(&Coord { x: 0., y: 1.2 }, None), 0);
+        // assert_eq(delaunay.find(&Coord { x: 0., y: -1 }, None), 0);
+        // assert_eq(delaunay.find(&Coord { x: 0., y: 1.2 }, None), 0);
     }
 
     #[test]
@@ -441,7 +441,7 @@ mod delaunay_test {
     // });
 
     #[test]
-    fn delaunay_find_tranverses_the_convex_hull() {
+    fn delaunay_find_transverses_the_convex_hull() {
         println!("delaunay.find(x, y, i) traverses the convex hull");
         let points = vec![
             Coord {
