@@ -20,7 +20,7 @@ pub(super) type Bounds<T> = (T, T, T, T);
 
 /// Data stores for a voronoi mesh.
 #[derive(Debug)]
-pub struct Voronoi<PROJECTOR, T>
+pub struct Voronoi<T>
 where
     T: CoordFloat,
 {
@@ -29,7 +29,7 @@ where
     /// These circumcenters form the coordinates of the Voronoi cell polygons.
     pub circumcenters: Vec<Coord<T>>,
     /// The delaunay triangulation.
-    pub delaunay: Delaunay<PROJECTOR, T>,
+    pub delaunay: Delaunay<T>,
     /// A Vec<v0, v0, w0, w0, …> where each non-zero quadruple describes an open (infinite) cell on the outer hull,
     ///  giving the directions of two open half-lines.
     pub vectors: Vec<Coord<T>>,
@@ -43,7 +43,7 @@ where
     pub ymax: T,
 }
 
-impl<PROJECTOR, T> Voronoi<PROJECTOR, T>
+impl<T> Voronoi<T>
 where
     T: CoordFloat + FloatConst + FromPrimitive,
 {
@@ -52,7 +52,7 @@ where
     /// # Panics
     ///  Will never happen as constants will always be converted into T.
     #[allow(clippy::similar_names)]
-    pub fn new(delaunay: Delaunay<PROJECTOR, T>, bounds: Option<Bounds<T>>) -> Self {
+    pub fn new(delaunay: Delaunay<T>, bounds: Option<Bounds<T>>) -> Self {
         let (xmin, ymin, xmax, ymax) = bounds.map_or_else(
             || {
                 (

@@ -31,7 +31,7 @@ type FnTransform<T> = Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>;
 /// Wrapper stores data associated with delaunator Triangulation.
 ///
 /// `hull` and `half_edge` data.
-pub struct Delaunay<PROJECTOR, T>
+pub struct Delaunay<T>
 where
     T: CoordFloat,
 {
@@ -55,12 +55,11 @@ where
     /// The coordinates of a point as an vector.
     pub points: Vec<Coord<T>>,
 
-    pub projection: Option<PROJECTOR>,
     pub fx: FnTransform<T>,
     pub fy: FnTransform<T>,
 }
 
-impl<PROJECTOR, T> Debug for Delaunay<PROJECTOR, T>
+impl<T> Debug for Delaunay<T>
 where
     T: CoordFloat,
 {
@@ -76,14 +75,14 @@ where
     }
 }
 
-impl<PROJECTOR, T> Delaunay<PROJECTOR, T>
+impl<T> Delaunay<T>
 where
     T: CoordFloat + FloatConst + FromPrimitive,
 {
     /// # Panics
     /// unwrap() is used here but a panic will never happen as T will always be converted into f64.
     ///
-    /// Computes a delanay triangularization and stores the results.
+    /// Computes a delaunay triangulation and stores the results.
     pub fn new(points: &[Coord<T>]) -> Self {
         // conversion into delaunay point!!!
         let d_point_in: Vec<DPoint> = points
@@ -95,7 +94,7 @@ where
             .collect();
 
         // TODO breaking API change if all points are collinear
-        // now returning a special triangulaization where
+        // now returning a special triangulation where
         // all point are on the hull... I am not sure about the
         // implications of this yet.?????
         let delaunator = triangulate(&d_point_in);
@@ -118,7 +117,6 @@ where
             hull_index: Vec::with_capacity(points.len() / 2),
             points: points.to_vec(),
             half_edges: Vec::new(),
-            projection: None,
             fx: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.x()),
             fy: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.y()),
             triangles: Vec::new(),
@@ -130,8 +128,8 @@ where
     }
 
     #[inline]
-    /// Use the stored delaunay mesh data to compute the assoicated voronoi mesh.
-    pub fn voronoi(self, bounds: Option<Bounds<T>>) -> Voronoi<PROJECTOR, T> {
+    /// Use the stored delaunay mesh data to compute the associated voronoi mesh.
+    pub fn voronoi(self, bounds: Option<Bounds<T>>) -> Voronoi<T> {
         Voronoi::new(self, bounds)
     }
 
@@ -183,7 +181,7 @@ where
                 .collect();
 
             // TODO breaking API change if all points are collinear
-            // now returning a special triangulaization where
+            // now returning a special triangulation where
             // all point are on the hull... I am not sure about the
             // implications of this yet.?????
             self.delaunator = triangulate(&d_point_in);
@@ -245,7 +243,7 @@ where
         }
     }
 
-    // fn neighbours(&self, i: usize) {
+    // fn neighbors(&self, i: usize) {
     //     let g = Gn::new_scoped(move |s| {
     //         // degenerate case with several collinear points
     //         if self.collinear.is_empty() {
@@ -349,7 +347,7 @@ where
         c
     }
 
-    // TODO Mising functions :-
+    // TODO Missing functions :-
     // fn render()
     // render(&self, context: &mut impl RenderingContext2d<T>)
 
@@ -392,6 +390,7 @@ where
     /// render() has been spit into two functions.
     /// rust expects variable type to be determined statically.
     /// 'context' cannot be either a Path type of a `RenderingContext2d`.
+    #[must_use]
     pub fn render_hull_to_string(&self) -> String
     where
         T: CoordFloat + Display,

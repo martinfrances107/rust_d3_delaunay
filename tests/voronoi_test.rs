@@ -15,9 +15,9 @@ mod voronoi_test {
     use d3_geo_rs::stream::DrainStub;
 
     type ProjectorStub = ProjectorAntimeridianResampleClip<DrainStub<f64>, Gnomic<f64>, f64>;
-    type DelaunayStub = Delaunay<ProjectorStub, f64>;
+    type DelaunayStub = Delaunay<f64>;
 
-    type VoronoiStub = Voronoi<ProjectorStub, f64>;
+    type VoronoiStub = Voronoi<f64>;
 
     #[test]
     fn simple() {

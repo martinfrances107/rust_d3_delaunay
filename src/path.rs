@@ -39,7 +39,7 @@ where
     }
 }
 
-// Really only want ToString, but as discusssed here
+// Really only want ToString, but as discussed here
 //
 // https://doc.rust-lang.org/std/fmt/trait.Display.html
 //
@@ -60,19 +60,19 @@ where
     fn move_to(&mut self, p: &Coord<T>) {
         self.p0 = *p;
         self.p1 = Some(*p);
-        write!(self.s, "M{},{}", p.x, p.y).expect("cannot apppend to buffer");
+        write!(self.s, "M{},{}", p.x, p.y).expect("cannot append to buffer");
     }
 
     fn close_path(&mut self) {
         if self.p1.is_some() {
             self.p1 = Some(self.p0);
-            write!(self.s, "Z").expect("cannot apppend to buffer");
+            write!(self.s, "Z").expect("cannot append to buffer");
         }
     }
 
     fn line_to(&mut self, p: &Coord<T>) {
         self.p1 = Some(*p);
-        write!(self.s, "L{},{}", p.x, p.y).expect("cannot apppend to buffer");
+        write!(self.s, "L{},{}", p.x, p.y).expect("cannot append to buffer");
     }
 
     fn arc(&mut self, p: &Coord<T>, r: T, _start: T, _stop: T) {
@@ -84,7 +84,7 @@ where
         match &self.p1 {
             Some(p1) => {
                 if (p1.x - x0).abs() > self.epsilon || (p1.y - y0).abs() > self.epsilon {
-                    write!(self.s, "L{x0},{y0}").expect("cannot apppend to buffer");
+                    write!(self.s, "L{x0},{y0}").expect("cannot append to buffer");
                 }
                 if r == T::zero() {
                     return;
@@ -102,10 +102,10 @@ where
                     self.p0.x,
                     self.p0.y
                 )
-                .expect("cannot apppend to buffer");
+                .expect("cannot append to buffer");
             }
             _ => {
-                write!(self.s, "M{x0},{y0}").expect("cannot apppend to buffer");
+                write!(self.s, "M{x0},{y0}").expect("cannot append to buffer");
             }
         }
     }
@@ -113,6 +113,6 @@ where
     fn rect(&mut self, p: &Coord<T>, w: T, h: T) {
         self.p0 = *p;
         self.p1 = Some(*p);
-        write!(self.s, "M{},{},{w}h{h}v{h}h{}Z", p.x, p.y, -w).expect("cannot apppend to buffer");
+        write!(self.s, "M{},{},{w}h{h}v{h}h{}Z", p.x, p.y, -w).expect("cannot append to buffer");
     }
 }
