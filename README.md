@@ -16,9 +16,9 @@ This is a port of [d3-delaunay](https://github.com/d3/d3-delaunay). It is in a v
 
 It is part of a collection d3 modules ported into RUST
 
-* [rust_d3_geo](https://github.com/martinfrances107/rust_d3_geo)
+* [rust_d3_geo](https://crates.io/crates/d3_geo_rs)
 * rust_d3_delaunay
-* [rust_d3_geo_voronoi](https://github.com/martinfrances107/rust_d3_geo_voronoi)
+* [rust_d3_geo_voronoi](https://crates.io/crates/d3_geo_voronoi_rs)
 
 Currently the code coverage, as reported by Cargo tarpaulin is 80%.
 
