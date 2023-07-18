@@ -10,11 +10,7 @@ mod delaunay_test {
     use d3_delaunay_rs::delaunay::Delaunay;
     use d3_delaunay_rs::path::Path;
     use d3_delaunay_rs::voronoi::Voronoi;
-    use d3_geo_rs::projection::gnomic::Gnomic;
-    use d3_geo_rs::projection::projector_commom::types::ProjectorAntimeridianResampleClip;
-    use d3_geo_rs::stream::DrainStub;
 
-    type ProjectorStub = ProjectorAntimeridianResampleClip<DrainStub<f64>, Gnomic<f64>, f64>;
     type DelaunayStub = Delaunay<f64>;
 
     type VoronoiStub = Voronoi<f64>;
