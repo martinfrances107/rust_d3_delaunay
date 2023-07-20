@@ -1,10 +1,10 @@
 [package]
 authors = ["martin frances <martinfrances107@hotmail.com>"]
-categories = ["graphics"]
+categories = ["graphics", "Mathematics"]
 description = "A port of D3/d3-delauany"
 edition = "2021"
 license = "MIT"
-keywords = ["graphics", "d3-delauany"]
+keywords = ["diagram", "delauany", "graphics"]
 name = "d3_delaunay_rs"
 repository = "https://github.com/martinfrances107/rust_d3_delaunay"
 version = "0.6.1"
