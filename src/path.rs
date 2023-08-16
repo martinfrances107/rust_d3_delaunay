@@ -10,7 +10,7 @@ use geo_types::Coord;
 use super::CanvasRenderingContext2d;
 
 #[derive(Clone, Debug)]
-/// Produces a string into response to `RendingContext2d` API calls.
+/// Produces a string into response to [`CanvasRenderingContext2d`] API calls.
 pub struct Path<T>
 where
     T: CoordFloat,

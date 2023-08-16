@@ -256,7 +256,7 @@ where
     /// Wrapper function - a departure from the javascript version.
     /// render() has been spit into two functions.
     /// rust expects variable type to be determined statically
-    /// 'context' cannot be either a Path type of a `RenderingContext2d`.
+    /// 'context' cannot be either a Path type of a [`CanvasRenderingContext2d`].
     pub fn render_to_string(&self) -> String
     where
         T: CoordFloat + Display,
@@ -315,7 +315,7 @@ where
         path.to_string()
     }
 
-    /// Renders bounds to  a [`CanvasRenderingContext2d`].
+    /// Renders bounds to a [`CanvasRenderingContext2d`].
     pub fn render_bounds(&self, context: &mut impl CanvasRenderingContext2d<T>) {
         context.rect(
             &Coord {
