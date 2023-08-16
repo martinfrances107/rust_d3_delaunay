@@ -321,4 +321,79 @@ mod voronoi_test {
     //     Object.assign([[0, 1], [1, 0], [2, 0], [2, 2], [0, 2], [0, 1]], { index: 2 })
     //   ]);
     // });
+
+    #[ignore]
+    #[test]
+    fn generates_a_cross_pattern() {
+        println!("pattern produces a cross");
+
+        let points = [
+            Coord {
+                x: 25_f64,
+                y: 25_f64,
+            },
+            Coord {
+                x: 25_f64,
+                y: 75_f64,
+            },
+            Coord {
+                x: 75_f64,
+                y: 75_f64,
+            },
+            Coord {
+                x: 75_f64,
+                y: 25f64,
+            },
+            Coord {
+                x: 50_f64,
+                y: 50_f64,
+            },
+        ];
+
+        let delaunay = Delaunay::new(&points);
+        // assert_eq!(
+        //     delaunay.render_points_to_string(Some(4_f64)),
+        //     String::from("M-1,2L-1,0.5L0.5,0.5L2,2Z")
+        // );
+
+        assert_eq!(
+            delaunay.render_to_string(),
+            String::from(
+                "M50,50L25,25M25,75L50,50M75,75L50,50M75,25L50,50M75,75L75,25L25,25L25,75Z"
+            )
+        );
+
+        let voronoi = delaunay.voronoi(Some((0_f64, 0_f64, 100_f64, 100_f64)));
+
+        assert_eq!(
+            voronoi.render_to_string(),
+            // String::from("M25,50L50,25M25,50L50,75M50,75L75,50M75,50L50,25M50,75L50,100M75,50L100,50M50,25L50,0M25,50L0,50")
+               String::from("M25,50L50,75M25,50L50,25M50,75L75,50M50,25L75,50M50,75L50,100M75,50L100,50M50,25L50,0M25,50L0,25")
+        );
+
+        assert_eq!(voronoi.render_to_string(), String::from("fail"));
+    }
+
+    // This test in not in the original
+    //
+    // it("pattern produces a cross", () => {
+    //   const points = [
+    //     [25, 25],
+    //     [25, 75],
+    //     [75, 75],
+    //     [75, 25],
+    //     [50, 50],
+    //   ];
+
+    //   const delaunay = Delaunay.from(points);
+    //   const voronoi = delaunay.voronoi([0, 0, 100, 100]);
+    //   // let context1 = new Context;
+    //   // assert.strictEqual((delaunay.renderPoints(context1, 4), context1.toString()), `M-1,-1L0.5,-1L0.5,0.5L-1,0.5Z`);
+    //   let context2 = new Context;
+    //   assert.strictEqual((delaunay.render(context2), context2.toString()), `M50,50L25,25M25,75L50,50M75,75L50,50M75,25L50,50M75,75L75,25L25,25L25,75Z`);
+    //   let context3 = new Context;
+    //   assert.strictEqual((voronoi.render(context3), context3.toString()), `M25,50L50,25M25,50L50,75M50,75L75,50M75,50L50,25M50,75L50,100M75,50L100,50M50,25L50,0M25,50L0,50`);
+    //   // let context4 = new Context;
+    //   // assert.strictEqual((voronoi.renderBounds(context4), context4.toString()), `x`);
+    // })
 }

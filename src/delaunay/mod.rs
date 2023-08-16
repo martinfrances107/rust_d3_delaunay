@@ -347,9 +347,31 @@ where
         c
     }
 
-    // TODO Missing functions :-
-    // fn render()
-    // render(&self, context: &mut impl RenderingContext2d<T>)
+    /// Returns the delaunay mesh as a string.
+    pub fn render_to_string(&self) -> String
+    where
+        T: CoordFloat + Display,
+    {
+        let mut path = Path::<T>::default();
+        self.render(&mut path);
+        path.to_string()
+    }
+
+    /// Appends the delaunay mesh to the context.
+    pub fn render(&self, context: &mut impl CanvasRenderingContext2d<T>) {
+        for i in 0..self.half_edges.len() {
+            let j = self.half_edges[i];
+            if j < i || j == EMPTY {
+                continue;
+            };
+            let ti = self.triangles[i];
+            let tj = self.triangles[j];
+
+            context.move_to(&self.points[ti]);
+            context.line_to(&self.points[tj]);
+        }
+        self.render_hull(context)
+    }
 
     /// Output the hull to a string.
     ///
