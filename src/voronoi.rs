@@ -15,8 +15,8 @@ use super::path::Path;
 use super::polygon::Polygon;
 use super::CanvasRenderingContext2d;
 
-// xmin, ymin, xmax, ymax.
-pub(super) type Bounds<T> = (T, T, T, T);
+/// xmin, ymin, xmax, ymax.
+pub type Bounds<T> = (T, T, T, T);
 
 /// Data stores for a voronoi mesh.
 #[derive(Debug)]
@@ -302,8 +302,25 @@ where
         }
     }
 
-    // TODO implement render_bounds()
+    pub fn render_bounds_to_string(&self) -> String
+    where
+        T: CoordFloat + Display,
+    {
+        let mut path = Path::<T>::default();
+        self.render_bounds(&mut path);
+        path.to_string()
+    }
 
+    pub fn render_bounds(&self, context: &mut impl CanvasRenderingContext2d<T>) {
+        context.rect(
+            &Coord {
+                x: self.xmin,
+                y: self.ymin,
+            },
+            self.xmax - self.xmin,
+            self.ymax - self.ymin,
+        );
+    }
     /// Wrapper function - a departure from the javascript version.
     /// `render_cell()` has been spit into two functions.
     /// rust expects variable type to be determined statically
