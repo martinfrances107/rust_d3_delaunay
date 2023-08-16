@@ -113,6 +113,6 @@ where
     fn rect(&mut self, p: &Coord<T>, w: T, h: T) {
         self.p0 = *p;
         self.p1 = Some(*p);
-        write!(self.s, "M{},{},{w}h{h}v{h}h{}Z", p.x, p.y, -w).expect("cannot append to buffer");
+        write!(self.s, "M{},{}h{w}v{h}h{}Z", p.x, p.y, -w).expect("cannot append to buffer");
     }
 }
