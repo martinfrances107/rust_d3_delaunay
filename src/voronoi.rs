@@ -302,6 +302,10 @@ where
         }
     }
 
+    /// Wrapper function - a departure from the javascript version.
+    /// `render_bounds()` has been spit into two functions.
+    /// rust expects variable type to be determined statically
+    /// 'context' cannot be either a [`super::path::Path`] or something that implements [`CanvasRenderingContext2d`].
     pub fn render_bounds_to_string(&self) -> String
     where
         T: CoordFloat + Display,
@@ -324,7 +328,7 @@ where
     /// Wrapper function - a departure from the javascript version.
     /// `render_cell()` has been spit into two functions.
     /// rust expects variable type to be determined statically
-    /// 'context' cannot be either a Path type of a `RenderingContext2d`.
+    /// 'context' cannot be either a [`super::path::Path`] type of a [`CanvasRenderingContext2d`].
     pub fn render_cell_to_string(&self, i: usize) -> String
     where
         T: CoordFloat + Display + FloatConst,
@@ -334,7 +338,7 @@ where
         path.to_string()
     }
 
-    /// Renders cells of the voronoi mesh to a context.
+    /// Renders cells of the voronoi mesh to a [`CanvasRenderingContext2d`].
     pub fn render_cell(&self, i: usize, context: &mut impl CanvasRenderingContext2d<T>)
     where
         T: CoordFloat + Display,
