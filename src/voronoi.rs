@@ -315,6 +315,7 @@ where
         path.to_string()
     }
 
+    /// Renders bounds to  a [`CanvasRenderingContext2d`].
     pub fn render_bounds(&self, context: &mut impl CanvasRenderingContext2d<T>) {
         context.rect(
             &Coord {
