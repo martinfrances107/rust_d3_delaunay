@@ -1,7 +1,7 @@
 [workspace]
-resolver = "2"
-members = ["./lib", "examples/cross_pattern"]
+members = ["./lib", "examples/cross_pattern", "examples/n_points"]
 
+resolver = "2"
 [workspace.package]
 authors = ["martin frances <martinfrances107@hotmail.com>"]
 edition = "2021"

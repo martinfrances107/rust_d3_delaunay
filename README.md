@@ -16,11 +16,32 @@ This is a port of [d3-delaunay](https://github.com/d3/d3-delaunay). It is in a v
 
 It is part of a collection d3 modules ported into RUST
 
-* [rust_d3_geo](https://crates.io/crates/d3_geo_rs)
-* rust_d3_delaunay
-* [rust_d3_geo_voronoi](https://crates.io/crates/d3_geo_voronoi_rs)
+* [d3_geo_rs](https://crates.io/crates/d3_geo_rs)
+* d3_delaunay_rs
+* [d3_geo_voronoi_rs](https://crates.io/crates/d3_geo_voronoi_rs)
 
 Currently the code coverage, as reported by Cargo tarpaulin is 80%.
+
+An example app is provided in the git repository associated with crate
+
+
+# examples/500_points
+
+
+to run the application
+
+```console
+cd example/500_points
+cargo run
+```
+
+This produces a file "mesh.svg"
+
+The delaunay mesh is in green.
+The voronoi mesh is in blue.
+
+<image src ="https://github.com/martinfrances107/rust_d3_delaunay/tree/main/images/500_points.svg" >
+
 
 ## Phase 1
 
