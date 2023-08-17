@@ -400,7 +400,7 @@ where
 
             if let Some(s) = s {
                 context.move_to(&s[0]);
-                context.line_to(&s[2]);
+                context.line_to(&s[1]);
             }
         }
     }
