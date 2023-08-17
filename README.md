@@ -37,8 +37,8 @@ cargo run
 
 This produces a file "mesh.svg"
 
-The delaunay mesh is in green.
-The voronoi mesh is in blue.
+The delaunay mesh is in blue.
+The voronoi mesh is in green.
 
 ![alt](https://raw.githubusercontent.com/martinfrances107/rust_d3_delaunay/main/images/500_points.svg)
 

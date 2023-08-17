@@ -46,29 +46,24 @@ fn main() -> std::io::Result<()> {
     // fill the unit square with points
     let points = (0..args.n_points)
         .map(|_| Coord {
-            x: 99_f64 * rng.gen::<f64>(),
-            y: 99_f64 * rng.gen::<f64>(),
+            x: 96_f64 * rng.gen::<f64>() + 2_f64,
+            y: 96_f64 * rng.gen::<f64>() + 2_f64,
         })
         .collect::<Vec<_>>();
 
     let delaunay = Delaunay::new(&points);
     let data_points = delaunay.render_points_to_string(Some(0.1_f64));
 
-    // Output points used to generate the delaunay points. ( red )
-    file.write_all(b"  <path stroke=\"red\" stroke-width=\"1px\" d=\"")?;
-    file.write_all(data_points.as_bytes())?;
-    file.write_all(b"\"/>\n")?;
-
     // Output the delaunay mesh. ( green )
     let data_delaunay = delaunay.render_to_string();
-    file.write_all(b"  <path stroke=\"green\" fill=\"none\" stroke-width=\"0.2px\" d=\"")?;
+    file.write_all(b"  <path stroke=\"blue\" fill=\"none\" stroke-width=\"0.2px\" d=\"")?;
     file.write_all(data_delaunay.as_bytes())?;
     file.write_all(b"\"/>\n")?;
 
     let voronoi = delaunay.voronoi(Some((0_f64, 0_f64, 100_f64, 100_f64)));
     // Output voronoi mesh. ( blue )
     let data_voronoi = voronoi.render_to_string();
-    file.write_all(b"  <path stroke=\"blue\" fill=\"none\" stroke-width=\"0.2px\" d=\"")?;
+    file.write_all(b"  <path stroke=\"green\" fill=\"none\" stroke-width=\"0.2px\" d=\"")?;
     file.write_all(data_voronoi.as_bytes())?;
     file.write_all(b"\"/>\n")?;
 
@@ -77,6 +72,12 @@ fn main() -> std::io::Result<()> {
     file.write_all(b"  <path stroke=\"white\" fill=\"none\" stroke-width=\"0.2px\" d=\"")?;
     file.write_all(data_bounds.as_bytes())?;
     file.write_all(b"\"/>\n")?;
+
+    // Output points used to generate the delaunay points. ( red )
+    file.write_all(b"  <path fill=\"red\" stroke=\"red\" stroke-width=\"1px\" d=\"")?;
+    file.write_all(data_points.as_bytes())?;
+    file.write_all(b"\"/>\n")?;
+
     // Close.
     file.write_all(b"</svg>")?;
 
