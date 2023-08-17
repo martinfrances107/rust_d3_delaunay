@@ -1,7 +1,7 @@
 #![allow(clippy::pedantic)]
 #[cfg(not(tarpaulin_include))]
 #[cfg(test)]
-mod voronoi_test {
+mod voronoi {
     extern crate pretty_assertions;
 
     use geo_types::Coord;

@@ -1,6 +1,6 @@
 #[cfg(not(tarpaulin_include))]
 #[cfg(test)]
-mod delaunay_test {
+mod delaunay {
     extern crate pretty_assertions;
 
     use delaunator::EMPTY;
