@@ -40,7 +40,7 @@ This produces a file "mesh.svg"
 The delaunay mesh is in green.
 The voronoi mesh is in blue.
 
-<image src ="https://github.com/martinfrances107/rust_d3_delaunay/tree/main/images/500_points.svg" >
+![alt](https://raw.githubusercontent.com/martinfrances107/rust_d3_delaunay/main/images/500_points.svg)
 
 
 ## Phase 1
