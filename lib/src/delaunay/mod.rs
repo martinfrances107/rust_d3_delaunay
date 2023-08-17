@@ -98,18 +98,6 @@ where
         // all point are on the hull... I am not sure about the
         // implications of this yet.?????
         let delaunator = triangulate(&d_point_in);
-        // let delaunator = match triangulate(&d_point_in) {
-        //     Some(d) => d,
-        //     None => {
-        //         // When triangulation fails the javascript response
-        //         // is mostly empty but hull has an value.
-        //         Triangulation {
-        //             triangles: Vec::new(),
-        //             halfedges: Vec::new(),
-        //             hull: (0..d_point_in.len()).collect(),
-        //         }
-        //     }
-        // };
 
         let mut out = Self {
             delaunator,
@@ -198,7 +186,6 @@ where
             //     }
             // };
         } else {
-            // colinear_vec.clear();
         }
         self.half_edges = self.delaunator.halfedges.clone();
 
@@ -236,9 +223,9 @@ where
             self.triangles[0] = self.delaunator.hull[0];
             self.inedges[self.delaunator.hull[0]] = 1;
             if self.delaunator.hull.len() == 2 {
+                self.inedges[self.delaunator.hull[1]] = 0;
                 self.triangles[1] = self.delaunator.hull[1];
                 self.triangles[2] = self.delaunator.hull[1];
-                self.inedges[self.delaunator.hull[1]] = 0;
             }
         }
     }

@@ -322,7 +322,6 @@ mod voronoi {
     //   ]);
     // });
 
-    #[ignore]
     #[test]
     fn generates_a_cross_pattern() {
         println!("pattern produces a cross");
@@ -359,7 +358,7 @@ mod voronoi {
         assert_eq!(
             delaunay.render_to_string(),
             String::from(
-                "M50,50L25,25M25,75L50,50M75,75L50,50M75,25L50,50M75,75L75,25L25,25L25,75Z"
+                "M25,75L50,50M50,50L25,25M75,75L50,50M50,50L75,25M75,75L75,25L25,25L25,75Z"
             )
         );
 
@@ -367,11 +366,10 @@ mod voronoi {
 
         assert_eq!(
             voronoi.render_to_string(),
-            // String::from("M25,50L50,25M25,50L50,75M50,75L75,50M75,50L50,25M50,75L50,100M75,50L100,50M50,25L50,0M25,50L0,50")
-               String::from("M25,50L50,75M25,50L50,25M50,75L75,50M50,25L75,50M50,75L50,100M75,50L100,50M50,25L50,0M25,50L0,25")
+               String::from("M25,50L50,75M25,50L50,25M50,75L75,50M50,25L75,50M50,75L50,100M75,50L100,50M50,25L50,0M25,50L0,50")
         );
 
-        assert_eq!(voronoi.render_to_string(), String::from("fail"));
+        // assert_eq!(voronoi.render_to_string(), String::from("fail"));
     }
 
     // This test in not in the original

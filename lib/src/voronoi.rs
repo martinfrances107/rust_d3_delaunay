@@ -832,7 +832,7 @@ where
             if c < t {
                 x = self.xmin;
                 t = c;
-                y = p0.x + t * vy;
+                y = p0.y + t * vy;
             }
         }
         Some(Coord { x, y })

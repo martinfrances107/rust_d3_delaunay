@@ -30,19 +30,12 @@ fn main() -> std::io::Result<()> {
     let mut rng = rand::thread_rng();
 
     // fill the unit square with points
-    let points = (0..N_POINTS)
+    let _points = (0..N_POINTS)
         .map(|_| Coord {
             x: 100_f64 * rng.gen::<f64>(),
             y: 100_f64 * rng.gen::<f64>(),
         })
         .collect::<Vec<_>>();
-    // let points = vec![
-    //     Coord {
-    //         x: -20.0_f64,
-    //         y: 20.0_f64,
-    //     },
-    //     Coord { x: 20., y: 20. },
-    // ];
     let points = vec![
         Coord { x: 25f64, y: 25f64 },
         Coord { x: 25f64, y: 75f64 },
@@ -50,7 +43,6 @@ fn main() -> std::io::Result<()> {
         Coord { x: 75f64, y: 25f64 },
         Coord { x: 50f64, y: 50f64 },
     ];
-    // println!("{:?}", &points);
     let delaunay = Delaunay::new(&points);
     let data_points = delaunay.render_points_to_string(Some(0.1_f64));
 
@@ -68,7 +60,6 @@ fn main() -> std::io::Result<()> {
     let voronoi = delaunay.voronoi(Some((0_f64, 0_f64, 100_f64, 100_f64)));
     // Output voronoi mesh. ( blue )
     let data_voronoi = voronoi.render_to_string();
-    // println!("{}", &data_voronoi);
     file.write_all(b"  <path stroke=\"blue\" fill=\"none\" stroke-width=\"0.2px\" d=\"")?;
     file.write_all(data_voronoi.as_bytes())?;
     file.write_all(b"\"/>\n")?;
