@@ -348,6 +348,7 @@ where
     }
 
     /// Returns the delaunay mesh as a string.
+    #[must_use]
     pub fn render_to_string(&self) -> String
     where
         T: CoordFloat + Display,
@@ -370,7 +371,7 @@ where
             context.move_to(&self.points[ti]);
             context.line_to(&self.points[tj]);
         }
-        self.render_hull(context)
+        self.render_hull(context);
     }
 
     /// Output the hull to a string.

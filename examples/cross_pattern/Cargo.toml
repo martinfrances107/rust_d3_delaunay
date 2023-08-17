@@ -1,8 +1,10 @@
 [package]
 authors = ["martin <martinfrances107@hotmail.com>"]
-edition = "2021"
+edition = { workspace = true }
 keywords = ["demo", "graphics"]
 license = "MIT"
+categories = ["graphics"]
+description = "A example app demonstrating a simple pattern derived from 5 points."
 name = "cross_pattern"
 readme = "README.md"
 repository = "https://github.com/martinfrances107/rust_d3_geo"
@@ -13,7 +15,7 @@ rust-version = "1.65"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-d3_delaunay_rs = { path = "../../" }
+d3_delaunay_rs = { path = "../../lib" }
 geo = "~0.26"
 svg = "~0.13"
 geo-types = "~0.7"
