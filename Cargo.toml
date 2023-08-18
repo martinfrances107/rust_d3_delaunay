@@ -1,5 +1,10 @@
 [workspace]
-members = ["./lib", "examples/cross_pattern", "examples/n_points"]
+members = [
+  "./lib",
+  "examples/cross_pattern",
+  "examples/n_points",
+  "examples/triangulation",
+]
 
 resolver = "2"
 [workspace.package]
@@ -17,3 +22,4 @@ geo = "~0.26"
 geo-types = "~0.7"
 num-traits = "~0.2"
 pretty_assertions = "~1"
+generator = "0.7"

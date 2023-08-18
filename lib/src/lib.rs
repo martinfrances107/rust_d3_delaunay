@@ -29,13 +29,13 @@ where
     T: CoordFloat,
 {
     /// draws an arc.
-    fn arc(&mut self, p: &Coord<T>, r: T, start: T, stop: T);
+    fn arc(&mut self, _p: &Coord<T>, _r: T, _start: T, _stop: T) {}
     /// signals path is closed.
-    fn close_path(&mut self);
+    fn close_path(&mut self) {}
     /// draws line from current point to p specified.
-    fn line_to(&mut self, p: &Coord<T>);
+    fn line_to(&mut self, _p: &Coord<T>) {}
     /// Sets the current point.
-    fn move_to(&mut self, p: &Coord<T>);
+    fn move_to(&mut self, _p: &Coord<T>) {}
     /// draw rectangle.
-    fn rect(&mut self, p: &Coord<T>, w: T, h: T);
+    fn rect(&mut self, _p: &Coord<T>, _w: T, _h: T) {}
 }

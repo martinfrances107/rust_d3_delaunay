@@ -9,24 +9,26 @@ use core::fmt::Display;
 
 use colinear::colinear;
 use colinear::Tri;
-
 use delaunator::triangulate;
 use delaunator::Point as DPoint;
 use delaunator::Triangulation;
 use delaunator::EMPTY;
+use generator::done;
+use generator::Generator;
+use generator::Gn;
 use geo::CoordFloat;
-use geo::Point;
 use geo_types::Coord;
 use jitter::jitter;
 use num_traits::float::FloatConst;
 use num_traits::FromPrimitive;
 
 use crate::path::Path;
+use crate::polygon::Polygon;
 use crate::voronoi::Bounds;
 use crate::voronoi::Voronoi;
 use crate::CanvasRenderingContext2d;
 
-type FnTransform<T> = Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>;
+// type FnTransform<T> = Box<dyn Fn(Point<T>, usize, Vec<Point<T>>) -> T>;
 
 /// Wrapper stores data associated with delaunator Triangulation.
 ///
@@ -54,9 +56,8 @@ where
     pub triangles: Vec<usize>,
     /// The coordinates of a point as an vector.
     pub points: Vec<Coord<T>>,
-
-    pub fx: FnTransform<T>,
-    pub fy: FnTransform<T>,
+    // pub fx: FnTransform<T>,
+    // pub fy: FnTransform<T>,
 }
 
 impl<T> Debug for Delaunay<T>
@@ -105,8 +106,8 @@ where
             hull_index: Vec::with_capacity(points.len() / 2),
             points: points.to_vec(),
             half_edges: Vec::new(),
-            fx: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.x()),
-            fy: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.y()),
+            // fx: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.x()),
+            // fy: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.y()),
             triangles: Vec::new(),
         };
 
@@ -345,7 +346,7 @@ where
         path.to_string()
     }
 
-    /// Appends the delaunay mesh to the context.
+    /// Dumps the delaunay mesh to the [`CanvasRenderingContext2d`].
     pub fn render(&self, context: &mut impl CanvasRenderingContext2d<T>) {
         for i in 0..self.half_edges.len() {
             let j = self.half_edges[i];
@@ -366,7 +367,7 @@ where
     /// Wrapper function - a departure from the javascript version.
     /// render() has been spit into two functions.
     /// rust expects variable type to be determined statically.
-    /// 'context' cannot be either a Path type of a `RenderingContext2d`.
+    /// 'context' cannot be either a Path type of a [`CanvasRenderingContext2d`].
     pub fn render_points_to_string(&self, r: Option<T>) -> String
     where
         T: CoordFloat + Display,
@@ -399,7 +400,7 @@ where
     /// Wrapper function - a departure from the javascript version.
     /// render() has been spit into two functions.
     /// rust expects variable type to be determined statically.
-    /// 'context' cannot be either a Path type of a `RenderingContext2d`.
+    /// 'context' cannot be either a Path type of a [`CanvasRenderingContext2d`].
     #[must_use]
     pub fn render_hull_to_string(&self) -> String
     where
@@ -410,7 +411,7 @@ where
         path.to_string()
     }
 
-    /// Dumps the hull to the render context.
+    /// Dumps the hull to the [`CanvasRenderingContext2d`].
     pub fn render_hull(&self, context: &mut impl CanvasRenderingContext2d<T>) {
         let h = self.delaunator.hull[0];
         let n = self.delaunator.hull.len();
@@ -422,7 +423,61 @@ where
         context.close_path();
     }
 
-    // TODO hullPolygon
-    // TODO renderTriangle
-    // TODO trianglePolygon
+    /// Returns the hull as series of [`Coord`]'s
+    #[must_use]
+    pub fn hull_polygon(&self) -> Vec<Coord<T>> {
+        let mut polygon = Polygon::default();
+        self.render_hull(&mut polygon);
+        polygon.0
+    }
+}
+
+/// Generator and helper.
+impl<T> Delaunay<T>
+where
+    T: CoordFloat + Display + FloatConst + FromPrimitive + Send + Sync,
+{
+    /// Renders selected triangle into [`CanvasRenderingContext2d`]
+    pub fn render_triangle(&self, mut i: usize, context: &mut impl CanvasRenderingContext2d<T>) {
+        i *= 3;
+        let t0 = self.triangles[i];
+        let t1 = self.triangles[i + 1];
+        let t2 = self.triangles[i + 3];
+        context.move_to(&self.points[t0]);
+        context.move_to(&self.points[t1]);
+        context.move_to(&self.points[t2]);
+        context.close_path();
+    }
+
+    /// Deviation from javascript
+    /// `render_triangle` is split into two
+    /// idiomatic rust avoid multi-value context
+    #[must_use]
+    pub fn render_triangle_to_string(&self, i: usize) -> String
+    where
+        T: Display,
+    {
+        let mut path = Path::default();
+        self.render_triangle(i, &mut path);
+        path.to_string()
+    }
+
+    /// Returns a polygon representing the selected triangle.
+    #[must_use]
+    pub fn triangle_polygon(&self, i: usize) -> Polygon<T> {
+        let mut polygon = Polygon::default();
+        self.render_triangle(i, &mut polygon);
+        polygon
+    }
+
+    /// Returns a [`Generator`] that can be use to successively yield triangles.
+    #[must_use]
+    pub fn triangle_polygon_generator(&self) -> Generator<'_, (), Polygon<T>> {
+        Gn::new_scoped(move |mut s| {
+            for i in &self.triangles {
+                s.yield_with(self.triangle_polygon(*i));
+            }
+            done!();
+        })
+    }
 }

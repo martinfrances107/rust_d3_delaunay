@@ -55,12 +55,23 @@ API finalization. There maybe optimization in the area of generics. So the API o
 
 Modules, passing test ready for phase 2 evaluation :-
 
-## Other To-do's
+## Unimplemented generators
 
-This function used generators - which rust does not currently support.
+The following functions are under going rapid development.
 
-* Maybe I could use next() see  [iter](https://doc.rust-lang.org/rust-by-example/trait/iter.html)
-* Maybe [generator](https://crates.io/crates/generator) This routes would be a major breaking change
-  as it would require T to become Sync and Send.
+```rust
+impl<T> Delaunay<T> {
+    pub fn render_triangle(&self, mut i: usize, context: &mut impl CanvasRenderingContext2d<T>);
 
-Clippy report lots of documentation is missing.
+    pub fn render_triangle_to_string(&self, i: usize) -> String
+
+    pub fn triangle_polygon(&self, i: usize) -> Polygon<T>;
+
+    pub fn triangle_polygon_generator(&self) -> Generator<'_, (), Polygon<T>>;
+}
+```
+The following generators functions are missing.
+
+| delauany    |   | voronoi         |
+| ------------|---| --------------  |
+| neighbors() |   |  cellPolygons() |

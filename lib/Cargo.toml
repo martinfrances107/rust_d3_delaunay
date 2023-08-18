@@ -19,6 +19,7 @@ delaunator = "~1"
 geo = "~0.26"
 geo-types = "~0.7"
 num-traits = "~0.2"
+generator = "0.7"
 
 [dev-dependencies]
 pretty_assertions = "~1"
