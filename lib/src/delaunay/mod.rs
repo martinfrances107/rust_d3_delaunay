@@ -442,7 +442,7 @@ where
         i *= 3;
         let t0 = self.triangles[i];
         let t1 = self.triangles[i + 1];
-        let t2 = self.triangles[i + 3];
+        let t2 = self.triangles[i + 2];
         context.move_to(&self.points[t0]);
         context.move_to(&self.points[t1]);
         context.move_to(&self.points[t2]);
@@ -472,10 +472,10 @@ where
 
     /// Returns a [`Generator`] that can be use to successively yield triangles.
     #[must_use]
-    pub fn triangle_polygon_generator(&self) -> Generator<'_, (), Polygon<T>> {
+    pub fn triangle_polygons_generator(&self) -> Generator<'_, (), Polygon<T>> {
         Gn::new_scoped(move |mut s| {
-            for i in &self.triangles {
-                s.yield_with(self.triangle_polygon(*i));
+            for i in 0..self.triangles.len() / 3 {
+                s.yield_with(self.triangle_polygon(i));
             }
             done!();
         })

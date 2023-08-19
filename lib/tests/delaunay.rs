@@ -9,6 +9,7 @@ mod delaunay {
 
     use d3_delaunay_rs::delaunay::Delaunay;
     use d3_delaunay_rs::path::Path;
+    use d3_delaunay_rs::polygon::Polygon;
     use d3_delaunay_rs::voronoi::Voronoi;
 
     type DelaunayStub = Delaunay<f64>;
@@ -764,5 +765,78 @@ mod delaunay {
         ];
         let delaunay: DelaunayStub = Delaunay::new(&points);
         assert_eq!(delaunay.render_hull_to_string(), "M0,1L1,1L1,0L0,0Z");
+    }
+
+    // triangle_polygons_generator() has no equivalent testing in the javascript original
+    // It was used to bug hunt some otherwise untested code.
+    //
+    // Point in a square should result in the generator outputting two triangles.
+    #[test]
+    fn generator() {
+        let points = [
+            Coord {
+                x: 25_f64,
+                y: 25_f64,
+            },
+            Coord {
+                x: 75_f64,
+                y: 25_f64,
+            },
+            Coord {
+                x: 75_f64,
+                y: 75_f64,
+            },
+            Coord {
+                x: 25_f64,
+                y: 75_f64,
+            },
+        ];
+
+        let delaunay = Delaunay::new(&points);
+
+        let expected = vec![
+            Polygon(vec![
+                Coord {
+                    x: 25.0_f64,
+                    y: 25.0f64,
+                },
+                Coord {
+                    x: 75.0_f64,
+                    y: 75.0f64,
+                },
+                Coord {
+                    x: 75.0_f64,
+                    y: 25.0f64,
+                },
+                Coord {
+                    x: 25.0_f64,
+                    y: 25.0f64,
+                },
+            ]),
+            Polygon(vec![
+                Coord {
+                    x: 25.0_f64,
+                    y: 25.0_f64,
+                },
+                Coord {
+                    x: 25.0_f64,
+                    y: 75.0_f64,
+                },
+                Coord {
+                    x: 75.0_f64,
+                    y: 75.0_f64,
+                },
+                Coord {
+                    x: 25.0_f64,
+                    y: 25.0_f64,
+                },
+            ]),
+        ];
+
+        let mut actual = vec![];
+        for polygon in delaunay.triangle_polygons_generator() {
+            actual.push(polygon);
+        }
+        assert_eq!(expected, actual);
     }
 }

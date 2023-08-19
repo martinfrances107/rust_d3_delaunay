@@ -3,7 +3,7 @@ use geo::CoordFloat;
 use geo_types::Coord;
 
 /// A Vector of point which implements [`CanvasRenderingContext2d`].
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Polygon<T>(pub Vec<Coord<T>>)
 where
     T: CoordFloat;

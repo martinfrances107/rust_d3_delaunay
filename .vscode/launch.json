@@ -1,0 +1,176 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug unit tests in library 'd3_delaunay_rs'",
+      "cargo": {
+        "args": [
+          "test",
+          "--no-run",
+          "--lib",
+          "--package=d3_delaunay_rs"
+        ],
+        "filter": {
+          "name": "d3_delaunay_rs",
+          "kind": "lib"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug integration test 'voronoi'",
+      "cargo": {
+        "args": [
+          "test",
+          "--no-run",
+          "--test=voronoi",
+          "--package=d3_delaunay_rs"
+        ],
+        "filter": {
+          "name": "voronoi",
+          "kind": "test"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug integration test 'delaunay'",
+      "cargo": {
+        "args": [
+          "test",
+          "--no-run",
+          "--test=delaunay",
+          "--package=d3_delaunay_rs"
+        ],
+        "filter": {
+          "name": "delaunay",
+          "kind": "test"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug executable 'cross_pattern'",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=cross_pattern",
+          "--package=cross_pattern"
+        ],
+        "filter": {
+          "name": "cross_pattern",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug unit tests in executable 'cross_pattern'",
+      "cargo": {
+        "args": [
+          "test",
+          "--no-run",
+          "--bin=cross_pattern",
+          "--package=cross_pattern"
+        ],
+        "filter": {
+          "name": "cross_pattern",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug executable 'n_points'",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=n_points",
+          "--package=n_points"
+        ],
+        "filter": {
+          "name": "n_points",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug unit tests in executable 'n_points'",
+      "cargo": {
+        "args": [
+          "test",
+          "--no-run",
+          "--bin=n_points",
+          "--package=n_points"
+        ],
+        "filter": {
+          "name": "n_points",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug executable 'triangulation'",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=triangulation",
+          "--package=triangulation"
+        ],
+        "filter": {
+          "name": "triangulation",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug unit tests in executable 'triangulation'",
+      "cargo": {
+        "args": [
+          "test",
+          "--no-run",
+          "--bin=triangulation",
+          "--package=triangulation"
+        ],
+        "filter": {
+          "name": "triangulation",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

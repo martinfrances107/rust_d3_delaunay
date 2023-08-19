@@ -60,6 +60,26 @@ fn main() -> std::io::Result<()> {
     file.write_all(data_delaunay.as_bytes())?;
     file.write_all(b"\"/>\n")?;
 
+    // The following produces an identical mesh to the one above ( green )
+    // // Output triangles ( orange )
+    // for polygon in delaunay.triangle_polygons_generator() {
+    //     let mut l_iter = polygon.0.iter();
+    //     if let Some(start) = l_iter.next() {
+    //         file.write_all(b"  <path stroke=\"orange\" fill=\"none\" stroke-width=\"0.2px\" d=\"")?;
+    //         write!(file, "M{},{}", start.x, start.y)?;
+
+    //         // Loop over remaining points in the line.
+    //         for p in l_iter {
+    //             write!(file, "L{},{}", p.x, p.y)?;
+    //         }
+
+    //         // Close the line
+    //         write!(file, "M{},{}", start.x, start.y)?;
+    //     }
+    //     writeln!(file, "\"/>")?;
+    // }
+    //
+    //
     let voronoi = delaunay.voronoi(Some((0_f64, 0_f64, 100_f64, 100_f64)));
     // Output voronoi mesh. ( blue )
     let data_voronoi = voronoi.render_to_string();
@@ -67,9 +87,9 @@ fn main() -> std::io::Result<()> {
     file.write_all(data_voronoi.as_bytes())?;
     file.write_all(b"\"/>\n")?;
 
-    // Output Render Bounds ( black )
+    // Output Render Bounds ( yellow )
     let data_bounds = voronoi.render_bounds_to_string();
-    file.write_all(b"  <path stroke=\"white\" fill=\"none\" stroke-width=\"0.2px\" d=\"")?;
+    file.write_all(b"  <path stroke=\"yellow\" fill=\"none\" stroke-width=\"0.2px\" d=\"")?;
     file.write_all(data_bounds.as_bytes())?;
     file.write_all(b"\"/>\n")?;
 

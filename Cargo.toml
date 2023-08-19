@@ -3,7 +3,6 @@ members = [
   "./lib",
   "examples/cross_pattern",
   "examples/n_points",
-  "examples/triangulation",
 ]
 
 resolver = "2"

@@ -59,17 +59,6 @@ Modules, passing test ready for phase 2 evaluation :-
 
 The following functions are under going rapid development.
 
-```rust
-impl<T> Delaunay<T> {
-    pub fn render_triangle(&self, mut i: usize, context: &mut impl CanvasRenderingContext2d<T>);
-
-    pub fn render_triangle_to_string(&self, i: usize) -> String
-
-    pub fn triangle_polygon(&self, i: usize) -> Polygon<T>;
-
-    pub fn triangle_polygon_generator(&self) -> Generator<'_, (), Polygon<T>>;
-}
-```
 The following generators functions are missing.
 
 | delauany    |   | voronoi         |
