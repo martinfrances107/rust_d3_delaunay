@@ -61,6 +61,7 @@ The following functions are under going rapid development.
 
 The following generators functions are missing.
 
-| delauany    |   | voronoi         |
+| delaunay    |   | voronoi         |
 | ------------|---| --------------  |
 | neighbors() |   |  cellPolygons() |
+|             |   |  update()       |

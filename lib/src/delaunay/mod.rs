@@ -94,7 +94,7 @@ where
             })
             .collect();
 
-        // TODO breaking API change if all points are collinear
+        // TODO breaking API change if all points are coqlinear
         // now returning a special triangulation where
         // all point are on the hull... I am not sure about the
         // implications of this yet.?????
@@ -231,8 +231,10 @@ where
         }
     }
 
-    // fn neighbors(&self, i: usize) {
-    //     let g = Gn::new_scoped(move |s| {
+    // Returns a generator that returns the neighbors for a given point
+    // specified at the time of generation.
+    // fn neighbors_generator(&self, i: usize) -> Generator<'_, (), Polygon<T>> {
+    //     Gn::new_scoped(move |s| {
     //         // degenerate case with several collinear points
     //         if self.collinear.is_empty() {
     //             let l = self.collinear[i];
@@ -261,7 +263,7 @@ where
     //             }; // bad triangulation
     //             e = self.half_edges[e];
     //             if e == EMPTY {
-    //                 let p = self.hull[(self._hull_index[i] + 1) % self.hull.len()];
+    //                 let p = self.delaunator.hull[(self.hull_index[i] + 1) % self.hull.len()];
     //                 if p != p0 {
     //                     s.yield_(Some(p));
     //                 }
@@ -271,7 +273,7 @@ where
     //                 break None;
     //             }
     //         }
-    //     });
+    //     })
     // }
 
     /// Returns the index of the point that is closest to the specified point p.
