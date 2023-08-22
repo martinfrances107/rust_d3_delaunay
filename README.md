@@ -24,9 +24,7 @@ Currently the code coverage, as reported by Cargo tarpaulin is 80%.
 
 An example app is provided in the git repository associated with crate
 
-
 ### examples/500_points
-
 
 to run the application
 
@@ -37,11 +35,11 @@ cargo run
 
 This produces a file "mesh.svg"
 
-The delaunay mesh is in blue.
-The voronoi mesh is in green.
-
 ![500 points](https://raw.githubusercontent.com/martinfrances107/rust_d3_delaunay/main/images/500_points.svg)
 
+* The delaunay mesh is in blue.
+
+* The voronoi mesh is in green.
 
 ## Phase 1
 
