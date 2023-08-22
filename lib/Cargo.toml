@@ -6,7 +6,7 @@ edition = { workspace = true }
 license = { workspace = true }
 keywords = ["delauany", "diagram", "graphics", "voronoi"]
 name = "d3_delaunay_rs"
-readme = "./README.md"
+readme = "../README.md"
 repository = "https://github.com/martinfrances107/rust_d3_delaunay"
 version = { workspace = true }
 
