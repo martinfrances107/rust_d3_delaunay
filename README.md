@@ -26,6 +26,8 @@ An example app is provided in the git repository associated with crate
 
 ### examples/500_points
 
+This demo renders the meshes associated with a set of 500 points. The points are created at random.
+
 to run the application
 
 ```console
