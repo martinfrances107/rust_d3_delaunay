@@ -186,7 +186,6 @@ where
             //         }
             //     }
             // };
-        } else {
         }
         self.half_edges = self.delaunator.halfedges.clone();
 
