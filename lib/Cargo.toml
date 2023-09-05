@@ -1,6 +1,6 @@
 [package]
 authors = { workspace = true }
-categories = ["graphics", "Mathematics"]
+categories = ["graphics", "mathematics"]
 description = "A port of D3/d3-delauany"
 edition = { workspace = true }
 license = { workspace = true }
