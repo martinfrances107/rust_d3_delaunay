@@ -17,6 +17,5 @@ rust-version = "1.65"
 [dependencies]
 d3_delaunay_rs = { path = "../../lib" }
 geo = "~0.26"
-svg = "~0.13"
 geo-types = "~0.7"
 rand = "~0.8"
