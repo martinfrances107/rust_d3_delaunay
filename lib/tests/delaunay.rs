@@ -9,7 +9,6 @@ mod delaunay {
 
     use d3_delaunay_rs::delaunay::Delaunay;
     use d3_delaunay_rs::path::Path;
-    use d3_delaunay_rs::polygon::Polygon;
     use d3_delaunay_rs::voronoi::Voronoi;
 
     type DelaunayStub = Delaunay<f64>;
@@ -772,7 +771,9 @@ mod delaunay {
     //
     // Point in a square should result in the generator outputting two triangles.
     #[test]
+    #[cfg(feature = "generator")]
     fn generator() {
+        use d3_delaunay_rs::polygon::Polygon;
         let points = [
             Coord {
                 x: 25_f64,

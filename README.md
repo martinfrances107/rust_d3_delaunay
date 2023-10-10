@@ -57,6 +57,9 @@ Modules, passing test ready for phase 2 evaluation :-
 
 ## Unimplemented generators
 
+Functions that use the generator crate are now availble only when the
+"generator" feature is enabled.
+
 The following functions are under going rapid development.
 
 The following generators functions are missing.

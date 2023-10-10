@@ -13,8 +13,11 @@ use delaunator::triangulate;
 use delaunator::Point as DPoint;
 use delaunator::Triangulation;
 use delaunator::EMPTY;
+#[cfg(feature = "generator")]
 use generator::done;
+#[cfg(feature = "generator")]
 use generator::Generator;
+#[cfg(feature = "generator")]
 use generator::Gn;
 use geo::CoordFloat;
 use geo_types::Coord;
@@ -473,6 +476,7 @@ where
 
     /// Returns a [`Generator`] that can be use to successively yield triangles.
     #[must_use]
+    #[cfg(feature = "generator")]
     pub fn triangle_polygons_generator(&self) -> Generator<'_, (), Polygon<T>> {
         Gn::new_scoped(move |mut s| {
             for i in 0..self.triangles.len() / 3 {
