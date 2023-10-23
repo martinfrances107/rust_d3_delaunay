@@ -1,3 +1,14 @@
+#![deny(clippy::all)]
+#![warn(clippy::cargo)]
+#![warn(clippy::complexity)]
+#![warn(clippy::pedantic)]
+#![warn(clippy::perf)]
+#![warn(missing_debug_implementations)]
+#![warn(missing_docs)]
+
+//! A known pattern of points
+//!
+//! Where the voronoi and delauany are very predictable.
 extern crate geo;
 
 use std::fs::File;

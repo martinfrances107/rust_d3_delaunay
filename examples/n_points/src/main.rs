@@ -1,3 +1,15 @@
+#![deny(clippy::all)]
+#![warn(clippy::cargo)]
+#![warn(clippy::complexity)]
+#![warn(clippy::pedantic)]
+#![warn(clippy::nursery)]
+#![warn(clippy::perf)]
+#![warn(missing_debug_implementations)]
+#![warn(missing_docs)]
+//! Generates a large number of random points.
+//!
+//! Then render the deluanay and voronoi meshes.
+
 use clap::Parser;
 
 /// Simple program to greet a person
@@ -46,8 +58,8 @@ fn main() -> std::io::Result<()> {
     // fill the unit square with points
     let points = (0..args.n_points)
         .map(|_| Coord {
-            x: 96_f64 * rng.gen::<f64>() + 2_f64,
-            y: 96_f64 * rng.gen::<f64>() + 2_f64,
+            x: 96_f64.mul_add(rng.gen::<f64>(), 2_f64),
+            y: 96_f64.mul_add(rng.gen::<f64>(), 2_f64),
         })
         .collect::<Vec<_>>();
 

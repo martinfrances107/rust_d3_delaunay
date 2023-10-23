@@ -1,8 +1,11 @@
 #![deny(clippy::all)]
-#![warn(clippy::pedantic)]
 #![warn(clippy::cargo)]
-#![warn(missing_docs)]
+#![warn(clippy::complexity)]
+#![warn(clippy::pedantic)]
+#![warn(clippy::nursery)]
+#![warn(clippy::perf)]
 #![warn(missing_debug_implementations)]
+#![warn(missing_docs)]
 //! A port of [d3/d3-delaunay](<https://github.com/d3/d3-delaunay>).
 //!
 //! Compute the Voronoi diagram of a set of two-dimensional points.
