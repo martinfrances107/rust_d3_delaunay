@@ -247,8 +247,8 @@ where
                 // clip infinite pushed to both the front and back of this queue.
                 // remove() then insert() here is inefficient .. but will only be done
                 // once during init(). clip_finite() is a common operation.
-                std::mem::swap(&mut self.vectors[p0 + 1], &mut Coord { x: ydiff, y: xdiff });
-                std::mem::swap(&mut self.vectors[p1], &mut Coord { x: ydiff, y: xdiff });
+                core::mem::swap(&mut self.vectors[p0 + 1], &mut Coord { x: ydiff, y: xdiff });
+                core::mem::swap(&mut self.vectors[p1], &mut Coord { x: ydiff, y: xdiff });
             }
         }
     }
