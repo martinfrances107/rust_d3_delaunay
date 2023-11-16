@@ -13,7 +13,7 @@ version = "0.8.0"
 [workspace.dependencies]
 d3_geo_rs = "~2"
 delaunator = "~1"
-geo = "~0.26"
+geo = "~0.27"
 geo-types = "~0.7"
 num-traits = "~0.2"
 pretty_assertions = "~1"
