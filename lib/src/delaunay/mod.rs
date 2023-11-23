@@ -97,7 +97,7 @@ where
             })
             .collect();
 
-        // TODO breaking API change if all points are coqlinear
+        // TODO breaking API change if all points are colinear
         // now returning a special triangulation where
         // all point are on the hull... I am not sure about the
         // implications of this yet.?????
@@ -108,7 +108,7 @@ where
             inedges: Vec::with_capacity(points.len() / 2),
             hull_index: Vec::with_capacity(points.len() / 2),
             points: points.to_vec(),
-            half_edges: Vec::new(),
+            half_edges: Vec::with_capacity(points.len()),
             // fx: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.x()),
             // fy: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.y()),
             triangles: Vec::new(),
