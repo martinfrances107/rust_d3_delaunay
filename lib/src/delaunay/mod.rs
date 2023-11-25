@@ -50,11 +50,6 @@ where
     /// The inedges table can be used to traverse the Delaunay triangulation
     pub inedges: Vec<usize>,
     hull_index: Vec<usize>,
-    /// The halfedge indexes as an [j0, j1, …]. For each index 0 ≤ i < halfedges.length,
-    ///  there is a halfedge from triangle vertex j = halfedges\[i\] to triangle vertex i.
-    ///  Equivalently, this means that triangle ⌊i / 3⌋ is adjacent to triangle ⌊j / 3⌋.
-    // pub half_edges: Vec<usize>,
-
     /// The coordinates of a point as an vector.
     pub points: Vec<Coord<T>>,
     // pub fx: FnTransform<T>,
@@ -70,8 +65,6 @@ where
             .field(&self.delaunator)
             .field(&self.inedges)
             .field(&self.hull_index)
-            // .field(&self.delaunator.half_edges)
-            // .field(&self.triangles)
             .field(&self.points)
             .finish()
     }
@@ -106,10 +99,8 @@ where
             inedges: Vec::with_capacity(points.len() / 2),
             hull_index: Vec::with_capacity(points.len() / 2),
             points: points.to_vec(),
-            // half_edges: Vec::with_capacity(points.len()),
             // fx: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.x()),
             // fy: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.y()),
-            // triangles: Vec::new(),
         };
 
         out.init();
@@ -188,9 +179,7 @@ where
             //     }
             // };
         }
-        // self.delaunator.half_edges = self.delaunator.halfedges.clone();
 
-        // self.triangles = self.delaunator.triangles.clone();
         let len = self.points.len();
         self.inedges = Vec::with_capacity(len);
         self.hull_index = Vec::with_capacity(len);
