@@ -53,7 +53,7 @@ where
     /// The halfedge indexes as an [j0, j1, …]. For each index 0 ≤ i < halfedges.length,
     ///  there is a halfedge from triangle vertex j = halfedges\[i\] to triangle vertex i.
     ///  Equivalently, this means that triangle ⌊i / 3⌋ is adjacent to triangle ⌊j / 3⌋.
-    pub half_edges: Vec<usize>,
+    // pub half_edges: Vec<usize>,
 
     /// The coordinates of a point as an vector.
     pub points: Vec<Coord<T>>,
@@ -70,7 +70,7 @@ where
             .field(&self.delaunator)
             .field(&self.inedges)
             .field(&self.hull_index)
-            .field(&self.half_edges)
+            // .field(&self.delaunator.half_edges)
             // .field(&self.triangles)
             .field(&self.points)
             .finish()
@@ -106,7 +106,7 @@ where
             inedges: Vec::with_capacity(points.len() / 2),
             hull_index: Vec::with_capacity(points.len() / 2),
             points: points.to_vec(),
-            half_edges: Vec::with_capacity(points.len()),
+            // half_edges: Vec::with_capacity(points.len()),
             // fx: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.x()),
             // fy: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.y()),
             // triangles: Vec::new(),
@@ -188,7 +188,7 @@ where
             //     }
             // };
         }
-        self.half_edges = self.delaunator.halfedges.clone();
+        // self.delaunator.half_edges = self.delaunator.halfedges.clone();
 
         // self.triangles = self.delaunator.triangles.clone();
         self.inedges = Vec::new();
@@ -202,7 +202,7 @@ where
         // Compute an index from each point to an (arbitrary) incoming halfedge
         // Used to give the first neighbor of each point; for this reason,
         // on the hull we give priority to exterior halfedges
-        for (e, he) in self.half_edges.iter().enumerate() {
+        for (e, he) in self.delaunator.halfedges.iter().enumerate() {
             let p = if e % 3 == 2 {
                 self.delaunator.triangles[e - 2]
             } else {
@@ -220,7 +220,7 @@ where
         // degenerate case: 1 or 2 (distinct) points
         if self.delaunator.hull.len() <= 2 && !self.delaunator.hull.is_empty() {
             self.delaunator.triangles = vec![EMPTY, EMPTY, EMPTY];
-            self.half_edges = vec![EMPTY, EMPTY, EMPTY];
+            self.delaunator.halfedges = vec![EMPTY, EMPTY, EMPTY];
             self.delaunator.triangles[0] = self.delaunator.hull[0];
             self.inedges[self.delaunator.hull[0]] = 1;
             if self.delaunator.hull.len() == 2 {
@@ -319,7 +319,7 @@ where
                 // bad triangulation
                 break;
             }
-            e = self.half_edges[e];
+            e = self.delaunator.halfedges[e];
             if e == EMPTY {
                 e = self.delaunator.hull[(self.hull_index[i] + 1) % self.delaunator.hull.len()];
                 if e != t
@@ -350,8 +350,8 @@ where
 
     /// Dumps the delaunay mesh to the [`CanvasRenderingContext2d`].
     pub fn render(&self, context: &mut impl CanvasRenderingContext2d<T>) {
-        for i in 0..self.half_edges.len() {
-            let j = self.half_edges[i];
+        for i in 0..self.delaunator.halfedges.len() {
+            let j = self.delaunator.halfedges[i];
             if j < i || j == EMPTY {
                 continue;
             };

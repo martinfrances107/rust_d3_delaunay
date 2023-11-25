@@ -36,7 +36,10 @@ mod delaunay {
         );
 
         assert_eq!(delaunay.delaunator.triangles, vec![0, 2, 1, 2, 3, 1]);
-        assert_eq!(delaunay.half_edges, vec![EMPTY, 5, EMPTY, EMPTY, EMPTY, 1]);
+        assert_eq!(
+            delaunay.delaunator.halfedges,
+            vec![EMPTY, 5, EMPTY, EMPTY, EMPTY, 1]
+        );
         assert_eq!(delaunay.inedges, vec![2, 4, 0, 3]);
 
         // Cannot reproduce neighbors tests...neighbors is a generator function!

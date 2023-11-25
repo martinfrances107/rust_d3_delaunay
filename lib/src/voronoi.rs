@@ -275,8 +275,8 @@ where
             return;
         }
 
-        for i in 0..self.delaunay.half_edges.len() {
-            let j = self.delaunay.half_edges[i];
+        for i in 0..self.delaunay.delaunator.halfedges.len() {
+            let j = self.delaunay.delaunator.halfedges[i];
             if j < i || j == EMPTY {
                 continue;
             }
@@ -431,7 +431,7 @@ where
             if self.delaunay.delaunator.triangles[e] != i {
                 break;
             } // bad triangulation.
-            e = self.delaunay.half_edges[e];
+            e = self.delaunay.delaunator.halfedges[e];
             if e == e0 || e == EMPTY {
                 break;
             }
