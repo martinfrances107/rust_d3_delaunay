@@ -96,11 +96,11 @@ where
     #[allow(clippy::too_many_lines)]
     fn init(&mut self) {
         // Compute circumcenters.
-        let circumcenter_len = self.delaunay.triangles.len() / 3;
+        let circumcenter_len = self.delaunay.delaunator.triangles.len() / 3;
         // Cannot use a slice cos need to be determined at compile time.
         // self.circumcenters = (self.circumcenters[0..circumcenter_len]).to_vec();
         self.circumcenters.truncate(circumcenter_len);
-        let triangles = &self.delaunay.triangles;
+        let triangles = &self.delaunay.delaunator.triangles;
         let points = &self.delaunay.points;
         let hull = &self.delaunay.delaunator.hull;
 
@@ -428,7 +428,7 @@ where
                 2 => e - 2,
                 _ => e + 1,
             };
-            if self.delaunay.triangles[e] != i {
+            if self.delaunay.delaunator.triangles[e] != i {
                 break;
             } // bad triangulation.
             e = self.delaunay.half_edges[e];

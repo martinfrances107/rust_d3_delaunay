@@ -54,9 +54,7 @@ where
     ///  there is a halfedge from triangle vertex j = halfedges\[i\] to triangle vertex i.
     ///  Equivalently, this means that triangle ⌊i / 3⌋ is adjacent to triangle ⌊j / 3⌋.
     pub half_edges: Vec<usize>,
-    /// The triangle vertex indexes as an `Vec<usize>` [i0, j0, k0, i1, j1, k1, …].
-    ///  Each contiguous triplet of indexes i, j, k forms a counterclockwise triangle.
-    pub triangles: Vec<usize>,
+
     /// The coordinates of a point as an vector.
     pub points: Vec<Coord<T>>,
     // pub fx: FnTransform<T>,
@@ -73,7 +71,7 @@ where
             .field(&self.inedges)
             .field(&self.hull_index)
             .field(&self.half_edges)
-            .field(&self.triangles)
+            // .field(&self.triangles)
             .field(&self.points)
             .finish()
     }
@@ -111,7 +109,7 @@ where
             half_edges: Vec::with_capacity(points.len()),
             // fx: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.x()),
             // fy: Box::new(|p: Point<T>, _i: usize, _points: Vec<Point<T>>| p.y()),
-            triangles: Vec::new(),
+            // triangles: Vec::new(),
         };
 
         out.init();
@@ -192,7 +190,7 @@ where
         }
         self.half_edges = self.delaunator.halfedges.clone();
 
-        self.triangles = self.delaunator.triangles.clone();
+        // self.triangles = self.delaunator.triangles.clone();
         self.inedges = Vec::new();
         self.hull_index = Vec::new();
         let len = self.points.len();
@@ -206,9 +204,9 @@ where
         // on the hull we give priority to exterior halfedges
         for (e, he) in self.half_edges.iter().enumerate() {
             let p = if e % 3 == 2 {
-                self.triangles[e - 2]
+                self.delaunator.triangles[e - 2]
             } else {
-                self.triangles[e + 1]
+                self.delaunator.triangles[e + 1]
             };
             if *he == EMPTY || self.inedges[p] == EMPTY {
                 self.inedges[p] = e;
@@ -221,14 +219,14 @@ where
 
         // degenerate case: 1 or 2 (distinct) points
         if self.delaunator.hull.len() <= 2 && !self.delaunator.hull.is_empty() {
-            self.triangles = vec![EMPTY, EMPTY, EMPTY];
+            self.delaunator.triangles = vec![EMPTY, EMPTY, EMPTY];
             self.half_edges = vec![EMPTY, EMPTY, EMPTY];
-            self.triangles[0] = self.delaunator.hull[0];
+            self.delaunator.triangles[0] = self.delaunator.hull[0];
             self.inedges[self.delaunator.hull[0]] = 1;
             if self.delaunator.hull.len() == 2 {
                 self.inedges[self.delaunator.hull[1]] = 0;
-                self.triangles[1] = self.delaunator.hull[1];
-                self.triangles[2] = self.delaunator.hull[1];
+                self.delaunator.triangles[1] = self.delaunator.hull[1];
+                self.delaunator.triangles[2] = self.delaunator.hull[1];
             }
         }
     }
@@ -304,7 +302,7 @@ where
         let e0 = self.inedges[i];
         let mut e = e0;
         loop {
-            let t = self.triangles[e];
+            let t = self.delaunator.triangles[e];
             let dt = (p.x - self.points[t].x).powi(2) + (p.y - self.points[t].y).powi(2);
             if dt < dc {
                 dc = dt;
@@ -317,7 +315,7 @@ where
                 e += 1;
             }
 
-            if self.triangles[e] != i {
+            if self.delaunator.triangles[e] != i {
                 // bad triangulation
                 break;
             }
@@ -357,8 +355,8 @@ where
             if j < i || j == EMPTY {
                 continue;
             };
-            let ti = self.triangles[i];
-            let tj = self.triangles[j];
+            let ti = self.delaunator.triangles[i];
+            let tj = self.delaunator.triangles[j];
 
             context.move_to(&self.points[ti]);
             context.line_to(&self.points[tj]);
@@ -444,9 +442,9 @@ where
     /// Renders selected triangle into [`CanvasRenderingContext2d`]
     pub fn render_triangle(&self, mut i: usize, context: &mut impl CanvasRenderingContext2d<T>) {
         i *= 3;
-        let t0 = self.triangles[i];
-        let t1 = self.triangles[i + 1];
-        let t2 = self.triangles[i + 2];
+        let t0 = self.delaunator.triangles[i];
+        let t1 = self.delaunator.triangles[i + 1];
+        let t2 = self.delaunator.triangles[i + 2];
         context.move_to(&self.points[t0]);
         context.move_to(&self.points[t1]);
         context.move_to(&self.points[t2]);
