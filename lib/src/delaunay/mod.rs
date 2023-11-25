@@ -191,9 +191,9 @@ where
         // self.delaunator.half_edges = self.delaunator.halfedges.clone();
 
         // self.triangles = self.delaunator.triangles.clone();
-        self.inedges = Vec::new();
-        self.hull_index = Vec::new();
         let len = self.points.len();
+        self.inedges = Vec::with_capacity(len);
+        self.hull_index = Vec::with_capacity(len);
         for _i in 0..len {
             self.inedges.push(EMPTY);
             self.hull_index.push(EMPTY);
