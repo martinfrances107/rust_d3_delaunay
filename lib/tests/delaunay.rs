@@ -124,7 +124,8 @@ mod delaunay {
             Coord { x: 1f64, y: 1f64 },
         ];
 
-        let voronoi: VoronoiStub = Delaunay::new(&points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
+        let voronoi: VoronoiStub =
+            Delaunay::new(&points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         assert_eq!(voronoi.xmin, -1f64);
         assert_eq!(voronoi.ymin, -1f64);
         assert_eq!(voronoi.xmax, 2f64);
@@ -210,7 +211,8 @@ mod delaunay {
     #[test]
     fn delaunay_return_for_zero_points() {
         println!("delaunay.voronoi() for zero point returns expected values");
-        let v: VoronoiStub = Delaunay::new(&[]).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
+        let v: VoronoiStub =
+            Delaunay::new(&[]).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         assert_eq!(v.render_to_string(), "");
     }
 
@@ -239,7 +241,9 @@ mod delaunay {
 
     #[test]
     fn delaunay_return_for_one_point() {
-        println!("delaunay.voronoi() for one point returns the bounding rectangle");
+        println!(
+            "delaunay.voronoi() for one point returns the bounding rectangle"
+        );
         let points = vec![Coord { x: 0., y: 0. }];
         let d: DelaunayStub = Delaunay::new(&points);
         let voronoi = d.voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
@@ -249,7 +253,9 @@ mod delaunay {
 
     #[test]
     fn delaunay_return_for_two_point() {
-        println!("delaunay.voronoi() for one point returns the bounding rectangle");
+        println!(
+            "delaunay.voronoi() for one point returns the bounding rectangle"
+        );
         let points = vec![
             Coord { x: 0f64, y: 0f64 },
             Coord { x: 1f64, y: 0f64 },
@@ -351,12 +357,21 @@ mod delaunay {
             Coord { x: 0., y: 4. },
         ];
         let delaunay: DelaunayStub = Delaunay::new(&points);
-        assert_eq!(points[delaunay.find(&Coord { x: 0., y: -1. }, None)].y, 0.0);
+        assert_eq!(
+            points[delaunay.find(&Coord { x: 0., y: -1. }, None)].y,
+            0.0
+        );
         assert_eq!(points[delaunay.find(&Coord { x: 0., y: 1.2 }, None)].y, 1.);
 
         assert_eq!(points[delaunay.find(&Coord { x: 1., y: 1.9 }, None)].y, 2.);
-        assert_eq!(points[delaunay.find(&Coord { x: -1., y: 3.3 }, None)].y, 3.);
-        assert_eq!(points[delaunay.find(&Coord { x: 10., y: 10. }, None)].y, 4.);
+        assert_eq!(
+            points[delaunay.find(&Coord { x: -1., y: 3.3 }, None)].y,
+            3.
+        );
+        assert_eq!(
+            points[delaunay.find(&Coord { x: 10., y: 10. }, None)].y,
+            4.
+        );
         assert_eq!(
             points[delaunay.find(&Coord { x: 10., y: 10. }, Some(0))].y,
             4.
@@ -387,7 +402,10 @@ mod delaunay {
         let delaunay: DelaunayStub = Delaunay::new(&points);
         assert_eq!(points[delaunay.find(&Coord { x: 0., y: -1. }, None)].y, 0.);
         assert_eq!(points[delaunay.find(&Coord { x: 0., y: 1.2 }, None)].y, 1.);
-        assert_eq!(points[delaunay.find(&Coord { x: 3.9, y: 3.9 }, None)].y, 4.);
+        assert_eq!(
+            points[delaunay.find(&Coord { x: 3.9, y: 3.9 }, None)].y,
+            4.
+        );
         assert_eq!(
             points[delaunay.find(&Coord { x: 10.0, y: 9.5 }, Some(0))].y,
             9.

@@ -168,12 +168,14 @@ where
                     //     +0.signum() is 1.
                     //     -0.signum() is -1.
                     // so I must special case -0 and +0 here.
-                    let delta = (points[r].x - x1.unwrap()) * ey - (points[r].y - y1.unwrap()) * ex;
+                    let delta = (points[r].x - x1.unwrap()) * ey
+                        - (points[r].y - y1.unwrap()) * ex;
                     if delta.is_zero() {
                         a = T::zero();
                     } else {
                         a = a
-                            * ((points[r].x - x1.unwrap()) * ey - (points[r].y - y1.unwrap()) * ex)
+                            * ((points[r].x - x1.unwrap()) * ey
+                                - (points[r].y - y1.unwrap()) * ex)
                                 .signum();
                     }
                     match (x1, y1, x3, y3) {
@@ -230,7 +232,8 @@ where
         // causes panic in rust.
         if !hull.is_empty() {
             // Compute exterior cell rays.
-            let h = self.delaunay.delaunator.hull[self.delaunay.delaunator.hull.len() - 1];
+            let h = self.delaunay.delaunator.hull
+                [self.delaunay.delaunator.hull.len() - 1];
             let mut p1 = h * 2;
             let mut x1 = points[h].x;
             let mut y1 = points[h].y;
@@ -247,8 +250,14 @@ where
                 // clip infinite pushed to both the front and back of this queue.
                 // remove() then insert() here is inefficient .. but will only be done
                 // once during init(). clip_finite() is a common operation.
-                core::mem::swap(&mut self.vectors[p0 + 1], &mut Coord { x: ydiff, y: xdiff });
-                core::mem::swap(&mut self.vectors[p1], &mut Coord { x: ydiff, y: xdiff });
+                core::mem::swap(
+                    &mut self.vectors[p0 + 1],
+                    &mut Coord { x: ydiff, y: xdiff },
+                );
+                core::mem::swap(
+                    &mut self.vectors[p1],
+                    &mut Coord { x: ydiff, y: xdiff },
+                );
             }
         }
     }
@@ -294,7 +303,11 @@ where
                 let t = self.delaunay.inedges[*h1] / 3;
                 let pi = self.circumcenters[t];
                 let v = h0 * 2;
-                let p = self.project(&pi, self.vectors[v + 1].x, self.vectors[v + 1].y);
+                let p = self.project(
+                    &pi,
+                    self.vectors[v + 1].x,
+                    self.vectors[v + 1].y,
+                );
                 if let Some(p) = p {
                     self.render_segment(&pi, &p, context);
                 }
@@ -316,7 +329,10 @@ where
     }
 
     /// Renders bounds to a [`CanvasRenderingContext2d`].
-    pub fn render_bounds(&self, context: &mut impl CanvasRenderingContext2d<T>) {
+    pub fn render_bounds(
+        &self,
+        context: &mut impl CanvasRenderingContext2d<T>,
+    ) {
         context.rect(
             &Coord {
                 x: self.xmin,
@@ -340,8 +356,11 @@ where
     }
 
     /// Renders cells of the voronoi mesh to a [`CanvasRenderingContext2d`].
-    pub fn render_cell(&self, i: usize, context: &mut impl CanvasRenderingContext2d<T>)
-    where
+    pub fn render_cell(
+        &self,
+        i: usize,
+        context: &mut impl CanvasRenderingContext2d<T>,
+    ) where
         T: CoordFloat + Display,
     {
         let points = self.clip(i);
@@ -355,13 +374,17 @@ where
                 context.move_to(&points[0]);
 
                 let mut n = points.len();
-                while points[0usize].x == points[n - 1].x && points[0].y == points[n - 1].y && n > 1
+                while points[0usize].x == points[n - 1].x
+                    && points[0].y == points[n - 1].y
+                    && n > 1
                 {
                     n -= 1;
                 }
 
                 for i in 1..n {
-                    if points[i].x != points[i - 1].x || points[i].y != points[i - 1].y {
+                    if points[i].x != points[i - 1].x
+                        || points[i].y != points[i - 1].y
+                    {
                         context.line_to(&points[i].clone());
                     }
                 }
@@ -466,7 +489,14 @@ where
             let V = &self.vectors;
             let v = i * 2;
             if V[v].x != T::zero() || V[v].y != T::zero() {
-                self.clip_infinite(i, &points, V[v].x, V[v].y, V[v + 1].x, V[v + 1].y)
+                self.clip_infinite(
+                    i,
+                    &points,
+                    V[v].x,
+                    V[v].y,
+                    V[v + 1].x,
+                    V[v + 1].y,
+                )
             } else {
                 self.clip_finite(i, &points)
             }
@@ -474,7 +504,11 @@ where
     }
 
     #[allow(non_snake_case)]
-    fn clip_finite(&self, i: usize, points: &VecDeque<Coord<T>>) -> VecDeque<Coord<T>> {
+    fn clip_finite(
+        &self,
+        i: usize,
+        points: &VecDeque<Coord<T>>,
+    ) -> VecDeque<Coord<T>> {
         let mut P = VecDeque::new();
         let mut p1 = points[points.len() - 1];
         let mut c1 = self.regioncode(&p1);
@@ -756,7 +790,8 @@ where
 
             // The JS version has subtle handling of out of bounds checks.
             let out_of_bounds = j >= P.len();
-            if (out_of_bounds || P[j].x != x || P[j].y != y) && self.contains(i_in, &Coord { x, y })
+            if (out_of_bounds || P[j].x != x || P[j].y != y)
+                && self.contains(i_in, &Coord { x, y })
             {
                 P.insert(j, Coord { x, y });
                 j += 1;
@@ -768,7 +803,9 @@ where
             loop {
                 let j = (i + 1) % P.len();
                 let k = (i + 2) % P.len();
-                if P[i].x == P[j].x && P[j].x == P[k].x || P[i].y == P[j].y && P[j].y == P[k].y {
+                if P[i].x == P[j].x && P[j].x == P[k].x
+                    || P[i].y == P[j].y && P[j].y == P[k].y
+                {
                     P.remove(j);
                     // Skip increment
                 } else {

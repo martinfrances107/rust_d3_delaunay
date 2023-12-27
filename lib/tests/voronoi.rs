@@ -37,14 +37,17 @@ mod voronoi {
 
     #[test]
     fn noop_for_coincident_points() {
-        println!("voronoi.renderCell(i, context) is a noop for coincident points");
+        println!(
+            "voronoi.renderCell(i, context) is a noop for coincident points"
+        );
         let points = vec![
             Coord { x: 0f64, y: 0f64 },
             Coord { x: 1f64, y: 0f64 },
             Coord { x: 0f64, y: 1f64 },
             Coord { x: 1f64, y: 0f64 },
         ];
-        let voronoi: VoronoiStub = Delaunay::new(&points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
+        let voronoi: VoronoiStub =
+            Delaunay::new(&points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         let mut path = Path::default();
         voronoi.render_cell(3, &mut path);
         assert_eq!(path.to_string(), String::from(""));
@@ -58,7 +61,8 @@ mod voronoi {
             Coord { x: 1f64, y: 0f64 },
             Coord { x: 0f64, y: 1f64 },
         ];
-        let voronoi: VoronoiStub = Delaunay::new(&points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
+        let voronoi: VoronoiStub =
+            Delaunay::new(&points).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
         let mut context1 = Path::default();
         {
             voronoi.render_cell(0, &mut context1);
@@ -93,8 +97,8 @@ mod voronoi {
             Coord { x: 1_f64, y: 0_f64 },
         ];
 
-        let voronoi: VoronoiStub =
-            Delaunay::new(&points).voronoi(Some((-1_f64, -1_f64, 2_f64, 2_f64)));
+        let voronoi: VoronoiStub = Delaunay::new(&points)
+            .voronoi(Some((-1_f64, -1_f64, 2_f64, 2_f64)));
         assert_eq!(voronoi.contains(3, &Coord { x: 1_f64, y: 0_f64 }), false);
         assert_eq!(voronoi.contains(1, &Coord { x: 1_f64, y: 0_f64 }), true);
     }

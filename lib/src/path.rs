@@ -60,7 +60,8 @@ where
     fn move_to(&mut self, p: &Coord<T>) {
         self.p0 = *p;
         self.p1 = Some(*p);
-        write!(self.s, "M{},{}", p.x, p.y).expect("move_to: Cannot append to buffer.");
+        write!(self.s, "M{},{}", p.x, p.y)
+            .expect("move_to: Cannot append to buffer.");
     }
 
     fn close_path(&mut self) {
@@ -72,7 +73,8 @@ where
 
     fn line_to(&mut self, p: &Coord<T>) {
         self.p1 = Some(*p);
-        write!(self.s, "L{},{}", p.x, p.y).expect("line_to: Cannot append to buffer.");
+        write!(self.s, "L{},{}", p.x, p.y)
+            .expect("line_to: Cannot append to buffer.");
     }
 
     fn arc(&mut self, p: &Coord<T>, r: T, _start: T, _stop: T) {
@@ -83,8 +85,11 @@ where
 
         match &self.p1 {
             Some(p1) => {
-                if (p1.x - x0).abs() > self.epsilon || (p1.y - y0).abs() > self.epsilon {
-                    write!(self.s, "L{x0},{y0}").expect("arc: Cannot append line to buffer.");
+                if (p1.x - x0).abs() > self.epsilon
+                    || (p1.y - y0).abs() > self.epsilon
+                {
+                    write!(self.s, "L{x0},{y0}")
+                        .expect("arc: Cannot append line to buffer.");
                 }
                 if r == T::zero() {
                     return;
@@ -105,7 +110,8 @@ where
                 .expect("arc: Cannot append arc to buffer");
             }
             _ => {
-                write!(self.s, "M{x0},{y0}").expect("arc: Cannot append move_to to buffer.");
+                write!(self.s, "M{x0},{y0}")
+                    .expect("arc: Cannot append move_to to buffer.");
             }
         }
     }
@@ -113,6 +119,7 @@ where
     fn rect(&mut self, p: &Coord<T>, w: T, h: T) {
         self.p0 = *p;
         self.p1 = Some(*p);
-        write!(self.s, "M{},{}h{w}v{h}h{}Z", p.x, p.y, -w).expect("rect: Cannot append to buffer.");
+        write!(self.s, "M{},{}h{w}v{h}h{}Z", p.x, p.y, -w)
+            .expect("rect: Cannot append to buffer.");
     }
 }

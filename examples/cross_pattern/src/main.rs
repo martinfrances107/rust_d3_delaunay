@@ -64,20 +64,26 @@ fn main() -> std::io::Result<()> {
 
     // Output the delaunay mesh. ( green )
     let data_delaunay = delaunay.render_to_string();
-    file.write_all(b"  <path stroke=\"green\" fill=\"none\" stroke-width=\"0.2px\" d=\"")?;
+    file.write_all(
+        b"  <path stroke=\"green\" fill=\"none\" stroke-width=\"0.2px\" d=\"",
+    )?;
     file.write_all(data_delaunay.as_bytes())?;
     file.write_all(b"\"/>\n")?;
 
     let voronoi = delaunay.voronoi(Some((0_f64, 0_f64, 100_f64, 100_f64)));
     // Output voronoi mesh. ( blue )
     let data_voronoi = voronoi.render_to_string();
-    file.write_all(b"  <path stroke=\"blue\" fill=\"none\" stroke-width=\"0.2px\" d=\"")?;
+    file.write_all(
+        b"  <path stroke=\"blue\" fill=\"none\" stroke-width=\"0.2px\" d=\"",
+    )?;
     file.write_all(data_voronoi.as_bytes())?;
     file.write_all(b"\"/>\n")?;
 
     // Output Render Bounds ( black )
     let data_bounds = voronoi.render_bounds_to_string();
-    file.write_all(b"  <path stroke=\"black\" fill=\"none\" stroke-width=\"0.2px\" d=\"")?;
+    file.write_all(
+        b"  <path stroke=\"black\" fill=\"none\" stroke-width=\"0.2px\" d=\"",
+    )?;
     file.write_all(data_bounds.as_bytes())?;
     file.write_all(b"\"/>\n")?;
     // Close.

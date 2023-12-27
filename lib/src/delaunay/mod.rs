@@ -145,8 +145,8 @@ where
                 self.points[f].x,
                 self.points[f].y,
             ];
-            let r =
-                T::from_f64(1e-8).unwrap() * (bounds[3] - bounds[1]).hypot(bounds[3] - bounds[0]);
+            let r = T::from_f64(1e-8).unwrap()
+                * (bounds[3] - bounds[1]).hypot(bounds[3] - bounds[0]);
             for i in 0..self.points.len() {
                 let p = jitter(&self.points[i], r);
                 self.points[i].x = p.x;
@@ -287,12 +287,14 @@ where
             return (i + 1) % (self.points.len() >> 1);
         };
         let mut c = i;
-        let mut dc = (p.x - self.points[i].x).powi(2) + (p.y - self.points[i].y).powi(2);
+        let mut dc =
+            (p.x - self.points[i].x).powi(2) + (p.y - self.points[i].y).powi(2);
         let e0 = self.inedges[i];
         let mut e = e0;
         loop {
             let t = self.delaunator.triangles[e];
-            let dt = (p.x - self.points[t].x).powi(2) + (p.y - self.points[t].y).powi(2);
+            let dt = (p.x - self.points[t].x).powi(2)
+                + (p.y - self.points[t].y).powi(2);
             if dt < dc {
                 dc = dt;
                 c = t;
@@ -310,9 +312,12 @@ where
             }
             e = self.delaunator.halfedges[e];
             if e == EMPTY {
-                e = self.delaunator.hull[(self.hull_index[i] + 1) % self.delaunator.hull.len()];
+                e = self.delaunator.hull
+                    [(self.hull_index[i] + 1) % self.delaunator.hull.len()];
                 if e != t
-                    && (p.x - self.points[e].x).powi(2) + (p.y - self.points[e].y).powi(2) < dc
+                    && (p.x - self.points[e].x).powi(2)
+                        + (p.y - self.points[e].y).powi(2)
+                        < dc
                 {
                     return e;
                 }
@@ -372,7 +377,11 @@ where
     ///
     /// # Panics
     ///  Will never happen as '2' will always be converted into T.
-    pub fn render_points(&self, context: &mut impl CanvasRenderingContext2d<T>, r: Option<T>) {
+    pub fn render_points(
+        &self,
+        context: &mut impl CanvasRenderingContext2d<T>,
+        r: Option<T>,
+    ) {
         // if (r === undefined && (!context || typeof context.moveTo !== "function")) r = context, context = null;
         // r = r == undefined ? 2 : +r;
 
@@ -429,7 +438,11 @@ where
     T: CoordFloat + Display + FloatConst + FromPrimitive + Send + Sync,
 {
     /// Renders selected triangle into [`CanvasRenderingContext2d`]
-    pub fn render_triangle(&self, mut i: usize, context: &mut impl CanvasRenderingContext2d<T>) {
+    pub fn render_triangle(
+        &self,
+        mut i: usize,
+        context: &mut impl CanvasRenderingContext2d<T>,
+    ) {
         i *= 3;
         let t0 = self.delaunator.triangles[i];
         let t1 = self.delaunator.triangles[i + 1];
