@@ -67,4 +67,13 @@ The following generators functions are missing.
 | delaunay    |   | voronoi         |
 | ------------|---| --------------  |
 | neighbors() |   |  cellPolygons() |
-|             |   |  update()       |
+
+
+### update()
+d3-geo-delaunay has a dependency on this npm package [delauantor](https://github.com/mapbox/delaunator)
+the function update() allow for rapid retriangulation - in a memory efficient mannor.
+
+This module has a parallel depenecy on [delaunator-rs](https://github.com/mourner/delaunator-rs/issues/30)
+unfortunatly this is missing from the rust port.
+
+There is an open issue to add a update function https://github.com/mourner/delaunator-rs/issues/30
