@@ -266,9 +266,11 @@ where
     // }
 
     /// Returns the index of the point that is closest to the specified point p.
-    /// The search is started at the specified point i. If i is not specified, it defaults to zero.
+    /// The search is started at the specified point i.
+    /// If i is not specified, it starts at zero.
+    ///
+    /// If the point is not found, EMPTY is returned.
     pub fn find(&self, p: &Coord<T>, i: Option<usize>) -> usize {
-        // Skip return early if p is invalid.
         let mut i: usize = i.unwrap_or(0usize);
         let i0 = i;
         let mut c = self.step(i, p);
