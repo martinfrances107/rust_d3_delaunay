@@ -3,6 +3,8 @@
 mod delaunay {
     extern crate pretty_assertions;
 
+    use std::ops::Neg;
+
     use delaunator::EMPTY;
     use geo_types::Coord;
     use pretty_assertions::assert_eq;
@@ -428,6 +430,63 @@ mod delaunay {
     //   test.deepEqual(circumcenters2, Float64Array.from([ -150, 50, -250, -150, 50, -150, -150, -250 ]));
     // });
 
+    // #[test]
+    // fn allow_fast_updated() {
+    //     println!("delaunay.update() allows fast updates");
+    //     let points: Vec<Coord<f64>> = vec![
+    //         Coord { x: 0_f64, y: 0_f64 },
+    //         Coord {
+    //             x: 300_f64,
+    //             y: 0_f64,
+    //         },
+    //         Coord {
+    //             x: 0_f64,
+    //             y: 300_f64,
+    //         },
+    //         Coord {
+    //             x: 300_f64,
+    //             y: 300_f64,
+    //         },
+    //         Coord {
+    //             x: 100_f64,
+    //             y: 100_f64,
+    //         },
+    //     ];
+    //     let mut delaunay = Delaunay::new(&points);
+    //     let circumcenters1 = delaunay
+    //         .voronoi(Some((-500_f64, -500_f64, 500_f64, 500_f64)))
+    //         .circumcenters;
+
+    //     // let len = points.len();
+    //     // for i in 0..len {
+    //     //     let p = delaunay.points[i].clone();
+    //     //     delaunay.points[i] = p.neg();
+    //     // }
+    //     for p in delaunay.points.iter_mut() {
+    //         *p = p.neg();
+    //     }
+    //     delaunay.update();
+
+    //     let circumcenters2 = delaunay
+    //         .voronoi(Some((-500_f64, -500_f64, 500_f64, 500_f64)))
+    //         .circumcenters;
+
+    //     assert_eq!(
+    //         circumcenters1,
+    //         vec![Coord {
+    //             x: 150_f64,
+    //             y: 50_f64
+    //         },]
+    //     );
+    //     assert_eq!(
+    //         circumcenters2,
+    //         vec![Coord {
+    //             x: -150_f64,
+    //             y: 50_f64
+    //         },]
+    //     );
+    // }
+
     // tape("delaunay.update() updates collinear points", test => {
     //   const delaunay = new Delaunay(Array.from({ length: 250 }).fill(0));
     //   test.equal(delaunay.collinear, undefined);
@@ -449,13 +508,55 @@ mod delaunay {
     //   test.equal(delaunay.collinear, undefined);
     // });
 
-    // tape("delaunay.find(x, y) with coincident point", test => {
-    //   let delaunay = Delaunay.from([[0, 0], [0, 0], [10,10], [10, -10]]);
-    //   test.equal(delaunay.find(100,100), 2);
-    //   test.ok(delaunay.find(0,0,1) > -1);
-    //   delaunay = Delaunay.from(Array.from({length:1000}, () => [0, 0]).concat([[10,10], [10, -10]]));
-    //   test.ok(delaunay.find(0,0,1) > -1);
-    // });
+    #[test]
+    fn finds_concident_point() {
+        println!("delaunay.find(x, y) with coincident point");
+        let points = vec![
+            Coord { x: 0_f64, y: 0_f64 },
+            Coord { x: 0_f64, y: 0_f64 },
+            Coord {
+                x: 10_f64,
+                y: 10_f64,
+            },
+            Coord {
+                x: 10_f64,
+                y: -10_f64,
+            },
+        ];
+        let delaunay: DelaunayStub = Delaunay::new(&points);
+        assert_ne!(
+            delaunay.find(
+                &Coord {
+                    x: 100_f64,
+                    y: 100_f64
+                },
+                None
+            ),
+            20
+        );
+
+        assert_ne!(
+            delaunay.find(&Coord { x: 0_f64, y: 0_f64 }, Some(1)),
+            EMPTY
+        );
+        let mut points = vec![Coord { x: 0_f64, y: 0_f64 }; 1000];
+        points.append(&mut vec![
+            Coord {
+                x: 10_f64,
+                y: 10_f64,
+            },
+            Coord {
+                x: 10_f64,
+                y: -10_f64,
+            },
+        ]);
+
+        let delaunay: DelaunayStub = Delaunay::new(&points);
+        assert_ne!(
+            delaunay.find(&Coord { x: 0_f64, y: 0_f64 }, Some(1)),
+            EMPTY
+        );
+    }
 
     #[test]
     fn delaunay_find_transverses_the_convex_hull() {
