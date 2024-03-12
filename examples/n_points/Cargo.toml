@@ -16,7 +16,7 @@ rust-version = "1.65"
 
 [dependencies]
 d3_delaunay_rs = { path = "../../lib" }
-geo = {workspace=true}
-geo-types = {workspace=true}
+geo = { workspace = true }
+geo-types = { workspace = true }
 rand = "~0.8"
 clap = { version = "4.3.22", features = ["derive"] }
