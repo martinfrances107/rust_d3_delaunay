@@ -3,8 +3,6 @@
 mod delaunay {
     extern crate pretty_assertions;
 
-    use std::ops::Neg;
-
     use delaunator::EMPTY;
     use geo_types::Coord;
     use pretty_assertions::assert_eq;
