@@ -1,3 +1,6 @@
+//! A struct that handles `RendingContext2d` API calls for points and line segments.
+//!
+
 use core::fmt::Display;
 use core::fmt::Error;
 use core::fmt::Formatter;

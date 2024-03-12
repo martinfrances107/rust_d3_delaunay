@@ -1,4 +1,6 @@
 #![allow(clippy::many_single_char_names)]
+//! Holds helper functions and a wrapper struct that hold data associated with a delaunay triangulation.
+//!
 
 mod colinear;
 mod jitter;
@@ -75,7 +77,7 @@ where
     T: CoordFloat + FloatConst + FromPrimitive,
 {
     /// # Panics
-    /// unwrap() is used here but a panic will never happen as T will always be converted into f64.
+    /// `unwrap()` is used here but a panic will never happen as T will always be converted into f64.
     ///
     /// Computes a delaunay triangulation and stores the results.
     pub fn new(points: &[Coord<T>]) -> Self {
@@ -113,6 +115,11 @@ where
     pub fn voronoi(self, bounds: Option<Bounds<T>>) -> Voronoi<T> {
         Voronoi::new(self, bounds)
     }
+
+    // pub fn update(&mut self) {
+    //     todo!("how to enulate calls to delaunator::update()");
+    //     self.init();
+    // }
 
     fn init(&mut self) {
         // Check for colinear.
@@ -363,7 +370,7 @@ where
     /// Output the hull to a string.
     ///
     /// Wrapper function - a departure from the javascript version.
-    /// render() has been spit into two functions.
+    /// `render()` has been spit into two functions.
     /// rust expects variable type to be determined statically.
     /// 'context' cannot be either a Path type of a [`CanvasRenderingContext2d`].
     pub fn render_points_to_string(&self, r: Option<T>) -> String
@@ -400,7 +407,7 @@ where
     /// Output the hull to a string.
     ///
     /// Wrapper function - a departure from the javascript version.
-    /// render() has been spit into two functions.
+    /// `render()` has been spit into two functions.
     /// rust expects variable type to be determined statically.
     /// 'context' cannot be either a Path type of a [`CanvasRenderingContext2d`].
     #[must_use]

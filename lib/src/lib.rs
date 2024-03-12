@@ -14,13 +14,9 @@
 //!
 //! Repository [`rust_d3_geo`](<https://github.com/martinfrances107/rust_d3_delaunay>)
 
-/// Holds helper functions and a wrapper struct that hold data associated with a delaunay triangulation.
 pub mod delaunay;
-/// A struct that handles `RendingContext2d` API calls for points and line segments.
 pub mod path;
-/// A wrapper struct for a polygon, so that `RenderingAPI` call can be made.
 pub mod polygon;
-/// Storage a helpers for a  voronoi mesh.
 pub mod voronoi;
 
 use geo::CoordFloat;

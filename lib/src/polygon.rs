@@ -1,3 +1,6 @@
+//! A wrapper struct for a polygon, so that `RenderingAPI` call can be made.
+//!
+
 use crate::CanvasRenderingContext2d;
 use geo::CoordFloat;
 use geo_types::Coord;

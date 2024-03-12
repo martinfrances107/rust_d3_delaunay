@@ -1,5 +1,8 @@
 #![allow(clippy::many_single_char_names)]
 
+//! Storage a helpers for a  voronoi mesh.
+//!
+
 use core::fmt::Display;
 use std::collections::VecDeque;
 
@@ -91,6 +94,11 @@ where
         v.init();
         v
     }
+
+    // pub fn update(&mut self) {
+    //     self.delaunay.update();
+    //     self.init();
+    // }
 
     #[allow(clippy::similar_names)]
     #[allow(clippy::too_many_lines)]
@@ -263,7 +271,7 @@ where
     }
 
     /// Wrapper function - a departure from the javascript version.
-    /// render() has been spit into two functions.
+    /// `render()` has been spit into two functions.
     /// rust expects variable type to be determined statically
     /// 'context' cannot be either a Path type of a [`CanvasRenderingContext2d`].
     pub fn render_to_string(&self) -> String
