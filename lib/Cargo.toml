@@ -18,9 +18,9 @@ generator = ["dep:generator"]
 [dependencies]
 d3_geo_rs = "~2"
 delaunator = "~1"
-generator = { version = "0.7", optional = true }
-geo = {workspace=true}
-geo-types = {workspace=true}
+generator = { version = "~0.8", optional = true }
+geo = { workspace = true }
+geo-types = { workspace = true }
 num-traits = "~0.2"
 [dev-dependencies]
 pretty_assertions = "~1"
