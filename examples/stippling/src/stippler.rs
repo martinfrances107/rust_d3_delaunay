@@ -3,6 +3,7 @@ use wasm_bindgen::JsValue;
 use wasm_bindgen_test::console_log;
 use web_sys::js_sys::Math::random;
 use web_sys::CanvasRenderingContext2d;
+use web_sys::PerformanceMeasure;
 
 use d3_delaunay_rs::delaunay::Delaunay;
 
@@ -28,6 +29,17 @@ impl Stippler {
             context,
         };
 
+        let window =
+            web_sys::window().expect("should have a window in this context");
+        let performance = window
+            .performance()
+            .expect("performance should be available");
+
+        // console_log!("the current time (in ms) is {}", performance.now());
+
+        // let start = perf_to_system(performance.timing().request_start());
+
+        performance.mark(&"go")?;
         let mut points = Vec::with_capacity(n);
         console_log!("n {}", n);
         console_log!("data.len {}", data.len());
@@ -44,17 +56,52 @@ impl Stippler {
             }
         }
 
+        // let rejction_sampling_complete =
+        //     perf_to_system(performance.timing().response_end());
+
+        performance.mark(&"rejection_sampling_complete")?;
+
+        performance.measure_with_start_mark_and_end_mark(
+            &"rejection_sampling",
+            &"go",
+            &"rejection_sampling_complete",
+        )?;
+
+        let js_measure = performance
+            .get_entries_by_name(&"rejection_sampling")
+            .get(0);
+        let measure = PerformanceMeasure::try_from(js_measure).unwrap();
+
+        console_log!("rejection sampling {:#?} ms", measure.duration());
+
         let mut delaunay = Delaunay::new(&points);
         let mut voronoi =
             delaunay.voronoi(Some((0_f64, 0_f64, width as f64, height as f64)));
 
+        performance.mark(&"initial_voronoi_complete")?;
+
+        performance.measure_with_start_mark_and_end_mark(
+            &"initial_voronoi",
+            &"rejection_sampling_complete",
+            &"initial_voronoi_complete",
+        )?;
+        let js_measure =
+            performance.get_entries_by_name(&"initial_voronoi").get(0);
+        let measure = PerformanceMeasure::try_from(js_measure).unwrap();
+
+        console_log!("initial veronoi {:#?} ms", measure.duration());
+
+        let mut c = Vec::with_capacity(n);
+        let mut s = Vec::with_capacity(n);
+        for i in 0..n {
+            c.push(Coord { x: 0_f64, y: 0_f64 });
+            s.push(0_f64);
+        }
         for k in 0..80 {
             // Compute the weighted centroid for each Voronoi cell.
-            let mut c = Vec::with_capacity(n);
-            let mut s = Vec::with_capacity(n);
             for i in 0..n {
-                c.push(Coord { x: 0_f64, y: 0_f64 });
-                s.push(0_f64);
+                c[i] = Coord { x: 0_f64, y: 0_f64 };
+                s[i] = 0_f64;
             }
 
             //     // I javascript land i is null here.
@@ -95,6 +142,10 @@ impl Stippler {
             //     }
 
             state.draw(&points)?;
+
+            // let loop_draw_complete =
+            //     perf_to_system(performance.timing().response_end());
+
             // // TODO: doing a update() the hard way...
             // // What can I refactor here.
             delaunay = Delaunay::new(&points);
@@ -104,6 +155,9 @@ impl Stippler {
                 width as f64,
                 height as f64,
             )));
+
+            // let loop_update_complete =
+            //     perf_to_system(performance.timing().response_end());
         }
 
         Ok(())
