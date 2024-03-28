@@ -67,9 +67,8 @@ impl Stippler {
             "rejection_sampling_complete",
         )?;
 
-        let js_measure = performance
-            .get_entries_by_name(&"rejection_sampling")
-            .get(0);
+        let js_measure =
+            performance.get_entries_by_name("rejection_sampling").get(0);
         let measure = PerformanceMeasure::from(js_measure);
 
         console_log!("rejection sampling {:#?} ms", measure.duration());
@@ -86,7 +85,7 @@ impl Stippler {
             "initial_voronoi_complete",
         )?;
         let js_measure =
-            performance.get_entries_by_name(&"initial_voronoi").get(0);
+            performance.get_entries_by_name("initial_voronoi").get(0);
         let measure = PerformanceMeasure::from(js_measure);
 
         console_log!("initial veronoi {:#?} ms", measure.duration());

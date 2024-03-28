@@ -17,3 +17,10 @@ javascript has a update() function ... the RUST port does not.
 
 I am in the process of benchmarking and decide wheather to implement
 update().
+
+Development take mins to run!!!
+npm run watch
+
+Use the production build
+
+npm run build; npm run serve
