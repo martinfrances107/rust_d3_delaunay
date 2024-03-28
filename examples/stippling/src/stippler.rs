@@ -39,7 +39,7 @@ impl Stippler {
 
         // let start = perf_to_system(performance.timing().request_start());
 
-        performance.mark(&"go")?;
+        performance.mark("go")?;
         let mut points = Vec::with_capacity(n);
         console_log!("n {}", n);
         console_log!("data.len {}", data.len());
@@ -59,18 +59,18 @@ impl Stippler {
         // let rejction_sampling_complete =
         //     perf_to_system(performance.timing().response_end());
 
-        performance.mark(&"rejection_sampling_complete")?;
+        performance.mark("rejection_sampling_complete")?;
 
         performance.measure_with_start_mark_and_end_mark(
-            &"rejection_sampling",
-            &"go",
-            &"rejection_sampling_complete",
+            "rejection_sampling",
+            "go",
+            "rejection_sampling_complete",
         )?;
 
         let js_measure = performance
             .get_entries_by_name(&"rejection_sampling")
             .get(0);
-        let measure = PerformanceMeasure::try_from(js_measure).unwrap();
+        let measure = PerformanceMeasure::from(js_measure);
 
         console_log!("rejection sampling {:#?} ms", measure.duration());
 
@@ -78,16 +78,16 @@ impl Stippler {
         let mut voronoi =
             delaunay.voronoi(Some((0_f64, 0_f64, width as f64, height as f64)));
 
-        performance.mark(&"initial_voronoi_complete")?;
+        performance.mark("initial_voronoi_complete")?;
 
         performance.measure_with_start_mark_and_end_mark(
-            &"initial_voronoi",
-            &"rejection_sampling_complete",
-            &"initial_voronoi_complete",
+            "initial_voronoi",
+            "rejection_sampling_complete",
+            "initial_voronoi_complete",
         )?;
         let js_measure =
             performance.get_entries_by_name(&"initial_voronoi").get(0);
-        let measure = PerformanceMeasure::try_from(js_measure).unwrap();
+        let measure = PerformanceMeasure::from(js_measure);
 
         console_log!("initial veronoi {:#?} ms", measure.duration());
 
