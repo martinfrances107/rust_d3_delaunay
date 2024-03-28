@@ -1,5 +1,10 @@
 [workspace]
-members = ["./lib", "examples/cross_pattern", "examples/n_points"]
+members = [
+  "./lib",
+  "examples/cross_pattern",
+  "examples/n_points",
+  "examples/stippling",
+]
 
 resolver = "2"
 [workspace.package]

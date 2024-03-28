@@ -1,0 +1,49 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Meetup//RemoteApi//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-ORIGINAL-URL:https://www.meetup.com/Cambridge-Rust-Meetup/events/299730
+ 322/ical/Rust+Meetup+Reboot+3.ics
+X-WR-CALNAME:Events - Rust Meetup Reboot 3.ics
+X-MS-OLK-FORCEINSPECTOROPEN:TRUE
+BEGIN:VTIMEZONE
+TZID:Europe/London
+TZURL:http://tzurl.org/zoneinfo-outlook/Europe/London
+X-LIC-LOCATION:Europe/London
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0000
+TZOFFSETTO:+0100
+TZNAME:BST
+DTSTART:19700329T010000
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0000
+TZNAME:GMT
+DTSTART:19701025T020000
+RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTAMP:20240311T214810Z
+DTSTART;TZID=Europe/London:20240410T184500
+DTEND;TZID=Europe/London:20240410T204500
+STATUS:CONFIRMED
+SUMMARY:Rust Meetup Reboot 3
+DESCRIPTION:Cambridge Rust Meetup\nWednesday\, April 10 at 6:45 PM\n\nThe
+  first Rust meetup after another long period of absence. Once again host
+ ed at Quantinuum's office on Hill's road. Our speaker will be Agustín Bo
+ rgn...\n\nhttps://www.meetup.com/cambridge-rust-meetup/events/299730322/
+ 
+CLASS:PUBLIC
+CREATED:20240311T152722Z
+GEO:52.18;0.12
+LOCATION:Terrington House (13-15 Hills Road\, Cambridge\, United Kingdom 
+ CB2 1NL)
+URL:https://www.meetup.com/cambridge-rust-meetup/events/299730322/
+LAST-MODIFIED:20240311T164905Z
+UID:event_299730322@meetup.com
+END:VEVENT
+END:VCALENDAR
