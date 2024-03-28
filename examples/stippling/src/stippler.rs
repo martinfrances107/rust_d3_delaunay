@@ -3,24 +3,26 @@ use wasm_bindgen::JsValue;
 use wasm_bindgen_test::console_log;
 use web_sys::js_sys::Math::random;
 use web_sys::CanvasRenderingContext2d;
+use web_sys::Performance;
 use web_sys::PerformanceMeasure;
 
 use d3_delaunay_rs::delaunay::Delaunay;
 
-pub(crate) struct Stippler {
+pub(crate) struct Stippler<'a> {
     width: usize,
     height: usize,
     n: usize,
-    context: CanvasRenderingContext2d,
+    context: &'a CanvasRenderingContext2d,
 }
 
-impl Stippler {
+impl<'a> Stippler<'a> {
     pub(crate) fn go(
         width: usize,
         height: usize,
         data: &mut [f64], // gray scale - image data
         n: usize,
-        context: CanvasRenderingContext2d,
+        context: &CanvasRenderingContext2d,
+        performance: &Performance,
     ) -> Result<(), JsValue> {
         let state = Stippler {
             width,
@@ -28,12 +30,6 @@ impl Stippler {
             n,
             context,
         };
-
-        let window =
-            web_sys::window().expect("should have a window in this context");
-        let performance = window
-            .performance()
-            .expect("performance should be available");
 
         // console_log!("the current time (in ms) is {}", performance.now());
 

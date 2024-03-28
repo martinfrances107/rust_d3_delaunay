@@ -6,9 +6,11 @@ use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::Clamped;
 use wasm_bindgen::JsCast;
 use wasm_bindgen::JsValue;
+use wasm_bindgen_test::console_log;
 use web_sys::window;
 use web_sys::Document;
 use web_sys::ImageData;
+use web_sys::PerformanceMeasure;
 
 use stippler::Stippler;
 
@@ -26,6 +28,12 @@ fn document() -> Result<Document, JsValue> {
 #[wasm_bindgen]
 pub fn main() -> Result<(), JsValue> {
     // load image.
+
+    let window =
+        web_sys::window().expect("should have a window in this context");
+    let performance = window
+        .performance()
+        .expect("performance should be available");
 
     let eye_img = document()?
         .get_element_by_id("eye_img")
@@ -47,9 +55,22 @@ pub fn main() -> Result<(), JsValue> {
         .unwrap()
         .dyn_into::<web_sys::CanvasRenderingContext2d>()?;
 
+    performance.mark("draw_start")?;
     eye_context.draw_image_with_html_image_element_and_sw_and_sh_and_dx_and_dy_and_dw_and_dh(
       &eye_img, 0_f64, 0_f64, width as f64, height as f64, 0_f64, 0_f64, width as f64, height as f64
     )?;
+    performance.mark("draw_complete")?;
+
+    performance.measure_with_start_mark_and_end_mark(
+        "draw_to_canvas",
+        "draw_start",
+        "draw_complete",
+    )?;
+
+    let js_measure = performance.get_entries_by_name("draw_to_canvas").get(0);
+    let measure = PerformanceMeasure::from(js_measure);
+
+    console_log!("draw to the canvas {:#?} ms", measure.duration());
 
     let image_data: ImageData = eye_context.get_image_data(
         0_f64,
@@ -57,10 +78,23 @@ pub fn main() -> Result<(), JsValue> {
         width as f64,
         height as f64,
     )?;
+    performance.mark("get_data_from_canvas_complete")?;
 
-    let rgba: Clamped<Vec<u8>> = image_data.data();
+    performance.measure_with_start_mark_and_end_mark(
+        "get_image_data_from_canvas",
+        "draw_complete",
+        "get_data_from_canvas_complete",
+    )?;
 
-    let mut data: Vec<f64> = rgba
+    let js_measure = performance
+        .get_entries_by_name("get_image_data_from_canvas")
+        .get(0);
+    let measure = PerformanceMeasure::from(js_measure);
+
+    console_log!("get image data from canvas {:#?} ms", measure.duration());
+
+    let mut data: Vec<f64> = image_data
+        .data()
         .iter()
         .step_by(4)
         .map(|d| f64::max(0_f64, (1 - d / 254).into()))
@@ -76,7 +110,14 @@ pub fn main() -> Result<(), JsValue> {
         .unwrap()
         .dyn_into::<web_sys::CanvasRenderingContext2d>()?;
 
-    Stippler::go(width, height, &mut data, width * height, context_raw)?;
+    Stippler::go(
+        width,
+        height,
+        &mut data,
+        width * height,
+        &context_raw,
+        &performance,
+    )?;
 
     Ok(())
 }
