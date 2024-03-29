@@ -2,7 +2,7 @@ use geo_types::Coord;
 use wasm_bindgen::JsValue;
 use wasm_bindgen_test::console_log;
 use web_sys::js_sys::Math::random;
-use web_sys::CanvasRenderingContext2d;
+use web_sys::OffscreenCanvasRenderingContext2d;
 use web_sys::Performance;
 use web_sys::PerformanceMeasure;
 
@@ -12,7 +12,7 @@ pub(crate) struct Stippler<'a> {
     width: usize,
     height: usize,
     n: usize,
-    context: &'a CanvasRenderingContext2d,
+    context: &'a OffscreenCanvasRenderingContext2d,
 }
 
 impl<'a> Stippler<'a> {
@@ -21,7 +21,7 @@ impl<'a> Stippler<'a> {
         height: usize,
         data: &mut [f64], // gray scale - image data
         n: usize,
-        context: &CanvasRenderingContext2d,
+        context: &OffscreenCanvasRenderingContext2d,
         performance: &Performance,
     ) -> Result<(), JsValue> {
         let state = Stippler {
@@ -94,61 +94,65 @@ impl<'a> Stippler<'a> {
         }
 
         // for k in 0..80 {
-        let k = 0;
-        // Compute the weighted centroid for each Voronoi cell.
-        for i in 0..n {
-            c[i] = Coord { x: 0_f64, y: 0_f64 };
-            s[i] = 0_f64;
+        for k in 0..8 {
+            // Compute the weighted centroid for each Voronoi cell.
+            for i in 0..n {
+                c[i] = Coord { x: 0_f64, y: 0_f64 };
+                s[i] = 0_f64;
+            }
+
+            //     // I javascript land i is null here.
+            //     // find() treats None as zero.
+            //     let mut i = 0;
+            //     for y in 0..height {
+            //         // for (let x = 0; x < width; ++x) {
+            //         for x in 0..width {
+            //             let w = data[y * width + x];
+            //             let i = voronoi.delaunay.find(
+            //                 &Coord {
+            //                     x: x as f64 + 0.5_f64,
+            //                     y: y as f64 + 0.5_f64,
+            //                 },
+            //                 Some(i),
+            //             );
+            //             s[i] += w;
+            //             // c[i * 2] += w * (x + 0.5);
+            //             // c[i * 2 + 1] += w * (y + 0.5);
+            //             c[i].x += w * (x as f64 + 0.5_f64);
+            //             c[i].y += w * (y as f64 + 0.5_f64);
+            //         }
+            //     }
+
+            //     // Relax the diagram by moving points to the weighted centroid.
+            //     // Wiggle the points a little bit so they don’t get stuck.
+            //     let w = (k as f64 + 1_f64).powf(-0.8) * 10_f64;
+            //     // for (let i = 0; i < n; ++i) {
+            //     for i in 0..n {
+            //         let x0 = points[i].x;
+            //         let y0 = points[i].y;
+            //         // let x1 = s[i] ? c[i * 2] / s[i] : x0;
+            //         let x1 = if s[i] == 0_f64 { x0 } else { c[i].y / s[i] };
+            //         // let y1 = s[i] ? c[i * 2 + 1] / s[i] : y0;
+            //         let y1 = if s[i] == 0_f64 { y0 } else { c[i].y / s[i] };
+            //         points[i].x = x0 + (x1 - x0) * 1.8 + (random() - 0.5) * w;
+            //         points[i].y = y0 + (y1 - y0) * 1.8 + (random() - 0.5) * w;
+            //     }
+
+            state.draw(&points)?;
+
+            // let loop_draw_complete =
+            //     perf_to_system(performance.timing().response_end());
+
+            // // TODO: doing a update() the hard way...
+            // // What can I refactor here.
+            delaunay = Delaunay::new(&points);
+            voronoi = delaunay.voronoi(Some((
+                0_f64,
+                0_f64,
+                width as f64,
+                height as f64,
+            )));
         }
-
-        //     // I javascript land i is null here.
-        //     // find() treats None as zero.
-        //     let mut i = 0;
-        //     for y in 0..height {
-        //         // for (let x = 0; x < width; ++x) {
-        //         for x in 0..width {
-        //             let w = data[y * width + x];
-        //             let i = voronoi.delaunay.find(
-        //                 &Coord {
-        //                     x: x as f64 + 0.5_f64,
-        //                     y: y as f64 + 0.5_f64,
-        //                 },
-        //                 Some(i),
-        //             );
-        //             s[i] += w;
-        //             // c[i * 2] += w * (x + 0.5);
-        //             // c[i * 2 + 1] += w * (y + 0.5);
-        //             c[i].x += w * (x as f64 + 0.5_f64);
-        //             c[i].y += w * (y as f64 + 0.5_f64);
-        //         }
-        //     }
-
-        //     // Relax the diagram by moving points to the weighted centroid.
-        //     // Wiggle the points a little bit so they don’t get stuck.
-        //     let w = (k as f64 + 1_f64).powf(-0.8) * 10_f64;
-        //     // for (let i = 0; i < n; ++i) {
-        //     for i in 0..n {
-        //         let x0 = points[i].x;
-        //         let y0 = points[i].y;
-        //         // let x1 = s[i] ? c[i * 2] / s[i] : x0;
-        //         let x1 = if s[i] == 0_f64 { x0 } else { c[i].y / s[i] };
-        //         // let y1 = s[i] ? c[i * 2 + 1] / s[i] : y0;
-        //         let y1 = if s[i] == 0_f64 { y0 } else { c[i].y / s[i] };
-        //         points[i].x = x0 + (x1 - x0) * 1.8 + (random() - 0.5) * w;
-        //         points[i].y = y0 + (y1 - y0) * 1.8 + (random() - 0.5) * w;
-        //     }
-
-        state.draw(&points)?;
-
-        // let loop_draw_complete =
-        //     perf_to_system(performance.timing().response_end());
-
-        // // TODO: doing a update() the hard way...
-        // // What can I refactor here.
-        delaunay = Delaunay::new(&points);
-        voronoi =
-            delaunay.voronoi(Some((0_f64, 0_f64, width as f64, height as f64)));
-        // }
 
         Ok(())
     }

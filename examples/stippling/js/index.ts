@@ -3,11 +3,14 @@
 const sizeRange = document.getElementById('size-range');
 const sizeLabel = document.getElementById('size-label');
 const perf = document.getElementById('perf');
-const canvas = document.getElementById('c');
 
 import('../pkg')
   .then(pkg => {
     console.log('wasm is imported');
 
-    pkg.main();
+    const originalCanvas = document.querySelector('#eye_canvas').transferControlToOffscreen();
+    const stippledCanvas = document.querySelector('#stippled_canvas').transferControlToOffscreen();
+
+
+    pkg.main(originalCanvas, stippledCanvas);
   })

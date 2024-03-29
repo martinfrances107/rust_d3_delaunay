@@ -10,6 +10,8 @@ use wasm_bindgen_test::console_log;
 use web_sys::window;
 use web_sys::Document;
 use web_sys::ImageData;
+use web_sys::OffscreenCanvas;
+use web_sys::OffscreenCanvasRenderingContext2d;
 use web_sys::PerformanceMeasure;
 
 use stippler::Stippler;
@@ -25,8 +27,12 @@ fn document() -> Result<Document, JsValue> {
         Err(JsValue::from_str("Unable to get window."))
     }
 }
+
 #[wasm_bindgen]
-pub fn main() -> Result<(), JsValue> {
+pub fn main(
+    original_canvas: OffscreenCanvas,
+    strippled_canvas: OffscreenCanvas,
+) -> Result<(), JsValue> {
     // load image.
 
     let window =
@@ -38,7 +44,9 @@ pub fn main() -> Result<(), JsValue> {
 
     performance.mark("start")?;
 
-    let eye_img = document()?
+    let document = document()?;
+
+    let eye_img = document
         .get_element_by_id("eye_img")
         .unwrap()
         .dyn_into::<web_sys::HtmlImageElement>()?;
@@ -46,28 +54,17 @@ pub fn main() -> Result<(), JsValue> {
     let width = eye_img.width() as usize;
     let height = eye_img.height() as usize;
 
-    // Must write img to hidden canvas *ONLY* so that
-    // data can be inspected.
-    let eye_canvas = document()?
-        .get_element_by_id("eye_canvas")
-        .unwrap()
-        .dyn_into::<web_sys::HtmlCanvasElement>()?;
-
-    let eye_context = eye_canvas
+    let eye_context = original_canvas
         .get_context("2d")?
         .unwrap()
-        .dyn_into::<web_sys::CanvasRenderingContext2d>()?;
+        .dyn_into::<web_sys::OffscreenCanvasRenderingContext2d>(
+    )?;
 
-    let canvas = document()?
-        .get_element_by_id("c")
-        .unwrap()
-        .dyn_into::<web_sys::HtmlCanvasElement>()?;
-
-    let context_raw = canvas
+    let context_raw = strippled_canvas
         .get_context("2d")?
         .unwrap()
-        .dyn_into::<web_sys::CanvasRenderingContext2d>()?;
-
+        .dyn_into::<web_sys::OffscreenCanvasRenderingContext2d>(
+    )?;
     performance.mark("init_complete")?;
 
     performance.measure_with_start_mark_and_end_mark(
@@ -103,6 +100,7 @@ pub fn main() -> Result<(), JsValue> {
         width as f64,
         height as f64,
     )?;
+
     performance.mark("get_data_from_canvas_complete")?;
 
     performance.measure_with_start_mark_and_end_mark(
