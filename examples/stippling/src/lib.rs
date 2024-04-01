@@ -3,7 +3,6 @@ mod stippler;
 extern crate d3_delaunay_rs;
 
 use wasm_bindgen::prelude::wasm_bindgen;
-use wasm_bindgen::Clamped;
 use wasm_bindgen::JsCast;
 use wasm_bindgen::JsValue;
 use wasm_bindgen_test::console_log;
@@ -11,7 +10,6 @@ use web_sys::window;
 use web_sys::Document;
 use web_sys::ImageData;
 use web_sys::OffscreenCanvas;
-use web_sys::OffscreenCanvasRenderingContext2d;
 use web_sys::PerformanceMeasure;
 
 use stippler::Stippler;
@@ -32,7 +30,7 @@ fn document() -> Result<Document, JsValue> {
 pub fn main(
     original_canvas: OffscreenCanvas,
     strippled_canvas: OffscreenCanvas,
-) -> Result<(), JsValue> {
+) -> Result<Stippler, JsValue> {
     // load image.
 
     let window =
@@ -118,7 +116,7 @@ pub fn main(
 
     let mut data: Vec<f64> = image_data
         .data()
-        .iter()
+        .drain(..)
         .step_by(4)
         .map(|d| f64::max(0_f64, (1 - d / 254).into()))
         .collect();
@@ -136,38 +134,14 @@ pub fn main(
 
     console_log!("data transform {:#?} ms", measure.duration());
 
-    Stippler::go(
+    let stippler = Stippler::new(
         width,
         height,
-        &mut data,
+        data,
         width * height,
         &context_raw,
         &performance,
     )?;
 
-    performance.mark("final")?;
-
-    performance.measure_with_start_mark_and_end_mark(
-        "stippler_time",
-        "data_transform_complete",
-        "final",
-    )?;
-
-    let js_measure = performance.get_entries_by_name("stippler_time").get(0);
-    let measure = PerformanceMeasure::from(js_measure);
-
-    console_log!("stippler time {:#?} ms", measure.duration());
-
-    performance.measure_with_start_mark_and_end_mark(
-        "total_time",
-        "start",
-        "final",
-    )?;
-
-    let js_measure = performance.get_entries_by_name("total_time").get(0);
-    let measure = PerformanceMeasure::from(js_measure);
-
-    console_log!("total time {:#?} ms", measure.duration());
-
-    Ok(())
+    Ok(stippler)
 }

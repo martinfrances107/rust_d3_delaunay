@@ -12,5 +12,23 @@ import('../pkg')
     const stippledCanvas = document.querySelector('#stippled_canvas').transferControlToOffscreen();
 
 
-    pkg.main(originalCanvas, stippledCanvas);
+    let stippler = pkg.main(originalCanvas, stippledCanvas);
+    for (let i = 0; i < 8; i++) {
+      // stippler.next();
+      stippler.draw();
+    }
+
+
+    let k = 0;
+    const renderLoop = () => {
+
+      stippler.next(k);
+
+      if (k < 80) {
+        requestAnimationFrame(renderLoop);
+        k++;
+      }
+    }
+
+    renderLoop();
   })
