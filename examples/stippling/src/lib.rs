@@ -114,7 +114,7 @@ pub fn main(
 
     console_log!("get image data from canvas {:#?} ms", measure.duration());
 
-    let mut data: Vec<f64> = image_data
+    let data: Vec<f64> = image_data
         .data()
         .drain(..)
         .step_by(4)

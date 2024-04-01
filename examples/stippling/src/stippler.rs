@@ -33,10 +33,6 @@ impl Stippler {
         context: &OffscreenCanvasRenderingContext2d,
         performance: &Performance,
     ) -> Result<Stippler, JsValue> {
-        // console_log!("the current time (in ms) is {}", performance.now());
-
-        // let start = perf_to_system(performance.timing().request_start());
-
         performance.mark("go")?;
         let mut points = Vec::with_capacity(n);
         console_log!("n {}", n);
@@ -87,7 +83,7 @@ impl Stippler {
 
         let mut c = Vec::with_capacity(n);
         let mut s = Vec::with_capacity(n);
-        for i in 0..n {
+        for _i in 0..n {
             c.push(Coord { x: 0_f64, y: 0_f64 });
             s.push(0_f64);
         }
@@ -117,10 +113,9 @@ impl Stippler {
         // find() treats None as zero.
         let mut i = 0;
         for y in 0..self.height {
-            // for (let x = 0; x < width; ++x) {
             for x in 0..self.width {
                 let w = self.data[y * self.width + x];
-                let i = self.voronoi.delaunay.find(
+                i = self.voronoi.delaunay.find(
                     &Coord {
                         x: x as f64 + 0.5_f64,
                         y: y as f64 + 0.5_f64,
@@ -128,8 +123,6 @@ impl Stippler {
                     Some(i),
                 );
                 self.s[i] += w;
-                // c[i * 2] += w * (x + 0.5);
-                // c[i * 2 + 1] += w * (y + 0.5);
                 self.c[i].x += w * (x as f64 + 0.5_f64);
                 self.c[i].y += w * (y as f64 + 0.5_f64);
             }
