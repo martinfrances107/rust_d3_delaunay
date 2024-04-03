@@ -8,8 +8,8 @@ import('../pkg')
   .then(pkg => {
     console.log('wasm is imported');
 
-    const originalCanvas = document.querySelector<HTMLCanvasElement>('#eye_canvas')?.transferControlToOffscreen();
-    const stippledCanvas = document.querySelector<HTMLCanvasElement>('#stippled_canvas')?.transferControlToOffscreen();
+    const originalCanvas = document.querySelector('#eye_canvas').transferControlToOffscreen();
+    const stippledCanvas = document.querySelector('#stippled_canvas').transferControlToOffscreen();
 
 
     let stippler = pkg.main(originalCanvas, stippledCanvas);

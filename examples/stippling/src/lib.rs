@@ -138,7 +138,7 @@ pub fn main(
         width,
         height,
         data,
-        width * height,
+        width * height / 40,
         &context_raw,
         &performance,
     )?;
