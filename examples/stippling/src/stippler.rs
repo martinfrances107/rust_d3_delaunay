@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use geo_types::Coord;
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
@@ -34,21 +36,22 @@ impl Stippler {
         performance: &Performance,
     ) -> Result<Stippler, JsValue> {
         performance.mark("go")?;
-        let mut points = Vec::with_capacity(n);
+        let mut h_points: HashMap<usize, Coord<f64>> = HashMap::with_capacity(n);
         console_log!("n {}", n);
         console_log!("data.len {}", data.len());
         // Initialize the points using rejection sampling.
-        for _i in 0..n {
+        for i in 0..n {
             '_30Loop: for _ in 0..30 {
                 let x = f64::floor(random() * (width as f64));
                 let y = f64::floor(random() * (height as f64));
                 let index = y as usize * width + x as usize;
-                points.push(Coord { x, y });
+                h_points.insert(i, Coord { x, y });
                 if random() < data[index] {
                     break '_30Loop;
                 }
             }
         }
+        let points = h_points.into_values().collect::<Vec<_>>();
 
         performance.mark("rejection_sampling_complete")?;
 
@@ -109,47 +112,47 @@ impl Stippler {
             self.s[i] = 0_f64;
         }
 
-        // // I javascript land i is null here.
-        // // find() treats None as zero.
-        // let mut i = 0;
-        // for y in 0..self.height {
-        //     for x in 0..self.width {
-        //         let w = self.data[y * self.width + x];
-        //         i = self.voronoi.delaunay.find(
-        //             &Coord {
-        //                 x: x as f64 + 0.5_f64,
-        //                 y: y as f64 + 0.5_f64,
-        //             },
-        //             Some(i),
-        //         );
-        //         self.s[i] += w;
-        //         self.c[i].x += w * (x as f64 + 0.5_f64);
-        //         self.c[i].y += w * (y as f64 + 0.5_f64);
-        //     }
-        // }
+        // I javascript land i is null here.
+        // find() treats None as zero.
+        let mut i = 0;
+        for y in 0..self.height {
+            for x in 0..self.width {
+                let w = self.data[y * self.width + x];
+                i = self.voronoi.delaunay.find(
+                    &Coord {
+                        x: x as f64 + 0.5_f64,
+                        y: y as f64 + 0.5_f64,
+                    },
+                    Some(i),
+                );
+                self.s[i] += w;
+                self.c[i].x += w * (x as f64 + 0.5_f64);
+                self.c[i].y += w * (y as f64 + 0.5_f64);
+            }
+        }
 
-        // // Relax the diagram by moving points to the weighted centroid.
-        // // Wiggle the points a little bit so they don’t get stuck.
-        // let w = (k as f64 + 1_f64).powf(-0.8) * 10_f64;
-        // // for (let i = 0; i < n; ++i) {
-        // for i in 0..self.n {
-        //     let x0 = self.points[i].x;
-        //     let y0 = self.points[i].y;
-        //     // let x1 = s[i] ? c[i * 2] / s[i] : x0;
-        //     let x1 = if self.s[i] == 0_f64 {
-        //         x0
-        //     } else {
-        //         self.c[i].y / self.s[i]
-        //     };
-        //     // let y1 = s[i] ? c[i * 2 + 1] / s[i] : y0;
-        //     let y1 = if self.s[i] == 0_f64 {
-        //         y0
-        //     } else {
-        //         self.c[i].y / self.s[i]
-        //     };
-        //     self.points[i].x = x0 + (x1 - x0) * 1.8 + (random() - 0.5) * w;
-        //     self.points[i].y = y0 + (y1 - y0) * 1.8 + (random() - 0.5) * w;
-        // }
+        // Relax the diagram by moving points to the weighted centroid.
+        // Wiggle the points a little bit so they don’t get stuck.
+        let w = (k as f64 + 1_f64).powf(-0.8) * 10_f64;
+        // for (let i = 0; i < n; ++i) {
+        for i in 0..self.n {
+            let x0 = self.points[i].x;
+            let y0 = self.points[i].y;
+            // let x1 = s[i] ? c[i * 2] / s[i] : x0;
+            let x1 = if self.s[i] == 0_f64 {
+                x0
+            } else {
+                self.c[i].y / self.s[i]
+            };
+            // let y1 = s[i] ? c[i * 2 + 1] / s[i] : y0;
+            let y1 = if self.s[i] == 0_f64 {
+                y0
+            } else {
+                self.c[i].y / self.s[i]
+            };
+            self.points[i].x = x0 + (x1 - x0) * 1.8 + (random() - 0.5) * w;
+            self.points[i].y = y0 + (y1 - y0) * 1.8 + (random() - 0.5) * w;
+        }
 
         self.draw()?;
 
