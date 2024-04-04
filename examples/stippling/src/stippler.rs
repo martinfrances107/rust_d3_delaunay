@@ -142,7 +142,7 @@ impl Stippler {
             let x1 = if self.s[i] == 0_f64 {
                 x0
             } else {
-                self.c[i].y / self.s[i]
+                self.c[i].x / self.s[i]
             };
             // let y1 = s[i] ? c[i * 2 + 1] / s[i] : y0;
             let y1 = if self.s[i] == 0_f64 {
