@@ -126,17 +126,14 @@ impl Stippler {
         // Relax the diagram by moving points to the weighted centroid.
         // Wiggle the points a little bit so they don’t get stuck.
         let w = (k as f64 + 1_f64).powf(-0.8) * 10_f64;
-        // for (let i = 0; i < n; ++i) {
         for i in 0..self.n {
             let x0 = self.points[i].x;
             let y0 = self.points[i].y;
-            // let x1 = s[i] ? c[i * 2] / s[i] : x0;
             let x1 = if s[i] == 0_f64 {
                 x0
             } else {
                 c[i].x / s[i]
             };
-            // let y1 = s[i] ? c[i * 2 + 1] / s[i] : y0;
             let y1 = if s[i] == 0_f64 {
                 y0
             } else {
