@@ -8,15 +8,14 @@ import('../pkg')
   .then(pkg => {
     console.log('wasm is imported');
 
-    const originalCanvas = document.querySelector('#eye_canvas').transferControlToOffscreen();
     const stippledCanvas = document.querySelector('#stippled_canvas').transferControlToOffscreen();
 
 
-    let stippler = pkg.main(originalCanvas, stippledCanvas);
-    for (let i = 0; i < 8; i++) {
+    let stippler = pkg.main(stippledCanvas);
+    // for (let i = 0; i < 8; i++) {
       // stippler.next();
       stippler.draw();
-    }
+    // }
 
 
     let k = 0;

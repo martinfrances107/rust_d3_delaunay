@@ -28,7 +28,6 @@ fn document() -> Result<Document, JsValue> {
 
 #[wasm_bindgen]
 pub fn main(
-    original_canvas: OffscreenCanvas,
     strippled_canvas: OffscreenCanvas,
 ) -> Result<Stippler, JsValue> {
     // load image.
@@ -45,13 +44,14 @@ pub fn main(
     let document = document()?;
 
     let eye_img = document
-        .get_element_by_id("eye_img")
+        .get_element_by_id("input_img")
         .unwrap()
         .dyn_into::<web_sys::HtmlImageElement>()?;
 
     let width = eye_img.width() as usize;
     let height = eye_img.height() as usize;
 
+    let original_canvas = OffscreenCanvas::new(width as u32, height as u32)?;
     let eye_context = original_canvas
         .get_context("2d")?
         .unwrap()
