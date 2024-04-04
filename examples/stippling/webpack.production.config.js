@@ -31,6 +31,7 @@ module.exports = {
       patterns: [
         { from: 'index.html' },
         // { from: 'close_up_of_eye_800x600.jpg' },
+        { from: 'obama.png'},
         { from: 'close_up_of_eye_399x266.jpg' },
       ]
     }),
