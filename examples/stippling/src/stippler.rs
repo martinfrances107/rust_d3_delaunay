@@ -21,8 +21,6 @@ pub struct Stippler {
     points: Vec<Coord<f64>>,
     voronoi: Voronoi<f64>,
     context: OffscreenCanvasRenderingContext2d,
-    c: Vec<Coord<f64>>,
-    s: Vec<f64>,
 }
 
 #[wasm_bindgen]
@@ -84,12 +82,6 @@ impl Stippler {
 
         console_log!("initial veronoi {:#?} ms", measure.duration());
 
-        let mut c = Vec::with_capacity(n);
-        let mut s = Vec::with_capacity(n);
-        for _i in 0..n {
-            c.push(Coord { x: 0_f64, y: 0_f64 });
-            s.push(0_f64);
-        }
 
         let state = Stippler {
             width,
@@ -99,17 +91,17 @@ impl Stippler {
             points,
             voronoi,
             context: context.clone(),
-            s,
-            c,
         };
         Ok(state)
     }
 
     pub fn next(&mut self, k: usize) -> Result<(), JsValue> {
         // Compute the weighted centroid for each Voronoi cell.
+        let mut c: Vec<Coord<f64>> = Vec::with_capacity(self.n);
+        let mut s: Vec<f64> = Vec::with_capacity(self.n);
         for i in 0..self.n {
-            self.c[i] = Coord { x: 0_f64, y: 0_f64 };
-            self.s[i] = 0_f64;
+            c.push( Coord { x: 0_f64, y: 0_f64 });
+            s.push( 0_f64);
         }
 
         // I javascript land i is null here.
@@ -125,9 +117,9 @@ impl Stippler {
                     },
                     Some(i),
                 );
-                self.s[i] += w;
-                self.c[i].x += w * (x as f64 + 0.5_f64);
-                self.c[i].y += w * (y as f64 + 0.5_f64);
+                s[i] += w;
+                c[i].x += w * (x as f64 + 0.5_f64);
+                c[i].y += w * (y as f64 + 0.5_f64);
             }
         }
 
@@ -139,16 +131,16 @@ impl Stippler {
             let x0 = self.points[i].x;
             let y0 = self.points[i].y;
             // let x1 = s[i] ? c[i * 2] / s[i] : x0;
-            let x1 = if self.s[i] == 0_f64 {
+            let x1 = if s[i] == 0_f64 {
                 x0
             } else {
-                self.c[i].x / self.s[i]
+                c[i].x / s[i]
             };
             // let y1 = s[i] ? c[i * 2 + 1] / s[i] : y0;
-            let y1 = if self.s[i] == 0_f64 {
+            let y1 = if s[i] == 0_f64 {
                 y0
             } else {
-                self.c[i].y / self.s[i]
+                c[i].y / s[i]
             };
             self.points[i].x = x0 + (x1 - x0) * 1.8 + (random() - 0.5) * w;
             self.points[i].y = y0 + (y1 - y0) * 1.8 + (random() - 0.5) * w;
