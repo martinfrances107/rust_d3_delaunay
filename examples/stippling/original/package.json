@@ -1,0 +1,16 @@
+{
+  "name": "stippling",
+  "version": "0.1.0",
+  "description": "A port of the stippling code, so I am compare with rust_d3_delaunay/examples/stippling.",
+  "main": "data.js",
+  "scripts": {
+    "build": "rimraf dist pkg && RUST_LOG=info webpack -c webpack.production.config.js",
+    "serve": "serve dist",
+    "start": "rimraf dist pkg && RUST_LOG=info webpack-dev-server --open "
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "d3-delaunay": "^6.0.4"
+  }
+}
