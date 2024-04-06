@@ -299,21 +299,16 @@ mod delaunay {
             "delaunay.find(x, y) returns the index of the cell that contains the specified point"
         );
 
-        let delaunay: DelaunayStub = Delaunay::new(&[
-            Coord { x: 0., y: 0. },
-            Coord { x: 300., y: 0. },
-            Coord { x: 0., y: 300. },
-            Coord { x: 300., y: 300. },
-            Coord { x: 100., y: 100. },
-        ]);
+        let points = vec![
+          Coord { x: 0., y: 0. },
+          Coord { x: 300., y: 0. },
+          Coord { x: 0., y: 300. },
+          Coord { x: 300., y: 300. },
+          Coord { x: 100., y: 100. },
+        ];
+        let delaunay: DelaunayStub = Delaunay::new(&points);
         assert_eq!(delaunay.find(&Coord { x: 49., y: 49. }, None), 0);
-        let delaunay: DelaunayStub = Delaunay::new(&[
-            Coord { x: 0., y: 0. },
-            Coord { x: 300., y: 0. },
-            Coord { x: 0., y: 300. },
-            Coord { x: 300., y: 300. },
-            Coord { x: 100., y: 100. },
-        ]);
+        let delaunay: DelaunayStub = Delaunay::new(&points);
         assert_eq!(delaunay.find(&Coord { x: 51., y: 51. }, None), 4);
     }
 
