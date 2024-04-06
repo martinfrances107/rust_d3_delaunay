@@ -1,5 +1,4 @@
 let image_element = document.querySelector("img#input_image");
-console.log(image_element);
 if (image_element instanceof HTMLImageElement) {
   let width = image_element?.width;
   let height = image_element?.height;
@@ -41,8 +40,7 @@ if (image_element instanceof HTMLImageElement) {
       // Load image
       //
       // Use worker to draw initial rounds of points.
-      function messaged({ data: points }) {
-        console.log("inside draw function.");
+       let messaged = ({ data: points }) => {
         stippled_context.fillStyle = "#fff";
         stippled_context.fillRect(0, 0, width, height);
         stippled_context.beginPath();
@@ -56,9 +54,6 @@ if (image_element instanceof HTMLImageElement) {
         stippled_context.fill();
       }
 
-      // /// terminate: Start worker from a know point.
-      // // is this needed?
-      // worker.terminate();
       worker.addEventListener("message", messaged);
       worker.postMessage({ data, width, height, n });
     } else {
