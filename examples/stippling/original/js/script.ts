@@ -1,8 +1,9 @@
-// importScripts( "d3-delaunay@6");
+import * as  d3 from  "d3-delaunay";
 
 // This is a service worker.
 
 onmessage = (event) => {
+  console.log("inside worker script.");
   const {data: {data, width, height, n}} = event;
   const points = new Float64Array(n * 2);
   const c = new Float64Array(n * 2);
