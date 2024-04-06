@@ -863,7 +863,7 @@ mod delaunay {
                     x: 49_f64,
                     y: 311_f64
                 },
-                None
+                Some(22)
             ),
             31
         )
