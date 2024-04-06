@@ -16,7 +16,7 @@ mod delaunay {
     type VoronoiStub = Voronoi<f64>;
 
     #[test]
-    fn delaunay_from_array() {
+    fn from_array() {
         println!("Delaunay.from(array)");
         let points = vec![
             Coord { x: 0f64, y: 0f64 },
@@ -98,7 +98,7 @@ mod delaunay {
     // });
 
     #[test]
-    fn voronoi_default_bounds() {
+    fn uses_the_default_bounds() {
         println!("delaunay.voronoi() uses the default bounds");
         let points = vec![
             Coord { x: 0f64, y: 0f64 },
@@ -115,7 +115,7 @@ mod delaunay {
     }
 
     #[test]
-    fn voronoi_specific_bounds() {
+    fn uses_the_specified_bounds() {
         println!("delaunay.voronoi([xmin, ymin, xmax, ymax]) uses the specified bounds");
         let points = vec![
             Coord { x: 0f64, y: 0f64 },
@@ -133,7 +133,7 @@ mod delaunay {
     }
 
     #[test]
-    fn voronoi_returns_the_expected_diagram() {
+    fn returns_the_expected_diagram() {
         println!("delaunay.voronoi() returns the expected diagram");
         let points = vec![
             Coord { x: 0f64, y: 0f64 },
@@ -181,7 +181,7 @@ mod delaunay {
     }
 
     #[test]
-    fn voronoi_skips_cells_for_coincident_points() {
+    fn skips_cells_for_coincident_points() {
         println!("delaunay.voronoi() skips cells for coincident points");
         let points = vec![
             Coord { x: 0f64, y: 0f64 },
@@ -209,7 +209,7 @@ mod delaunay {
     }
 
     #[test]
-    fn delaunay_return_for_zero_points() {
+    fn for_zero_poiints_return_for_zero_points() {
         println!("delaunay.voronoi() for zero point returns expected values");
         let v: VoronoiStub =
             Delaunay::new(&[]).voronoi(Some((-1f64, -1f64, 2f64, 2f64)));
@@ -217,7 +217,7 @@ mod delaunay {
     }
 
     #[test]
-    fn delaunay_render_points_accepts_r() {
+    fn render_points_accepts_r() {
         println!("delaunay.voronoi() for zero point returns expected values");
         let points = vec![Coord {
             x: 0.0_f64,
@@ -240,7 +240,7 @@ mod delaunay {
     }
 
     #[test]
-    fn delaunay_return_for_one_point() {
+    fn for_one_point_returns_the_bounding_rectangle() {
         println!(
             "delaunay.voronoi() for one point returns the bounding rectangle"
         );
@@ -252,9 +252,9 @@ mod delaunay {
     }
 
     #[test]
-    fn delaunay_return_for_two_point() {
+    fn for_two_point() {
         println!(
-            "delaunay.voronoi() for one point returns the bounding rectangle"
+          "delaunay.voronoi() for two points"
         );
         let points = vec![
             Coord { x: 0f64, y: 0f64 },
@@ -552,7 +552,7 @@ mod delaunay {
     }
 
     #[test]
-    fn delaunay_find_transverses_the_convex_hull() {
+    fn find_transverses_the_convex_hull() {
         println!("delaunay.find(x, y, i) traverses the convex hull");
         let points = vec![
             Coord {
