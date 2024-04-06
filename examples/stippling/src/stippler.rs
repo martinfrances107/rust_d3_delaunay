@@ -104,8 +104,6 @@ impl Stippler {
             s.push( 0_f64);
         }
 
-        // I javascript land i is null here.
-        // find() treats None as zero.
         let mut i = 0;
         for y in 0..self.height {
             for x in 0..self.width {
