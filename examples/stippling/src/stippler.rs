@@ -19,7 +19,7 @@ pub struct Stippler {
     n: usize,
     data: Vec<f64>,
     points: Vec<Coord<f64>>,
-    voronoi: Voronoi<f64>,
+    delaunay: Delaunay<f64>,
     context: OffscreenCanvasRenderingContext2d,
 }
 
@@ -66,8 +66,6 @@ impl Stippler {
         console_log!("rejection sampling {:#?} ms", measure.duration());
 
         let delaunay = Delaunay::new(&points);
-        let voronoi =
-            delaunay.voronoi(Some((0_f64, 0_f64, width as f64, height as f64)));
 
         performance.mark("initial_voronoi_complete")?;
 
@@ -89,7 +87,7 @@ impl Stippler {
             n,
             data,
             points,
-            voronoi,
+            delaunay,
             context: context.clone(),
         };
         Ok(state)
@@ -108,7 +106,7 @@ impl Stippler {
         for y in 0..self.height {
             for x in 0..self.width {
                 let w = self.data[y * self.width + x];
-                i = self.voronoi.delaunay.find(
+                i = self.delaunay.find(
                     &Coord {
                         x: x as f64 + 0.5_f64,
                         y: y as f64 + 0.5_f64,
@@ -145,13 +143,7 @@ impl Stippler {
 
         // // TODO: doing a update() the hard way...
         // // What can I refactor here.
-        let delaunay = Delaunay::new(&self.points);
-        self.voronoi = delaunay.voronoi(Some((
-            0_f64,
-            0_f64,
-            self.width as f64,
-            self.height as f64,
-        )));
+        self.delaunay = Delaunay::new(&self.points);
 
         Ok(())
     }
