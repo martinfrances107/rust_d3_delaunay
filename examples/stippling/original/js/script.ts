@@ -20,7 +20,7 @@ onmessage = (event) => {
   }
 
   let delaunay = new d3.Delaunay(points);
-  const voronoi = delaunay.voronoi([0, 0, width, height]);
+  // const voronoi = delaunay.voronoi([0, 0, width, height]);
 
   for (let k = 0; k < 80; ++k) {
     // Compute the weighted centroid for each Voronoi cell.
