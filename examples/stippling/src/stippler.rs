@@ -18,7 +18,6 @@ pub struct Stippler {
     height: usize,
     n: usize,
     data: Vec<f64>,
-    points: Vec<Coord<f64>>,
     delaunay: Delaunay<f64>,
     context: OffscreenCanvasRenderingContext2d,
 }
@@ -86,7 +85,6 @@ impl Stippler {
             height,
             n,
             data,
-            points,
             delaunay,
             context: context.clone(),
         };
@@ -123,8 +121,8 @@ impl Stippler {
         // Wiggle the points a little bit so they don’t get stuck.
         let w = (k as f64 + 1_f64).powf(-0.8) * 10_f64;
         for i in 0..self.n {
-            let x0 = self.points[i].x;
-            let y0 = self.points[i].y;
+            let x0 = self.delaunay.points[i].x;
+            let y0 = self.delaunay.points[i].y;
             let x1 = if s[i] == 0_f64 {
                 x0
             } else {
@@ -135,15 +133,15 @@ impl Stippler {
             } else {
                 c[i].y / s[i]
             };
-            self.points[i].x = x0 + (x1 - x0) * 1.8 + (random() - 0.5) * w;
-            self.points[i].y = y0 + (y1 - y0) * 1.8 + (random() - 0.5) * w;
+            self.delaunay.points[i].x = x0 + (x1 - x0) * 1.8 + (random() - 0.5) * w;
+            self.delaunay.points[i].y = y0 + (y1 - y0) * 1.8 + (random() - 0.5) * w;
         }
 
         self.draw()?;
 
         // // TODO: doing a update() the hard way...
         // // What can I refactor here.
-        self.delaunay = Delaunay::new(&self.points);
+        self.delaunay = Delaunay::new(&self.delaunay.points);
 
         Ok(())
     }
@@ -159,7 +157,7 @@ impl Stippler {
         );
 
         self.context.begin_path();
-        for p in &self.points {
+        for p in &self.delaunay.points {
             self.context.move_to(p.x + 1.5_f64, p.y);
             self.context.arc(
                 p.x,
