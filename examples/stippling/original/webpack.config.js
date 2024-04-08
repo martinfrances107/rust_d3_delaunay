@@ -30,19 +30,11 @@ module.exports = {
   devtool: 'inline-source-map',
   experiments: { syncWebAssembly: true },
   plugins: [
-    // new ESLintPlugin(),
     new CopyWebpackPlugin({
       patterns: [
         { from: 'obama.png' },
         { from: 'index.html' },
       ]
     }),
-    new WasmPackPlugin({
-      crateDirectory: __dirname,
-      args: '--log-level warn',
-      extraArgs: '',
-      forceMode: 'development'
-    }),
-
   ]
 }

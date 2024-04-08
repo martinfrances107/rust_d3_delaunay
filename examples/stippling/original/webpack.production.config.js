@@ -36,13 +36,6 @@ module.exports = {
         { from: 'index.html' },
       ]
     }),
-    new WasmPackPlugin({
-      crateDirectory: __dirname,
-      args: '--log-level warn',
-      extraArgs: '',
-      // run in release mode.
-      forceMode: 'production',
-    }),
     new CompressionPlugin({
       filename: '[path][base].br',
       algorithm: 'brotliCompress',
