@@ -23,6 +23,7 @@ It is part of a collection d3 modules ported into RUST
 Currently the code coverage, as reported by Cargo tarpaulin is 80%.
 
 ## Examples
+
 Two example web pages are provided in the git repository associated with crate
 
 ### examples/500_points
@@ -79,8 +80,8 @@ The following generators functions are missing.
 | ------------|---| --------------  |
 | neighbors() |   |  cellPolygons() |
 
-
 ### update()
+
 d3-geo-delaunay has a dependency on this npm package [delauantor](https://github.com/mapbox/delaunator)
 the function update() allow for rapid retriangulation - in a memory efficient mannor.
 
