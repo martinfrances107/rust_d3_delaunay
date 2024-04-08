@@ -118,7 +118,7 @@ pub fn main(
         .data()
         .drain(..)
         .step_by(4)
-        .map(|d| f64::max(0_f64, (1 - d / 254).into()))
+        .map(|d| f64::max(0_f64, 1_f64 - d as f64 / 254_f64))
         .collect();
 
     performance.mark("data_transform_complete")?;
