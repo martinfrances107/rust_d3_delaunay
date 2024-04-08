@@ -10,7 +10,6 @@ use web_sys::Performance;
 use web_sys::PerformanceMeasure;
 
 use d3_delaunay_rs::delaunay::Delaunay;
-use d3_delaunay_rs::voronoi::Voronoi;
 
 #[wasm_bindgen]
 pub struct Stippler {
@@ -95,7 +94,7 @@ impl Stippler {
         // Compute the weighted centroid for each Voronoi cell.
         let mut c: Vec<Coord<f64>> = Vec::with_capacity(self.n);
         let mut s: Vec<f64> = Vec::with_capacity(self.n);
-        for i in 0..self.n {
+        for _i in 0..self.n {
             c.push( Coord { x: 0_f64, y: 0_f64 });
             s.push( 0_f64);
         }
