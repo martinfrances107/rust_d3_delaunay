@@ -22,7 +22,8 @@ It is part of a collection d3 modules ported into RUST
 
 Currently the code coverage, as reported by Cargo tarpaulin is 80%.
 
-An example app is provided in the git repository associated with crate
+## Examples
+Two example web pages are provided in the git repository associated with crate
 
 ### examples/500_points
 
@@ -42,6 +43,16 @@ This produces a file "mesh.svg"
 * The delaunay mesh is in blue.
 
 * The voronoi mesh is in green.
+
+### examples/stippling
+
+Using this library - I have port this example into RUST
+
+<https://observablehq.com/@mbostock/voronoi-stippling>
+
+![eye](https://raw.githubusercontent.com/martinfrances107/rust_d3_delaunay/main/images/stippling.png)
+
+
 
 ## Phase 1
 
