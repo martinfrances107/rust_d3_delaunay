@@ -24,7 +24,7 @@ Currently the code coverage, as reported by Cargo tarpaulin is 80%.
 
 ## Examples
 
-Two example web pages are provided in the git repository associated with crate
+Three example web pages are provided in the git repository associated with crate
 
 ### examples/500_points
 
@@ -33,7 +33,7 @@ This demo renders the meshes associated with a set of 500 points. The points are
 to run the application
 
 ```console
-cd example/500_points
+cd examples/500_points
 cargo run
 ```
 
@@ -53,19 +53,28 @@ Using this library - I have port this example into RUST
 
 ![eye](https://raw.githubusercontent.com/martinfrances107/rust_d3_delaunay/main/images/stippling.png)
 
+to run the example
 
+```bash
+cd examples/stippling
+npm install
+npm run build
+npm run serve
+```
 
-## Phase 1
+Currently the RUST port of this example runs in javascrtipt's main event loop. This needs to be refactored so that the main computation run in parallel, runs in a web worker.
 
-Early draft port - sub module by submodule. Sub module porting means the test have also been ported.
-No API stability guarantees.
+### examples/cross_pattern
 
-## Phase 2
+This is a confidence building exercise
+With only 5 points in a symmetric pattern the meshes can be predicted.
 
-API finalization. There maybe optimization in the area of generics. So the API only gets locked down in phase 2.
- The code will be profiled and bottlenecks identified.
+## Next steps
 
-Modules, passing test ready for phase 2 evaluation :-
+API finalization. There maybe optimization in the area of generics.
+
+We need a profile taget based on the stippling example.
+To profile and identify bottlenecks.
 
 ## Unimplemented generators
 
