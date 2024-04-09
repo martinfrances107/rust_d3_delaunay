@@ -69,6 +69,8 @@ Currently the RUST port of this example runs in javascrtipt's main event loop. T
 This is a confidence building exercise
 With only 5 points in a symmetric pattern the meshes can be predicted.
 
+![cross_pattern](https://raw.githubusercontent.com/martinfrances107/rust_d3_delaunay/main/images/cross_pattern.svg)
+
 ## Next steps
 
 API finalization. There maybe optimization in the area of generics.
