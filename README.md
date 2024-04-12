@@ -47,7 +47,7 @@ This produces a file "mesh.svg"
 
 ### examples/stippling
 
-Using this library - I have port this example into RUST
+Using this library - I have ported this example into RUST
 
 <https://observablehq.com/@mbostock/voronoi-stippling>
 
@@ -62,12 +62,11 @@ npm run build
 npm run serve
 ```
 
-Currently the RUST port of this example runs in javascrtipt's main event loop. This needs to be refactored so that the main computation run in parallel, runs in a web worker.
+Currently the RUST port of this example runs in javascrtipt's main event loop. This needs to be refactored so that the main computation can be run in parallel, ( runs in a web worker ).
 
 ### examples/cross_pattern
 
-This is a confidence building exercise
-With only 5 points in a symmetric pattern the meshes can be predicted.
+This is a confidence building exercise. With only 5 points in a symmetric pattern the meshes can be predicted.
 
 ![cross_pattern](https://raw.githubusercontent.com/martinfrances107/rust_d3_delaunay/main/images/cross_pattern.svg)
 
