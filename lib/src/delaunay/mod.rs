@@ -394,7 +394,7 @@ where
         // if (r === undefined && (!context || typeof context.moveTo !== "function")) r = context, context = null;
         // r = r == undefined ? 2 : +r;
 
-        let tau = T::from(2_f64).unwrap() * T::PI();
+        let tau = T::TAU();
 
         let r = r.map_or_else(|| T::from(2.0).unwrap(), |r| r);
 
