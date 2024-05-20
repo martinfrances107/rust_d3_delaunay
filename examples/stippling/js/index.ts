@@ -14,7 +14,6 @@ import("../pkg").then((pkg) => {
 
   let k = 0;
   const renderLoop = () => {
-    console.log("k={}", k);
     stippler.next(k);
 
     if (k < 80) {
