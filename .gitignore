@@ -3,10 +3,6 @@
 **/package-lock.json
 
 Cargo.lock
-.*
-!.github
-!.gitattributes
-!.gitignore
 !.vscode
 **/pkg
 **/dist
