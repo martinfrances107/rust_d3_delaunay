@@ -32,7 +32,8 @@ impl Stippler {
         performance: &Performance,
     ) -> Result<Stippler, JsValue> {
         performance.mark("go")?;
-        let mut h_points: HashMap<usize, Coord<f64>> = HashMap::with_capacity(n);
+        let mut h_points: HashMap<usize, Coord<f64>> =
+            HashMap::with_capacity(n);
         console_log!("n {}", n);
         console_log!("data.len {}", data.len());
         // Initialize the points using rejection sampling.
@@ -78,7 +79,6 @@ impl Stippler {
 
         console_log!("initial veronoi {:#?} ms", measure.duration());
 
-
         let state = Stippler {
             width,
             height,
@@ -95,8 +95,8 @@ impl Stippler {
         let mut c: Vec<Coord<f64>> = Vec::with_capacity(self.n);
         let mut s: Vec<f64> = Vec::with_capacity(self.n);
         for _i in 0..self.n {
-            c.push( Coord { x: 0_f64, y: 0_f64 });
-            s.push( 0_f64);
+            c.push(Coord { x: 0_f64, y: 0_f64 });
+            s.push(0_f64);
         }
 
         let mut i = 0;
@@ -122,18 +122,12 @@ impl Stippler {
         for i in 0..self.n {
             let x0 = self.delaunay.points[i].x;
             let y0 = self.delaunay.points[i].y;
-            let x1 = if s[i] == 0_f64 {
-                x0
-            } else {
-                c[i].x / s[i]
-            };
-            let y1 = if s[i] == 0_f64 {
-                y0
-            } else {
-                c[i].y / s[i]
-            };
-            self.delaunay.points[i].x = x0 + (x1 - x0) * 1.8 + (random() - 0.5) * w;
-            self.delaunay.points[i].y = y0 + (y1 - y0) * 1.8 + (random() - 0.5) * w;
+            let x1 = if s[i] == 0_f64 { x0 } else { c[i].x / s[i] };
+            let y1 = if s[i] == 0_f64 { y0 } else { c[i].y / s[i] };
+            self.delaunay.points[i].x =
+                x0 + (x1 - x0) * 1.8 + (random() - 0.5) * w;
+            self.delaunay.points[i].y =
+                y0 + (y1 - y0) * 1.8 + (random() - 0.5) * w;
         }
 
         self.draw()?;

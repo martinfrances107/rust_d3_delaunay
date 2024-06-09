@@ -27,9 +27,7 @@ fn document() -> Result<Document, JsValue> {
 }
 
 #[wasm_bindgen]
-pub fn main(
-    strippled_canvas: OffscreenCanvas,
-) -> Result<Stippler, JsValue> {
+pub fn main(strippled_canvas: OffscreenCanvas) -> Result<Stippler, JsValue> {
     // load image.
 
     let window =
