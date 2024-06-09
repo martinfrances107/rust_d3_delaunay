@@ -253,9 +253,7 @@ mod delaunay {
 
     #[test]
     fn for_two_point() {
-        println!(
-          "delaunay.voronoi() for two points"
-        );
+        println!("delaunay.voronoi() for two points");
         let points = vec![
             Coord { x: 0f64, y: 0f64 },
             Coord { x: 1f64, y: 0f64 },
@@ -300,11 +298,11 @@ mod delaunay {
         );
 
         let points = vec![
-          Coord { x: 0., y: 0. },
-          Coord { x: 300., y: 0. },
-          Coord { x: 0., y: 300. },
-          Coord { x: 300., y: 300. },
-          Coord { x: 100., y: 100. },
+            Coord { x: 0., y: 0. },
+            Coord { x: 300., y: 0. },
+            Coord { x: 0., y: 300. },
+            Coord { x: 300., y: 300. },
+            Coord { x: 100., y: 100. },
         ];
         let delaunay: DelaunayStub = Delaunay::new(&points);
         assert_eq!(delaunay.find(&Coord { x: 49., y: 49. }, None), 0);
