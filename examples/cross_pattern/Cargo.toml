@@ -1,14 +1,15 @@
 [package]
-authors = ["martin <martinfrances107@hotmail.com>"]
+authors =  { workspace = true }
+categories = { workspace = true }
 edition = { workspace = true }
-keywords = ["demo", "graphics"]
-license = "MIT"
-categories = ["graphics"]
+keywords = ["demo", "delauany", "diagram", "graphics", "voronoi"]
+license = { workspace = true }
+
 description = "A example app demonstrating a simple pattern derived from 5 points."
 name = "cross_pattern"
 readme = "README.md"
-repository = "https://github.com/martinfrances107/rust_d3_geo"
-version = "0.1.0"
+repository = { workspace = true }
+version = { workspace = true }
 # Version 1.65 is required as this package makes use of "Generic Associated Types".
 rust-version = "1.65"
 
