@@ -28,17 +28,17 @@
   "dependencies": {
     "@wasm-tool/wasm-pack-plugin": "^1",
     "benchmark": "../pkg",
-    "compression-webpack-plugin": "^10",
-    "copy-webpack-plugin": "^11",
+    "compression-webpack-plugin": "^11",
+    "copy-webpack-plugin": "^12",
     "eslint": "^8.35.0",
     "request": "^2.79.0",
-    "rimraf": "^5",
+    "rimraf": "^6",
     "serve": "^14",
     "ts-loader": "^9",
     "typescript": "^5",
     "webpack": "^5",
     "webpack-cli": "^5",
-    "webpack-dev-server": "^4.15.2"
+    "webpack-dev-server": "^5"
   },
   "devDependencies": {
     "@types/topojson-client": "^3",
