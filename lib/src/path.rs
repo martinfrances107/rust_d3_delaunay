@@ -12,7 +12,7 @@ use geo_types::Coord;
 
 use super::CanvasRenderingContext2d;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 /// Produces a string into response to [`CanvasRenderingContext2d`] API calls.
 pub struct Path<T>
 where
