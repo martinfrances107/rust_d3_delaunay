@@ -69,21 +69,21 @@ mod voronoi {
         }
         assert_eq!(
             context1.to_string(),
-            String::from("M-1,-1L0.5,-1L0.5,0.5L-1,0.5Z")
+            "M-1,-1L0.5,-1L0.5,0.5L-1,0.5Z"
         );
 
         let mut context = Path::default();
         voronoi.render_cell(1, &mut context);
         assert_eq!(
             context.to_string(),
-            String::from("M2,-1L2,2L0.5,0.5L0.5,-1Z")
+            "M2,-1L2,2L0.5,0.5L0.5,-1Z"
         );
 
         let mut context = Path::default();
         voronoi.render_cell(2, &mut context);
         assert_eq!(
             context.to_string(),
-            String::from("M-1,2L-1,0.5L0.5,0.5L2,2Z")
+            "M-1,2L-1,0.5L0.5,0.5L2,2Z"
         );
     }
 
