@@ -67,24 +67,15 @@ mod voronoi {
         {
             voronoi.render_cell(0, &mut context1);
         }
-        assert_eq!(
-            context1.to_string(),
-            "M-1,-1L0.5,-1L0.5,0.5L-1,0.5Z"
-        );
+        assert_eq!(context1.to_string(), "M-1,-1L0.5,-1L0.5,0.5L-1,0.5Z");
 
         let mut context = Path::default();
         voronoi.render_cell(1, &mut context);
-        assert_eq!(
-            context.to_string(),
-            "M2,-1L2,2L0.5,0.5L0.5,-1Z"
-        );
+        assert_eq!(context.to_string(), "M2,-1L2,2L0.5,0.5L0.5,-1Z");
 
         let mut context = Path::default();
         voronoi.render_cell(2, &mut context);
-        assert_eq!(
-            context.to_string(),
-            "M-1,2L-1,0.5L0.5,0.5L2,2Z"
-        );
+        assert_eq!(context.to_string(), "M-1,2L-1,0.5L0.5,0.5L2,2Z");
     }
 
     #[test]
@@ -384,16 +375,14 @@ mod voronoi {
 
         assert_eq!(
             delaunay.render_to_string(),
-            String::from(
                 "M25,75L50,50M50,50L25,25M75,75L50,50M50,50L75,25M75,75L75,25L25,25L25,75Z"
-            )
         );
 
         let voronoi = delaunay.voronoi(Some((0_f64, 0_f64, 100_f64, 100_f64)));
 
         assert_eq!(
             voronoi.render_to_string(),
-               String::from("M25,50L50,75M25,50L50,25M50,75L75,50M50,25L75,50M50,75L50,100M75,50L100,50M50,25L50,0M25,50L0,50")
+               "M25,50L50,75M25,50L50,25M50,75L75,50M50,25L75,50M50,75L50,100M75,50L100,50M50,25L50,0M25,50L0,50"
         );
 
         // assert_eq!(voronoi.render_to_string(), String::from("fail"));
@@ -439,16 +428,13 @@ mod voronoi {
 
         let delaunay = Delaunay::new(&points);
 
-        assert_eq!(
-            delaunay.render_to_string(),
-            String::from("M33,85L90,73L7,87Z")
-        );
+        assert_eq!(delaunay.render_to_string(), "M33,85L90,73L7,87Z");
 
         let voronoi = delaunay.voronoi(Some((0_f64, 0_f64, 100_f64, 100_f64)));
 
         assert_eq!(
         voronoi.render_to_string(),
-           String::from("M13.384615384615387,0L21.07692307692308,100M44.8684210526316,0L65.92105263157896,100")
+           "M13.384615384615387,0L21.07692307692308,100M44.8684210526316,0L65.92105263157896,100"
     );
     }
 }
