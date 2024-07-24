@@ -39,12 +39,14 @@ impl Stippler {
         // Initialize the points using rejection sampling.
         for i in 0..n {
             '_30Loop: for _ in 0..30 {
-                let x = f64::floor(random() * (width as f64));
-                let y = f64::floor(random() * (height as f64));
+                let x = f64::floor(unsafe{random()} * (width as f64));
+                let y = f64::floor(unsafe{random()} * (height as f64));
                 let index = y as usize * width + x as usize;
                 h_points.insert(i, Coord { x, y });
-                if random() < data[index] {
+                unsafe{
+                  if random() < data[index] {
                     break '_30Loop;
+                }
                 }
             }
         }
@@ -124,10 +126,12 @@ impl Stippler {
             let y0 = self.delaunay.points[i].y;
             let x1 = if s[i] == 0_f64 { x0 } else { c[i].x / s[i] };
             let y1 = if s[i] == 0_f64 { y0 } else { c[i].y / s[i] };
-            self.delaunay.points[i].x =
-                x0 + (x1 - x0) * 1.8 + (random() - 0.5) * w;
-            self.delaunay.points[i].y =
-                y0 + (y1 - y0) * 1.8 + (random() - 0.5) * w;
+            unsafe{
+              self.delaunay.points[i].x =
+              x0 + (x1 - x0) * 1.8 + (random() - 0.5) * w;
+              self.delaunay.points[i].y =
+              y0 + (y1 - y0) * 1.8 + (random() - 0.5) * w;
+            }
         }
 
         self.draw()?;
