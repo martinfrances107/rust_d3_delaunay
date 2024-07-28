@@ -4,7 +4,6 @@ categories = { workspace = true }
 edition = { workspace = true }
 keywords = ["demo", "delauany", "diagram", "graphics", "voronoi"]
 license = { workspace = true }
-
 description = "A example app demonstrating a simple pattern derived from 5 points."
 name = "cross_pattern"
 readme = "README.md"
@@ -13,7 +12,10 @@ version = { workspace = true }
 # Version 1.65 is required as this package makes use of "Generic Associated Types".
 rust-version = "1.65"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[bin]]
+name = "cross_pattern"
+test = false
+bench = false
 
 [dependencies]
 d3_delaunay_rs = { path = "../../lib" }

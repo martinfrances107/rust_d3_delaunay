@@ -14,7 +14,10 @@ version = { workspace = true }
 # [arg(short, long, default_value_t = 500)]
 rust-version = "1.70"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[bin]]
+name = "n_points"
+test = false
+bench = false
 
 [dependencies]
 d3_delaunay_rs = { path = "../../lib" }

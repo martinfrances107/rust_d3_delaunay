@@ -11,12 +11,10 @@ repository = { workspace = true }
 
 [lib]
 crate-type = ["cdylib"]
-
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+test = false
+bench = false
 
 [dependencies]
-
 d3_delaunay_rs = { path = "../../lib" }
 geo-types = { workspace=true }
 wasm-bindgen = "~0.2"
