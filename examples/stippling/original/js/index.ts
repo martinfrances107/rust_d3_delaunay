@@ -1,13 +1,9 @@
 let image_element = document.querySelector("img#input_image");
 if (image_element instanceof HTMLImageElement) {
-  let width = image_element?.width;
-  let height = image_element?.height;
+  let width = image_element.width;
+  let height = image_element.height;
   let stippled_canvas = document.querySelector("canvas#stippled_canvas");
-  if (
-    typeof width === "number" &&
-    typeof height === "number" &&
-    stippled_canvas instanceof HTMLCanvasElement
-  ) {
+  if (stippled_canvas instanceof HTMLCanvasElement) {
     let stippled_context = stippled_canvas.getContext("2d");
 
     if (stippled_context instanceof CanvasRenderingContext2D) {
@@ -40,7 +36,7 @@ if (image_element instanceof HTMLImageElement) {
       // Load image
       //
       // Use worker to draw initial rounds of points.
-       let messaged = ({ data: points }) => {
+      let messaged = ({ data: points }) => {
         stippled_context.fillStyle = "#fff";
         stippled_context.fillRect(0, 0, width, height);
         stippled_context.beginPath();
@@ -52,7 +48,7 @@ if (image_element instanceof HTMLImageElement) {
         }
         stippled_context.fillStyle = "#000";
         stippled_context.fill();
-      }
+      };
 
       worker.addEventListener("message", messaged);
       worker.postMessage({ data, width, height, n });
