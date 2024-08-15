@@ -7,7 +7,7 @@ license = { workspace = true }
 keywords = ["delauany", "diagram", "graphics", "voronoi"]
 name = "d3_delaunay_rs"
 readme = "../README.md"
-repository = { workspace = true}
+repository = { workspace = true }
 version = { workspace = true }
 
 [lib]
@@ -17,6 +17,10 @@ crate-type = ["cdylib", "rlib"]
 [features]
 generator = ["dep:generator"]
 
+[[bench]]
+name = "n_points"
+harness = false
+
 [dependencies]
 d3_geo_rs = "~2"
 delaunator = "~1"
@@ -24,5 +28,8 @@ generator = { version = "~0.8", optional = true }
 geo = { workspace = true }
 geo-types = { workspace = true }
 num-traits = "~0.2"
+
 [dev-dependencies]
-pretty_assertions = "~1"
+criterion = "0.5"
+pretty_assertions = "1"
+rand = "0.8"
