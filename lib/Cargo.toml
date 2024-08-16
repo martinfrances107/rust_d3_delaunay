@@ -21,6 +21,10 @@ generator = ["dep:generator"]
 name = "n_points"
 harness = false
 
+[[bench]]
+name = "update"
+harness = false
+
 [dependencies]
 d3_geo_rs = "~2"
 delaunator = "~1"
