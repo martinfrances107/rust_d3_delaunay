@@ -19,7 +19,7 @@ version = "0.9.5"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace.dependencies]
-d3_geo_rs = "~2"
+d3_geo_rs = "~3"
 delaunator = "~1"
 geo = "~0.28"
 geo-types = "~0.7"
