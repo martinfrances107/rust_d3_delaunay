@@ -26,7 +26,7 @@ name = "update"
 harness = false
 
 [dependencies]
-d3_geo_rs = "~2"
+d3_geo_rs = "~3"
 delaunator = "~1"
 generator = { version = "~0.8", optional = true }
 geo = { workspace = true }
