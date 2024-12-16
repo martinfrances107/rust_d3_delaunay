@@ -62,7 +62,7 @@ npm run build
 npm run serve
 ```
 
-Currently the RUST port of this example runs in javascrtipt's main event loop. This needs to be refactored so that the main computation can be run in parallel, ( runs in a web worker ).
+Currently the RUST port of this example runs in javascript's main event loop. This needs to be refactored so that the main computation can be run in parallel, ( runs in a web worker ).
 
 ### examples/cross_pattern
 
@@ -74,12 +74,12 @@ This is a confidence building exercise. With only 5 points in a symmetric patter
 
 API finalization. There maybe optimization in the area of generics.
 
-We need a profile taget based on the stippling example.
+We need a profile target based on the stippling example.
 To profile and identify bottlenecks.
 
 ## Unimplemented generators
 
-Functions that use the generator crate are now availble only when the
+Functions that use the generator crate are now available only when the
 "generator" feature is enabled.
 
 The following functions are under going rapid development.
@@ -93,9 +93,9 @@ The following generators functions are missing.
 ### update()
 
 d3-geo-delaunay has a dependency on this npm package [delauantor](https://github.com/mapbox/delaunator)
-the function update() allow for rapid retriangulation - in a memory efficient mannor.
+the function update() allow for rapid retriangulation - in a memory efficient manor.
 
-This module has a parallel depenecy on [delaunator-rs](https://github.com/mourner/delaunator-rs/issues/30)
-unfortunatly this is missing from the rust port.
+This module has a parallel dependency on [delaunator-rs](https://github.com/mourner/delaunator-rs/issues/30)
+unfortunately this is missing from the rust port.
 
 There is an open issue to add a update function https://github.com/mourner/delaunator-rs/issues/30
