@@ -8,7 +8,7 @@
 #![warn(missing_docs)]
 //! Generates a large number of random points.
 //!
-//! Then render the deluanay and voronoi meshes.
+//! Then render the delaunay and voronoi meshes.
 
 use clap::Parser;
 
@@ -53,13 +53,13 @@ fn main() -> std::io::Result<()> {
 <rect x=\"0px\" y=\"0px\" width=\"100\" height=\"100\" fill=\"black\"/>\n",
     )?;
 
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
 
     // fill the unit square with points
     let points = (0..args.n_points)
         .map(|_| Coord {
-            x: 96_f64.mul_add(rng.gen::<f64>(), 2_f64),
-            y: 96_f64.mul_add(rng.gen::<f64>(), 2_f64),
+            x: 96_f64.mul_add(rng.random::<f64>(), 2_f64),
+            y: 96_f64.mul_add(rng.random::<f64>(), 2_f64),
         })
         .collect::<Vec<_>>();
 
