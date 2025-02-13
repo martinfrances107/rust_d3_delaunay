@@ -8,19 +8,15 @@
 
 //! A known pattern of points
 //!
-//! Where the voronoi and delauany are very predictable.
+//! Where the voronoi and delaunay are very predictable.
 extern crate geo;
 
 use std::fs::File;
 use std::io::LineWriter;
 use std::io::Write;
 
-use rand::Rng;
-
 use d3_delaunay_rs::delaunay::Delaunay;
 use geo_types::Coord;
-
-static N_POINTS: u16 = 3;
 
 fn main() -> std::io::Result<()> {
     let file = File::create("mesh.svg")?;
@@ -38,15 +34,7 @@ fn main() -> std::io::Result<()> {
 >\n",
     )?;
 
-    let mut rng = rand::thread_rng();
-
-    // fill the unit square with points
-    let _points = (0..N_POINTS)
-        .map(|_| Coord {
-            x: 100_f64 * rng.gen::<f64>(),
-            y: 100_f64 * rng.gen::<f64>(),
-        })
-        .collect::<Vec<_>>();
+    // Fill the unit square with points.
     let points = vec![
         Coord { x: 25f64, y: 25f64 },
         Coord { x: 25f64, y: 75f64 },

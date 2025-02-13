@@ -1,5 +1,5 @@
 [package]
-authors =  { workspace = true }
+authors = { workspace = true }
 categories = { workspace = true }
 edition = { workspace = true }
 keywords = ["demo", "delauany", "diagram", "graphics", "voronoi"]
@@ -19,6 +19,5 @@ bench = false
 
 [dependencies]
 d3_delaunay_rs = { path = "../../lib" }
-geo = {workspace=true}
-geo-types = {workspace=true}
-rand = "~0.8"
+geo = { workspace = true }
+geo-types = { workspace = true }
