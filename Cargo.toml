@@ -12,16 +12,16 @@ authors = ["martin frances <martinfrances107@hotmail.com>"]
 categories = ["graphics", "mathematics"]
 edition = "2021"
 license = "MIT"
-keywords = ["delauany", "diagram", "graphics", "voronoi"]
+keywords = ["delaunay", "diagram", "graphics", "voronoi"]
 repository = "https://github.com/martinfrances107/rust_d3_delaunay"
-version = "0.9.5"
+version = "0.10.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace.dependencies]
 d3_geo_rs = "~2"
 delaunator = "~1"
-geo = "~0.28"
+geo = "0.29.3"
 geo-types = "~0.7"
 num-traits = "~0.2"
 pretty_assertions = "1"
