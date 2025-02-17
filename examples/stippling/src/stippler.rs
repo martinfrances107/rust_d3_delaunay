@@ -145,7 +145,7 @@ impl Stippler {
 
     // Render to Canvas.
     pub fn draw(&self) -> Result<(), JsValue> {
-        self.context.set_fill_style_str(&"#fff");
+        self.context.set_fill_style_str("#fff");
         self.context.fill_rect(
             0_f64,
             0_f64,
@@ -164,7 +164,7 @@ impl Stippler {
                 core::f64::consts::TAU,
             )?;
         }
-        self.context.set_fill_style_str(&"#000");
+        self.context.set_fill_style_str("#000");
         self.context.fill();
 
         Ok(())
