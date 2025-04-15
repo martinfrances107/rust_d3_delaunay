@@ -294,7 +294,7 @@ where
     pub fn step(&self, i: usize, p: &Coord<T>) -> usize {
         if self.inedges[i] == EMPTY || self.points.is_empty() {
             return (i + 1) % (self.points.len() >> 1);
-        };
+        }
         let mut c = i;
         let mut dc =
             (p.x - self.points[i].x).powi(2) + (p.y - self.points[i].y).powi(2);
@@ -357,7 +357,7 @@ where
             let j = self.delaunator.halfedges[i];
             if j < i || j == EMPTY {
                 continue;
-            };
+            }
             let ti = self.delaunator.triangles[i];
             let tj = self.delaunator.triangles[j];
 

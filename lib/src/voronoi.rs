@@ -578,7 +578,7 @@ where
                     P = VecDeque::from(vec![s1]);
                 } else {
                     P.push_back(s1);
-                };
+                }
             }
         }
         if !P.is_empty() {
