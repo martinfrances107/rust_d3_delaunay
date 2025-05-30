@@ -130,7 +130,6 @@ impl Stippler {
                 x0 + (x1 - x0) * 1.8 + (random() - 0.5) * w;
             self.delaunay.points[i].y =
                 y0 + (y1 - y0) * 1.8 + (random() - 0.5) * w;
-
         }
 
         self.draw()?;
