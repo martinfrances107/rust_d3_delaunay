@@ -34,5 +34,5 @@ geo-types = { workspace = true }
 num-traits = "~0.2"
 
 [dev-dependencies]
-criterion = "0.5"
+criterion = "0.6"
 pretty_assertions = "1"
