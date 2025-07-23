@@ -4,12 +4,12 @@ use geo_types::Coord;
 // This code was run once to generate the points below
 pub(crate) fn output_points() {
     use rand::Rng;
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
 
     let points = (0..1000)
         .map(|_| Coord {
-            x: 96_f64.mul_add(rng.gen::<f64>(), 2_f64),
-            y: 96_f64.mul_add(rng.gen::<f64>(), 2_f64),
+            x: 96_f64.mul_add(rng.random::<f64>(), 2_f64),
+            y: 96_f64.mul_add(rng.random::<f64>(), 2_f64),
         })
         .collect::<Vec<_>>();
 
