@@ -488,7 +488,7 @@ where
     #[cfg(feature = "generator")]
     pub fn triangle_polygons_generator(&self) -> Generator<'_, (), Polygon<T>> {
         Gn::new_scoped(move |mut s| {
-            for i in 0..self.triangles.len() / 3 {
+            for i in 0..self.delaunator.triangles.len() / 3 {
                 s.yield_with(self.triangle_polygon(i));
             }
             done!();
