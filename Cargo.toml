@@ -19,9 +19,9 @@ version = "0.11.2"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace.dependencies]
-d3_geo_rs = "~3.1"
-delaunator = "~1"
+d3_geo_rs = "3.1.3"
+delaunator = "1.0.2"
 geo = "0.31.0"
-geo-types = "~0.7"
-num-traits = "~0.2"
-pretty_assertions = "1"
+geo-types = "0.7.17"
+num-traits = "0.2.19"
+pretty_assertions = "1.4.1"
