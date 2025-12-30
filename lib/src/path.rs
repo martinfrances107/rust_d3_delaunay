@@ -22,6 +22,7 @@ where
     p1: Option<Coord<T>>,
     s: String,
     epsilon: T,
+    num_digits: usize,
 }
 
 impl<T> Default for Path<T>
@@ -38,6 +39,7 @@ where
             p1: None,
             s: String::new(),
             epsilon: T::from(EPSILON).unwrap(),
+            num_digits: 2usize,
         }
     }
 }
@@ -63,8 +65,12 @@ where
     fn move_to(&mut self, p: &Coord<T>) {
         self.p0 = *p;
         self.p1 = Some(*p);
-        write!(self.s, "M{},{}", p.x, p.y)
-            .expect("move_to: Cannot append to buffer.");
+        write!(
+            self.s,
+            "M{:.*},{:.*}",
+            self.num_digits, p.x, self.num_digits, p.y
+        )
+        .expect("move_to: Cannot append to buffer.");
     }
 
     fn close_path(&mut self) {
@@ -76,8 +82,12 @@ where
 
     fn line_to(&mut self, p: &Coord<T>) {
         self.p1 = Some(*p);
-        write!(self.s, "L{},{}", p.x, p.y)
-            .expect("line_to: Cannot append to buffer.");
+        write!(
+            self.s,
+            "L{:.*},{:.*}",
+            self.num_digits, p.x, self.num_digits, p.y
+        )
+        .expect("line_to: Cannot append to buffer.");
     }
 
     fn arc(&mut self, p: &Coord<T>, r: T, _start: T, _stop: T) {
@@ -91,8 +101,12 @@ where
                 if (p1.x - x0).abs() > self.epsilon
                     || (p1.y - y0).abs() > self.epsilon
                 {
-                    write!(self.s, "L{x0},{y0}")
-                        .expect("arc: Cannot append line to buffer.");
+                    write!(
+                        self.s,
+                        "L{:.*},{:.*}",
+                        self.num_digits, x0, self.num_digits, y0
+                    )
+                    .expect("arc: Cannot append line to buffer.");
                 }
                 if r == T::zero() {
                     return;
@@ -100,14 +114,22 @@ where
                 self.p1 = Some(*p1);
                 write!(
                     self.s,
-                    "A{},{},0,1,1,{},{}A{},{},0,1,1,{},{}",
+                    "A{:.*},{:.*},0,1,1,{:.*},{:.*}A{:.*},{:.*},0,1,1,{:.*},{:.*}",
+                    self.num_digits,
                     r,
+                    self.num_digits,
                     r,
+                    self.num_digits,
                     p.x - r,
+                    self.num_digits,
                     p.y,
+                    self.num_digits,
                     r,
+                    self.num_digits,
                     r,
+                    self.num_digits,
                     self.p0.x,
+                    self.num_digits,
                     self.p0.y
                 )
                 .expect("arc: Cannot append arc to buffer");
