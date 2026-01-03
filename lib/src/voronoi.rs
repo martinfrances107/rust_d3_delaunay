@@ -386,7 +386,7 @@ where
                     if points[i].x != points[i - 1].x
                         || points[i].y != points[i - 1].y
                     {
-                        context.line_to(&points[i].clone());
+                        context.line_to(&points[i]);
                     }
                 }
 
