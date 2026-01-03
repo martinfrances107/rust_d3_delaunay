@@ -296,14 +296,16 @@ where
             return (i + 1) % (self.points.len() >> 1);
         }
         let mut c = i;
-        let mut dc =
-            (p.x - self.points[i].x).powi(2) + (p.y - self.points[i].y).powi(2);
+        let dx = p.x - self.points[i].x;
+        let dy = p.y - self.points[i].y;
+        let mut dc = dx * dx + dy * dy;
         let e0 = self.inedges[i];
         let mut e = e0;
         loop {
             let t = self.delaunator.triangles[e];
-            let dt = (p.x - self.points[t].x).powi(2)
-                + (p.y - self.points[t].y).powi(2);
+            let dx = (p.x - self.points[t].x);
+            let dy = (p.y - self.points[t].y);
+            let dt = dx * dx + dy * dy;
             if dt < dc {
                 dc = dt;
                 c = t;
@@ -323,11 +325,9 @@ where
             if e == EMPTY {
                 e = self.delaunator.hull
                     [(self.hull_index[i] + 1) % self.delaunator.hull.len()];
-                if e != t
-                    && (p.x - self.points[e].x).powi(2)
-                        + (p.y - self.points[e].y).powi(2)
-                        < dc
-                {
+                let dx = p.x - self.points[e].x;
+                let dy = p.y - self.points[e].y;
+                if e != t && dx * dx + dy * dy < dc {
                     return e;
                 }
                 break;
