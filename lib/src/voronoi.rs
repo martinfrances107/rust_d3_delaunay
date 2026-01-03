@@ -223,18 +223,11 @@ where
             }
         }
 
-        // JS used fill() here
-        // VecDeque has no fill() unlike Vec
-        // This is because VecDeque unlike Vec is not a
-        // contiguous memory element.
-        // .. is this going to be slow!!!
         let p_zero = Coord {
             x: T::zero(),
             y: T::zero(),
         };
-        for v in &mut self.vectors {
-            *v = p_zero;
-        }
+        self.vectors.fill(p_zero);
         // deviation from JS ... resolves index out of bounds issues
         // indexing using a negative value in JS returns undefined.
         // causes panic in rust.
