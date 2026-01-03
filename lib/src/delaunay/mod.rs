@@ -190,10 +190,8 @@ where
         let len = self.points.len();
         self.inedges = Vec::with_capacity(len);
         self.hull_index = Vec::with_capacity(len);
-        for _i in 0..len {
-            self.inedges.push(EMPTY);
-            self.hull_index.push(EMPTY);
-        }
+        self.inedges = vec![EMPTY; len];
+        self.hull_index = vec![EMPTY; len];
 
         // Compute an index from each point to an (arbitrary) incoming halfedge
         // Used to give the first neighbor of each point; for this reason,
