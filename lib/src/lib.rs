@@ -19,6 +19,9 @@ pub mod path;
 pub mod polygon;
 pub mod voronoi;
 
+// #[cfg(feature = "bevy")]
+pub mod convex_polygon;
+
 use geo::CoordFloat;
 use geo_types::Coord;
 

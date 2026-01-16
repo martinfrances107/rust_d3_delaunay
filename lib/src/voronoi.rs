@@ -44,6 +44,8 @@ where
     pub xmax: T,
     /// Bounds component.
     pub ymax: T,
+    #[cfg(feature = "Generator")]
+    pub cellPolygons: Generator,
 }
 
 impl<T> Voronoi<T>
@@ -56,17 +58,14 @@ where
     ///  Will never happen as constants will always be converted into T.
     #[allow(clippy::similar_names)]
     pub fn new(delaunay: Delaunay<T>, bounds: Option<Bounds<T>>) -> Self {
-        let (xmin, ymin, xmax, ymax) = bounds.map_or_else(
-            || {
-                (
-                    T::zero(),
-                    T::zero(),
-                    T::from_f64(960f64).unwrap(),
-                    T::from_f64(500f64).unwrap(),
-                )
-            },
-            |bounds| bounds,
-        );
+        let (xmin, ymin, xmax, ymax) = bounds.unwrap_or_else(|| {
+            (
+                T::zero(),
+                T::zero(),
+                T::from_f64(960f64).unwrap(),
+                T::from_f64(500f64).unwrap(),
+            )
+        });
 
         assert!(!(xmax < xmin || ymax < ymin), "Invalid bounds");
         let len = delaunay.points.len() * 2;
@@ -394,8 +393,6 @@ where
             }
         }
     }
-    //  cellPolygons*() is a generator which rustlang does not support.
-    // in tests this is implemented as a for loop using cell_polygon().
 
     /// Returns a vec points that for a voronoi cell.
     pub fn cell_polygon(&self, i: usize) -> Vec<Coord<T>>
@@ -437,7 +434,7 @@ where
 
     // TODO place neighbors* here() rustlang does not yet support generator functions.
 
-    fn cell(&self, i: usize) -> Option<VecDeque<Coord<T>>> {
+    pub fn cell(&self, i: usize) -> Option<VecDeque<Coord<T>>> {
         let e0 = self.delaunay.inedges[i];
         if e0 == EMPTY {
             // Coincident point.
@@ -897,7 +894,7 @@ where
         lower | upper
     }
 
-    fn regioncode(&self, p: &Coord<T>) -> u8 {
+    pub fn regioncode(&self, p: &Coord<T>) -> u8 {
         // Lower and upper nibbles.
         let lower = if p.x < self.xmin {
             0b001

@@ -301,8 +301,8 @@ where
         let mut e = e0;
         loop {
             let t = self.delaunator.triangles[e];
-            let dx = (p.x - self.points[t].x);
-            let dy = (p.y - self.points[t].y);
+            let dx = p.x - self.points[t].x;
+            let dy = p.y - self.points[t].y;
             let dt = dx * dx + dy * dy;
             if dt < dc {
                 dc = dt;
