@@ -10,13 +10,16 @@ resolver = "2"
 [workspace.package]
 authors = ["martin frances <martinfrances107@hotmail.com>"]
 categories = ["graphics", "mathematics"]
-edition = "2021"
+edition = "2024"
 license = "MIT"
 keywords = ["delaunay", "diagram", "graphics", "voronoi"]
 repository = "https://github.com/martinfrances107/rust_d3_delaunay"
 version = "0.11.3"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+# Version 1.65 is required as this package makes use of "Generic Associated Types".
+# Version 1.70 Needed by this clap class definition.
+# [arg(short, long, default_value_t = 500)]
+rust-version = "1.93.1"
 
 [workspace.dependencies]
 d3_geo_rs = "3.1.3"

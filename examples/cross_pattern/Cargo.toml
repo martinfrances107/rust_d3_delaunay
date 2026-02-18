@@ -9,8 +9,7 @@ name = "cross_pattern"
 readme = "README.md"
 repository = { workspace = true }
 version = { workspace = true }
-# Version 1.65 is required as this package makes use of "Generic Associated Types".
-rust-version = "1.65"
+rust-version = {workspace = true}
 
 [[bin]]
 name = "cross_pattern"

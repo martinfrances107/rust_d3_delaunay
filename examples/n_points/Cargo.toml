@@ -9,10 +9,7 @@ name = "n_points"
 readme = "README.md"
 repository = { workspace = true }
 version = { workspace = true }
-
-# Needed by this clap class definition.
-# [arg(short, long, default_value_t = 500)]
-rust-version = "1.70"
+rust-verison = {workspace = true}
 
 [[bin]]
 name = "n_points"
