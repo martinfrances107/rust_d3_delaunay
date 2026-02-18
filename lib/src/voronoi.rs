@@ -44,7 +44,7 @@ where
     pub xmax: T,
     /// Bounds component.
     pub ymax: T,
-    #[cfg(feature = "Generator")]
+    #[cfg(feature = "generator")]
     pub cellPolygons: Generator,
 }
 
