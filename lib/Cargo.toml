@@ -38,5 +38,5 @@ bevy_math = { version = "0.18"}
 
 [dev-dependencies]
 rand = "0.9.2"
-criterion = "0.7.0"
+criterion = "0.8.2"
 pretty_assertions = "1.4.1"
